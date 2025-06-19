@@ -1,0 +1,878 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>המפקח כעוגן התמודדות - מודל גש"ר מאח"ד</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+            direction: rtl;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 30px;
+            border-radius: 20px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .header h1 {
+            color: #2c3e50;
+            font-size: 2.5em;
+            margin-bottom: 15px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .model-explanation {
+            background: rgba(255, 255, 255, 0.9);
+            padding: 25px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+        }
+
+        .model-explanation h2 {
+            color: #3498db;
+            font-size: 1.8em;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .anchor-concept {
+            background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+            padding: 25px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+            border: 3px solid #17a2b8;
+        }
+
+        .anchor-concept h2 {
+            color: #17a2b8;
+            text-align: center;
+            font-size: 2em;
+            margin-bottom: 20px;
+        }
+
+        .anchor-types {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .anchor-type {
+            background: rgba(255, 255, 255, 0.9);
+            padding: 20px;
+            border-radius: 12px;
+            border: 2px solid #17a2b8;
+        }
+
+        .anchor-type h3 {
+            color: #17a2b8;
+            font-size: 1.5em;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .model-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+
+        .channel-card {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border: 3px solid transparent;
+            position: relative;
+            overflow: hidden;
+            min-height: 180px;
+        }
+
+        .channel-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 6px;
+            background: var(--channel-color);
+        }
+
+        .channel-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.25);
+            border-color: var(--channel-color);
+        }
+
+        .channel-card.active {
+            border-color: var(--channel-color);
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.25);
+        }
+
+        .channel-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .channel-icon {
+            font-size: 2.8em;
+            margin-left: 15px;
+            color: var(--channel-color);
+        }
+
+        .channel-title {
+            font-size: 1.6em;
+            font-weight: bold;
+            color: var(--channel-color);
+        }
+
+        .channel-content {
+            display: none;
+            animation: fadeIn 0.5s ease;
+            margin-top: 20px;
+        }
+
+        .channel-content.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .anchor-sections {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 25px;
+            margin-top: 20px;
+        }
+
+        .anchor-section {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 20px;
+            border-radius: 12px;
+            border: 2px solid var(--channel-color);
+        }
+
+        .anchor-section.self-anchor {
+            background: linear-gradient(135deg, rgba(155, 89, 182, 0.1) 0%, rgba(142, 68, 173, 0.1) 100%);
+            border-color: #9b59b6;
+        }
+
+        .anchor-section.principal-anchor {
+            background: linear-gradient(135deg, rgba(52, 152, 219, 0.1) 0%, rgba(41, 128, 185, 0.1) 100%);
+            border-color: #3498db;
+        }
+
+        .anchor-section h4 {
+            font-size: 1.4em;
+            margin-bottom: 15px;
+            padding: 10px;
+            border-radius: 8px;
+            text-align: center;
+            color: white;
+        }
+
+        .self-anchor h4 {
+            background: linear-gradient(135deg, #9b59b6 0%, #8e44ad 100%);
+        }
+
+        .principal-anchor h4 {
+            background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+        }
+
+        .strategy-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .strategy-list li {
+            background: rgba(255, 255, 255, 0.8);
+            margin: 10px 0;
+            padding: 15px;
+            border-radius: 10px;
+            border-right: 5px solid var(--strategy-color, var(--channel-color));
+            transition: all 0.3s ease;
+            cursor: pointer;
+            font-size: 1.05em;
+            line-height: 1.4;
+        }
+
+        .strategy-list li:hover {
+            background: rgba(255, 255, 255, 0.95);
+            transform: translateX(-8px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .self-anchor .strategy-list li {
+            --strategy-color: #9b59b6;
+        }
+
+        .principal-anchor .strategy-list li {
+            --strategy-color: #3498db;
+        }
+
+        .practical-examples {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 15px;
+            border: 1px dashed var(--channel-color);
+        }
+
+        .practical-examples h5 {
+            color: var(--channel-color);
+            font-size: 1.1em;
+            margin-bottom: 10px;
+        }
+
+        .practical-examples ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .practical-examples li {
+            background: rgba(255, 255, 255, 0.7);
+            margin: 8px 0;
+            padding: 10px 12px;
+            border-radius: 6px;
+            font-size: 0.95em;
+            border-right: 3px solid var(--channel-color);
+        }
+
+        .implementation-tools {
+            background: rgba(255, 255, 255, 0.9);
+            padding: 25px;
+            border-radius: 15px;
+            margin-top: 30px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+        }
+
+        .tools-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .tool-card {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            padding: 25px;
+            border-radius: 12px;
+            text-align: center;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border: 2px solid transparent;
+        }
+
+        .tool-card:hover {
+            transform: scale(1.05);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+            border-color: #3498db;
+        }
+
+        .tool-icon {
+            font-size: 2.5em;
+            margin-bottom: 15px;
+            color: #3498db;
+        }
+
+        .tool-card h4 {
+            color: #2c3e50;
+            font-size: 1.3em;
+            margin-bottom: 10px;
+        }
+
+        .tool-card p {
+            color: #7f8c8d;
+            line-height: 1.5;
+        }
+
+        /* Channel specific colors */
+        .mind { --channel-color: #3498db; }
+        .emotion { --channel-color: #e74c3c; }
+        .belief { --channel-color: #9b59b6; }
+        .society { --channel-color: #27ae60; }
+        .imagination { --channel-color: #17a2b8; }
+        .body { --channel-color: #f39c12; }
+
+        .toggle-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 1.1em;
+            transition: all 0.3s ease;
+            margin-top: 15px;
+            font-weight: bold;
+        }
+
+        .toggle-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .summary-section {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 30px;
+            border-radius: 15px;
+            margin-top: 30px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+            text-align: center;
+        }
+
+        .highlight {
+            background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+            padding: 20px;
+            border-radius: 12px;
+            margin: 20px 0;
+            border-right: 5px solid #17a2b8;
+            line-height: 1.6;
+        }
+
+        .success-metrics {
+            background: rgba(255, 255, 255, 0.9);
+            padding: 25px;
+            border-radius: 15px;
+            margin-top: 30px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+        }
+
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .metric-item {
+            background: linear-gradient(135deg, #e8f5e8 0%, #c8e6c9 100%);
+            padding: 15px;
+            border-radius: 10px;
+            border-right: 4px solid #27ae60;
+            text-align: center;
+        }
+
+        @media (max-width: 768px) {
+            .model-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .anchor-sections {
+                grid-template-columns: 1fr;
+            }
+            
+            .anchor-types {
+                grid-template-columns: 1fr;
+            }
+            
+            .header h1 {
+                font-size: 2em;
+            }
+            
+            .channel-title {
+                font-size: 1.3em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <p style="font-size: 1.4em; color: #2c3e50; font-weight: bold; margin-bottom: 15px;">האגף לחינוך יסודי</p>
+            <h1>🌉 המפקח/ת כעוגן התמודדות במשבר</h1>
+            <p style="font-size: 1.2em; color: #7f8c8d;">על פי מודל גש"ר מאח"ד למשאבי התמודדות</p>
+        </div>
+
+        <div class="model-explanation">
+            <h2>🎯 מה זה מודל גש"ר מאח"ד?</h2>
+            <div class="highlight">
+                <p><strong>גש"ר מאח"ד</strong> הוא מודל רב-ממדי להתמודדות עם מצבי לחץ ואי-ודאות, שפותח על ידי <strong>מולי להד ועפרה אילון</strong>.</p>
+                <p>המודל מבוסס על 6 ערוצי משאבים עיקריים: <strong>ג</strong>וף • <strong>ש</strong>כל • <strong>ר</strong>גש • <strong>מ</strong>ערכת <strong>א</strong>מונות • <strong>ח</strong>ברה • <strong>ד</strong>מיון</p>
+                <p><strong>עיקרון יסוד:</strong> בכל אדם טמון פוטנציאל להתמודדות. המודל עוסק בזיהוי סגנונות ההתמודדות הייחודיים לכל אדם.</p>
+            </div>
+            <p>המודל מאפשר התמודדות רב-ממדית עם משברים, תוך הבנה שאנשים מתקשרים עם עצמם ועם העולם דרך ערוצים שונים.</p>
+        </div>
+
+        <div class="anchor-concept">
+            <h2>⚓ מושג העוגן בהתמודדות עם משבר</h2>
+            <p style="font-size: 1.2em; text-align: center; margin-bottom: 20px;">
+                <strong>עוגן</strong> הוא נקודת יציבות ובטחון המאפשרת התמודדות יעילה עם משבר ומתח
+            </p>
+            
+            <div style="background: rgba(255, 255, 255, 0.8); padding: 15px; border-radius: 10px; margin-bottom: 20px;">
+                <h3 style="color: #17a2b8; text-align: center;">💡 עקרונות המודל</h3>
+                <ul style="list-style: none; padding: 0;">
+                    <li>✓ בשעת משבר כל אדם מגיב בשפה הטבעית לו</li>
+                    <li>✓ אין דפוס התמודדות אחד שטוב לכולם</li>
+                    <li>✓ כל דפוסי ההתמודדות לגיטימיים ועוזרים</li>
+                    <li>✓ חשוב לגוון את דפוסי ההתמודדות ולהרחיב את הרפרטואר</li>
+                </ul>
+            </div>
+            
+            <div class="anchor-types">
+                <div class="anchor-type">
+                    <h3>🔗 עוגן אישי (לעצמי)</h3>
+                    <p>כלים ואסטרטגיות שהמפקח משתמש בהם כדי לשמור על יציבות רגשית, מנטלית וגופנית שלו עצמו במהלך המשבר</p>
+                    <strong>מטרה:</strong> לשמור על כושר התמודדות אישי ויכולת לתמוך באחרים
+                </div>
+                <div class="anchor-type">
+                    <h3>🎯 עוגן מקצועי (למנהלים)</h3>
+                    <p>דרכי התמיכה והליווי שהמפקח מספק למנהלי בתי הספר כדי לעזור להם להתמודד עם המשבר</p>
+                    <strong>מטרה:</strong> לחזק את המנהלים ולאפשר תפקוד מיטבי של בתי הספר
+                </div>
+            </div>
+        </div>
+
+        <div class="model-grid">
+            <div class="channel-card mind" onclick="toggleChannel('mind')">
+                <div class="channel-header">
+                    <div class="channel-icon">🧠</div>
+                    <div class="channel-title">ערוץ השכל</div>
+                </div>
+                <p style="font-size: 1.1em;">המפקח כמנהיג חשיבה אסטרטגית ומקצועית - תמיכה בקבלת החלטות מושכלות<br>
+                <em>חוויות לחץ משפיעות על המערכת הנוירו-כימית ומערפלות את החשיבה</em></p>
+                <button class="toggle-btn">לחץ לפירוט מלא</button>
+                
+                <div class="channel-content" id="mind-content">
+                    <div class="anchor-sections">
+                        <div class="anchor-section self-anchor">
+                            <h4>🔗 עוגן בערוץ השכל - אישי</h4>
+                            <ul class="strategy-list">
+                                <li><strong>שמירה על חשיבה רציונלית:</strong> פיתוח יכולת לנתח מצבים באופן אובייקטיבי גם תחת לחץ</li>
+                                <li><strong>עדכון מתמיד במידע:</strong> מעקב אחר הנחיות משרד החינוך, מחקרים עדכניים וטכניקות ניהול משבר</li>
+                                <li><strong>ניתוח השלכות:</strong> הערכה מוקדמת של תוצאות אפשריות של החלטות שונות</li>
+                                <li><strong>תיעוד וללמידה:</strong> רישום תהליכי חשיבה והחלטות ללמידה עתידית</li>
+                                <li><strong>ייעוץ מקצועי:</strong> שמירה על קשר עם יועצים ועמיתים מנוסים</li>
+                            </ul>
+                            
+                            <div class="practical-examples">
+                                <h5>דוגמאות מעשיות:</h5>
+                                <ul>
+                                    <li>קביעת 15 דקות יומיות לקריאת עדכונים מקצועיים</li>
+                                    <li>יצירת רשימת בדיקה לקבלת החלטות במשבר</li>
+                                    <li>השתתפות בקבוצת למידה של מפקחים</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <div class="anchor-section principal-anchor">
+                            <h4>🎯 עוגן בערוץ השכל - למנהלים</h4>
+                            <ul class="strategy-list">
+                                <li><strong>שאילת שאלות מנחות:</strong> שימוש ברשימת שאלות מוכנות - "איך אתה מעריך את המצב? מה דורש טיפול דחוף?"</li>
+                                <li><strong>סדרי עדיפויות מובנים:</strong> עזרה בזיהוי 2-3 נושאים קריטיים באמצעות שיחה קצרה</li>
+                                <li><strong>תכנון צעדים קצרים:</strong> פיתוח רשימה פשוטה של 3-5 פעולות ליום-יומיים הקרובים</li>
+                                <li><strong>מיפוי משאבים פשוט:</strong> בירור מהיר - איזה כוחות יש בבית הספר? מי יכול לעזור?</li>
+                                <li><strong>תיעוד בסיסי:</strong> עידוד לכתיבת פתקים קצרים על החלטות חשובות</li>
+                                <li><strong>חיבור למומחים:</strong> הפניה למקורות מידע רלוונטיים או יועצים חיצוניים</li>
+                            </ul>
+                            
+                            <div class="practical-examples">
+                                <h5>דוגמאות מעשיות:</h5>
+                                <ul>
+                                    <li>שיחת טלפון של 10-15 דקות עם שאלות מוכנות</li>
+                                    <li>שליחת טופס פשוט "מה הדחוף? מה יכול לחכות?"</li>
+                                    <li>הכוונה למקורות מידע - אתרי משרד החינוך, מומחים</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="channel-card emotion" onclick="toggleChannel('emotion')">
+                <div class="channel-header">
+                    <div class="channel-icon">💖</div>
+                    <div class="channel-title">ערוץ הרגש</div>
+                </div>
+                <p style="font-size: 1.1em;">המפקח כתומך רגשי ומקור לבטחון פסיכולוגי - הכלה וחיזוק רגשי<br>
+                <em>מגוון רחב של רגשות מתעוררים עקב מצב לחץ - חשוב לאפשר ביטוי רגשי</em></p>
+                <button class="toggle-btn">לחץ לפירוט מלא</button>
+                
+                <div class="channel-content" id="emotion-content">
+                    <div class="anchor-sections">
+                        <div class="anchor-section self-anchor">
+                            <h4>🔗 עוגן בערוץ הרגש - אישי</h4>
+                            <ul class="strategy-list">
+                                <li><strong>זיהוי רגשות אישיים:</strong> מודעות לרגשות עצמיים וסימני מתח מוקדמים</li>
+                                <li><strong>טכניקות הרגעה:</strong> נשימות עמוקות, מדיטציה קצרה, הרפיה מתקדמת</li>
+                                <li><strong>ביטוי רגשי בריא:</strong> כתיבת יומן, שיחה עם חבר, פעילות יצירתית</li>
+                                <li><strong>טיפול עצמי רגשי:</strong> פעילויות משחררות כמו ספורט, מוזיקה, טבע</li>
+                                <li><strong>תמיכה מקצועית:</strong> יעוץ פסיכולוגי או קבוצת תמיכה עמיתים</li>
+                                <li><strong>איזון עבודה-חיים:</strong> שמירה על זמן אישי ומשפחתי</li>
+                            </ul>
+                            
+                            <div class="practical-examples">
+                                <h5>דוגמאות מעשיות:</h5>
+                                <ul>
+                                    <li>5 דקות מדיטציה בתחילת יום העבודה</li>
+                                    <li>שיחה שבועית עם חבר או יועץ</li>
+                                    <li>פעילות גופנית סדירה לשחרור מתחים</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <div class="anchor-section principal-anchor">
+                            <h4>🎯 עוגן בערוץ הרגש - למנהלים</h4>
+                            <ul class="strategy-list">
+                                <li><strong>מרחב בטוח לביטוי:</strong> יצירת אווירה של קבלה - "ספר לי איך אתה מרגיש עם המצב"</li>
+                                <li><strong>הקשבה פעילה:</strong> הקשבה ללא שיפוטים לרגשות הנוכחיים - כעס, חרדה, עייפות</li>
+                                <li><strong>וולידציה פשוטה:</strong> משפטים כמו "זה הגיוני שאתה מרגיש כך" או "המצב אכן מאתגר"</li>
+                                <li><strong>כלי הרגעה בסיסיים:</strong> שליחת קישור לסרטון נשימות של 3 דקות או אפליקציה</li>
+                                <li><strong>עידוד ביטוי:</strong> הצעות פשוטות - "כתוב 5 דקות על מה שמטריד אותך"</li>
+                                <li><strong>הומור מתאים:</strong> רגעי קלילות כשהמצב מאפשר ובאופן רגיש</li>
+                                <li><strong>חיזוק חיובי:</strong> הדגשת כוחות וההתמודדות הטובה שכבר מתרחשת</li>
+                            </ul>
+                            
+                            <div class="practical-examples">
+                                <h5>דוגמאות מעשיות:</h5>
+                                <ul>
+                                    <li>הודעת ווטסאפ: "איך אתה מרגיש היום? יש לך 5 דקות לשיחה?"</li>
+                                    <li>שליחת קישור לאפליקציית נשימה פשוטה (Calm, Headspace)</li>
+                                    <li>הודעת חיזוק: "ראיתי איך טיפלת במצב - זה היה מרשים"</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="channel-card belief" onclick="toggleChannel('belief')">
+                <div class="channel-header">
+                    <div class="channel-icon">⭐</div>
+                    <div class="channel-title">מערכת האמונות</div>
+                </div>
+                <p style="font-size: 1.1em;">המפקח כמוביל ערכי ומקור משמעות - חיזוק הזהות המקצועית והאמונה ביכולת<br>
+                <em>האמונה מעניקה משמעות למצוקה ולסבל - התקווה חיונית להישרדות</em></p>
+                <button class="toggle-btn">לחץ לפירוט מלא</button>
+                
+                <div class="channel-content" id="belief-content">
+                    <div class="anchor-sections">
+                        <div class="anchor-section self-anchor">
+                            <h4>🔗 עוגן בערוץ מערכת האמונות - אישי</h4>
+                            <ul class="strategy-list">
+                                <li><strong>חיבור למשמעות אישית:</strong> הגדרה מחודשת של מטרות ויעדים אישיים במקצוע</li>
+                                <li><strong>חיזוק הזהות המקצועית:</strong> זכירת הסיבות לבחירה בחינוך ובפיקוח</li>
+                                <li><strong>תרגול רוחני/פילוסופי:</strong> מדיטציה, תפילה, או הרהור פילוסופי</li>
+                                <li><strong>אמונה ביכולת האישית:</strong> זכירת הישגים עברים והצלחות במשברים קודמים</li>
+                                <li><strong>חיבור לערכים עליונים:</strong> הגדרת הערכים המנחים את הפעילות המקצועית</li>
+                                <li><strong>פיתוח חוסן נפשי:</strong> בניית עמידות מנטלית לאורך זמן</li>
+                            </ul>
+                            
+                            <div class="practical-examples">
+                                <h5>דוגמאות מעשיות:</h5>
+                                <ul>
+                                    <li>כתיבת מניפסט אישי על ערכי החינוך</li>
+                                    <li>רגע יומי של הרהור על המשמעות</li>
+                                    <li>יצירת "קיר הישגים" אישי</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <div class="anchor-section principal-anchor">
+                            <h4>🎯 עוגן בערוץ מערכת האמונות - למנהלים</h4>
+                            <ul class="strategy-list">
+                                <li><strong>תזכיר חשיבות התפקיד:</strong> הודעות קצרות על החשיבות של העבודה החינוכית</li>
+                                <li><strong>סיפורי השראה קצרים:</strong> שיתוף מקרי הצלחה מבתי ספר אחרים (במייל או ווטסאפ)</li>
+                                <li><strong>חיבור לחזון:</strong> שאלות פשוטות - "מה החלום שלך לבית הספר אחרי המשבר?"</li>
+                                <li><strong>הדגשת השפעה:</strong> הראיה כיצד הפעילות משפיעה חיובית על תלמידים וקהילה</li>
+                                <li><strong>חיזוק אמונה:</strong> הודעות עידוד - "אני מאמין בך וביכולת שלך להוביל"</li>
+                                <li><strong>מתן תקווה:</strong> שיתוף נתונים חיוביים או תחזיות אופטימיות מהמערכת</li>
+                                <li><strong>הזכרת משמעות:</strong> דגש על הערכים שמנחים את העבודה החינוכית</li>
+                            </ul>
+                            
+                            <div class="practical-examples">
+                                <h5>דוגמאות מעשיות:</h5>
+                                <ul>
+                                    <li>הודעה שבועית: "סיפור השראה מבית ספר ברמלה שהתמודד בהצלחה"</li>
+                                    <li>שאלה פשוטה: "איך את רואה את בית הספר בעוד חודש?"</li>
+                                    <li>הודעת חיזוק: "התלמידים שלכם בידיים טובות - אתם עושים עבודה חשובה"</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="channel-card society" onclick="toggleChannel('society')">
+                <div class="channel-header">
+                    <div class="channel-icon">👥</div>
+                    <div class="channel-title">ערוץ החברה</div>
+                </div>
+                <p style="font-size: 1.1em;">המפקח כמחבר קהילתי ויוצר רשתות תמיכה - בניית קהילה חזקה ותומכת<br>
+                <em>תקשורת בין-אישית חיונית - לתמיכה מצד הקבוצה חשיבות ראשונה במעלה</em></p>
+                <button class="toggle-btn">לחץ לפירוט מלא</button>
+                
+                <div class="channel-content" id="society-content">
+                    <div class="anchor-sections">
+                        <div class="anchor-section self-anchor">
+                            <h4>🔗 עוגן בערוץ החברה - אישי</h4>
+                            <ul class="strategy-list">
+                                <li><strong>רשת תמיכה אישית:</strong> בניית ושמירת קשרים עם חברים, משפחה ועמיתים</li>
+                                <li><strong>קהילה מקצועית:</strong> השתתפות פעילה ברשתות מפקחים וקבוצות למידה</li>
+                                <li><strong>חברות תומכות:</strong> טיפוח יחסים עמוקים עם אנשים שיכולים לתת תמיכה</li>
+                                <li><strong>פעילות חברתית:</strong> השתתפות בפעילויות קהילתיות מחוץ לעבודה</li>
+                                <li><strong>גבולות בריאים:</strong> איזון בין נתינה וקבלה בקשרים חברתיים</li>
+                                <li><strong>מנטורינג:</strong> קבלת הדרכה ממפקחים ותיקים יותר</li>
+                            </ul>
+                            
+                            <div class="practical-examples">
+                                <h5>דוגמאות מעשיות:</h5>
+                                <ul>
+                                    <li>מפגש חודשי עם קבוצת מפקחים</li>
+                                    <li>שיחת טלפון שבועית עם חבר קרוב</li>
+                                    <li>השתתפות בפעילות קהילתית (ספורט, תחביב)</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <div class="anchor-section principal-anchor">
+                            <h4>🎯 עוגן בערוץ החברה - למנהלים</h4>
+                            <ul class="strategy-list">
+                                <li><strong>חיבור וירטואלי:</strong> יצירת קבוצת ווטסאפ למנהלים לשיתוף מהיר ותמיכה</li>
+                                <li><strong>זיווג מנהלים:</strong> חיבור מנהל מנוסה עם מנהל חדש לתמיכה הדדית</li>
+                                <li><strong>הפניה למומחים:</strong> רשימה מעודכנת של פסיכולוגים, יועצים וגורמי תמיכה</li>
+                                <li><strong>שיתוף משאבים:</strong> העברת קישורים לכלים דיגיטליים ומשאבי עזרה</li>
+                                <li><strong>עידוד קשרים:</strong> הצעות פשוטות לחיזוק קשרים עם עמיתים</li>
+                                <li><strong>תמיכה במשפחה:</strong> הפניה למקורות עזרה לזוגיות ומשפחה</li>
+                                <li><strong>קהילת לימוד וירטואלית:</strong> שיתוף במפגשי זום קצרים בין מנהלים</li>
+                            </ul>
+                            
+                            <div class="practical-examples">
+                                <h5>דוגמאות מעשיות:</h5>
+                                <ul>
+                                    <li>יצירת קבוצת ווטסאפ "מנהלים בתמיכה" לשיתוף יומיומי</li>
+                                    <li>שליחת פרטי קשר של יועצת משפחה מומלצת</li>
+                                    <li>הזמנה למפגש זום של 30 דקות - "קפה וירטואלי" עם עמיתים</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="channel-card imagination" onclick="toggleChannel('imagination')">
+                <div class="channel-header">
+                    <div class="channel-icon">🎨</div>
+                    <div class="channel-title">ערוץ הדמיון</div>
+                </div>
+                <p style="font-size: 1.1em;">המפקח כמעורר יצירתיות ומפתח פתרונות חדשניים - חשיבה מחוץ לקופסה<br>
+                <em>פעולת הדמיון מאפשרת דיאלוג בין גוף, שכל ורגש - חיונית לכושר המצאה</em></p>
+                <button class="toggle-btn">לחץ לפירוט מלא</button>
+                
+                <div class="channel-content" id="imagination-content">
+                    <div class="anchor-sections">
+                        <div class="anchor-section self-anchor">
+                            <h4>🔗 עוגן בערוץ הדמיון - אישי</h4>
+                            <ul class="strategy-list">
+                                <li><strong>יצירתיות אישית:</strong> תרגול כתיבה, ציור, מוזיקה, או כל אמנות אחרת</li>
+                                <li><strong>חשיבה יצירתית:</strong> פיתוח יכולת להסתכל על בעיות מזוויות שונות</li>
+                                <li><strong>דמיון מודרך:</strong> תרגילי הדמיה של תרחישים חיוביים ופתרונות</li>
+                                <li><strong>למידה חדשנית:</strong> השתלמויות בתחומים חדשים ורעננים</li>
+                                <li><strong>משחק ובידור:</strong> פעילויות קלילות שמעוררות שמחה ויצירתיות</li>
+                                <li><strong>חלימות בוקר:</strong> זמן מוקדש לחשיבה חופשית ודמיון</li>
+                            </ul>
+                            
+                            <div class="practical-examples">
+                                <h5>דוגמאות מעשיות:</h5>
+                                <ul>
+                                    <li>15 דקות יומיות של כתיבה חופשית</li>
+                                    <li>השתתפות בסדנת יצירה או אמנות</li>
+                                    <li>משחקי חשיבה ופאזלים מאתגרים</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <div class="anchor-section principal-anchor">
+                            <h4>🎯 עוגן בערוץ הדמיון - למנהלים</h4>
+                            <ul class="strategy-list">
+                                <li><strong>סיעור מוחות מקוון:</strong> מפגש זום קצר (20 דק') לאיסוף רעיונות פתרונות</li>
+                                <li><strong>שיתוף כלים דיגיטליים:</strong> קישורים לאפליקציות ואתרים יצירתיים פשוטים</li>
+                                <li><strong>עידוד פתרונות חלופיים:</strong> שאלות מעוררות מחשבה - "איך אפשר לפתור את זה אחרת?"</li>
+                                <li><strong>חיבור לחזון עתידי:</strong> שימוש בכלים דיגיטליים פשוטים ליצירת "לוח חלומות"</li>
+                                <li><strong>משחקי חשיבה מקוונים:</strong> הצעת אפליקציות או משחקים שמעודדים יצירתיות</li>
+                                <li><strong>תרגילי דמיון פשוטים:</strong> שליחת הדרכה קצרה ל"דמיינו את בית הספר בעוד שנה"</li>
+                                <li><strong>חדשנות פשוטה:</strong> עידוד לנסות כלי חינוכי דיגיטלי אחד חדש השבוע</li>
+                            </ul>
+                            
+                            <div class="practical-examples">
+                                <h5>דוגמאות מעשיות:</h5>
+                                <ul>
+                                    <li>זום קצר: "בואו נחשוב על 3 דרכים חדשות להתמודד עם הבעיה"</li>
+                                    <li>שליחת קישור לאתר Padlet ליצירת "קיר רעיונות" משותף</li>
+                                    <li>אתגר שבועי: "נסו כלי דיגיטלי אחד חדש השבוע ושתפו"</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="channel-card body" onclick="toggleChannel('body')">
+                <div class="channel-header">
+                    <div class="channel-icon">🏃‍♂️</div>
+                    <div class="channel-title">ערוץ הגוף</div>
+                </div>
+                <p style="font-size: 1.1em;">המפקח כדוגמא פיזית ומקור לבריאות גופנית - טיפוח הגוף כבסיס לחוסן נפשי<br>
+                <em>חוויות לחץ משפיעות על המערכת הנוירו-כימית ומעוררות תגובות גופניות</em></p>
+                <button class="toggle-btn">לחץ לפירוט מלא</button>
+                
+                <div class="channel-content" id="body-content">
+                    <div class="anchor-sections">
+                        <div class="anchor-section self-anchor">
+                            <h4>🔗 עוגן בערוץ הגוף - אישי</h4>
+                            <ul class="strategy-list">
+                                <li><strong>פעילות גופנית סדירה:</strong> ספורט, הליכה, ריצה או כל פעילות גופנית מהנה</li>
+                                <li><strong>תזונה נכונה:</strong> שמירה על ארוחות מאוזנות ושתייה מספקת</li>
+                                <li><strong>שינה איכותית:</strong> שמירה על שעות שינה סדירות ומספקות</li>
+                                <li><strong>טכניקות הרפיה:</strong> נשימות עמוקות, מתיחות, יוגה או עיסוי</li>
+                                <li><strong>מודעות גופנית:</strong> הקשבה לסימני עייפות, מתח או מחלה</li>
+                                <li><strong>טיפול רפואי:</strong> בדיקות רפואיות סדירות וטיפול בבעיות בריאותיות</li>
+                            </ul>
+                            
+                            <div class="practical-examples">
+                                <h5>דוגמאות מעשיות:</h5>
+                                <ul>
+                                    <li>הליכה יומית של 30 דקות</li>
+                                    <li>הכנת ארוחות בריאות מראש</li>
+                                    <li>תרגילי נשימה של 5 דקות בבוקר</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <div class="anchor-section principal-anchor">
+                            <h4>🎯 עוגן בערוץ הגוף - למנהלים</h4>
+                            <ul class="strategy-list">
+                                <li><strong>תזכורות לבריאות בסיסית:</strong> הודעות קצרות על חשיבות שתייה, אכילה ושינה</li>
+                                <li><strong>עידוד פעילות פשוטה:</strong> הצעות למפגש הליכה קצר או מתיחות במשרד</li>
+                                <li><strong>שיתוף כלי הרפיה:</strong> קישורים לסרטוני יוטיוב קצרים (5 דקות) להרפיה</li>
+                                <li><strong>זיהוי מוקדם של עייפות:</strong> שאלות פשוטות - "איך הרמת האנרגיה שלך?"</li>
+                                <li><strong>הצעות לשיפור הסביבה:</strong> טיפים פשוטים לארגון המשרד או תאורה טובה יותר</li>
+                                <li><strong>דוגמה אישית:</strong> שיתוף בהרגלים בריאים פשוטים שעובדים למפקח</li>
+                                <li><strong>הפניה לטיפול רפואי:</strong> עידוד פנייה לרופא במקרה הצורך</li>
+                            </ul>
+                            
+                            <div class="practical-examples">
+                                <h5>דוגמאות מעשיות:</h5>
+                                <ul>
+                                    <li>הודעה: "תזכורת - לשתות מים ולקחת הפסקה של 5 דקות"</li>
+                                    <li>שליחת קישור לסרטון "מתיחות של 3 דקות ליד השולחן"</li>
+                                    <li>שיתוף אישי: "אני מתחיל את היום עם הליכה של 10 דקות - זה עוזר לי"</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="summary-section">
+            <h2 style="color: #2c3e50; margin-bottom: 20px;">🎯 מסקנה</h2>
+            <div class="highlight">
+                <p><strong>המפקח כעוגן התמודדות כפול:</strong></p>
+                <p>🔗 <strong>עוגן אישי</strong> - כלים לשמירה על יציבות ותפקוד עצמי של המפקח</p>
+                <p>🎯 <strong>עוגן מקצועי</strong> - דרכי תמיכה וליווי למנהלי בתי הספר</p>
+                <p>השימוש ב-6 הערוצים של מודל גש"ר מאח"ד מבטיח התמודדות מקיפה ויעילה עם כל סוגי המשברים, תוך שמירה על תפקוד מיטבי של המערכת החינוכית כולה.</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function toggleChannel(channelId) {
+            // Hide all channel contents
+            const allContents = document.querySelectorAll('.channel-content');
+            const allCards = document.querySelectorAll('.channel-card');
+            
+            allContents.forEach(content => {
+                content.classList.remove('active');
+            });
+            
+            allCards.forEach(card => {
+                card.classList.remove('active');
+            });
+            
+            // Show clicked channel content
+            const targetContent = document.getElementById(channelId + '-content');
+            const targetCard = document.querySelector(`.channel-card.${channelId}`);
+            
+            if (targetContent && targetCard) {
+                targetContent.classList.add('active');
+                targetCard.classList.add('active');
+                
+                // Smooth scroll to the card
+                targetCard.scrollIntoView({ 
+                    behavior: 'smooth', 
+                    block: 'center' 
+                });
+            }
+        }
+
+        // Add some interactive effects
+        document.addEventListener('DOMContentLoaded', function() {
+            // Add hover effects to strategy items
+            const strategyItems = document.querySelectorAll('.strategy-list li');
+            strategyItems.forEach(item => {
+                item.addEventListener('mouseenter', function() {
+                    this.style.transform = 'translateX(-5px) scale(1.02)';
+                });
+                
+                item.addEventListener('mouseleave', function() {
+                    this.style.transform = 'translateX(0) scale(1)';
+                });
+            });
+            
+            // Add click animation to tool cards
+            const toolCards = document.querySelectorAll('.tool-card');
+            toolCards.forEach(card => {
+                card.addEventListener('click', function() {
+                    this.style.transform = 'scale(0.95)';
+                    setTimeout(() => {
+                        this.style.transform = 'scale(1.05)';
+                    }, 150);
+                });
+            });
+
+            // Add click animation to metric items
+            const metricItems = document.querySelectorAll('.metric-item');
+            metricItems.forEach(item => {
+                item.addEventListener('click', function() {
+                    this.style.transform = 'scale(1.1)';
+                    setTimeout(() => {
+                        this.style.transform = 'scale(1)';
+                    }, 200);
+                });
+            });
+        });
+    </script>
+</body>
+</html>
