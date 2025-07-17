@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>תפיסת יסודי עכשווי: תיאוריית השינוי ומודל לוגי</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Assistant:wght@400;600;700&display=swap');
+
+        body {
+            font-family: 'Assistant', sans-serif;
+            background-color: #f0f2f5;
+            color: #333;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            min-height: 100vh;
+        }
+
+        .presentation-container {
+            background-color: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            max-width: 950px;
+            width: 100%;
+            overflow: hidden;
+        }
+
+        .header-nav {
+            display: flex;
+            justify-content: center;
+            background-color: #f8f9fa;
+            padding: 10px;
+            border-bottom: 2px solid #dee2e6;
+            flex-wrap: wrap;
+            gap: 8px;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        .header-nav button {
+            background-color: transparent;
+            color: #005a9c;
+            border: 1px solid #0077b6;
+            padding: 8px 12px;
+            font-size: 0.9rem;
+            font-family: 'Assistant', sans-serif;
+            font-weight: 600;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .header-nav button:hover {
+            background-color: #e9f5ff;
+        }
+
+        .header-nav button.active-nav {
+            background-color: #0077b6;
+            color: white;
+            border-color: #0077b6;
+        }
+
+        .slide {
+            display: none;
+            padding: 40px;
+            min-height: 500px;
+            flex-direction: column;
+            justify-content: center;
+            animation: fadeIn 0.5s ease-in-out;
+        }
+        
+        .slide.active {
+            display: flex;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        h1, h2, h3 { color: #005a9c; margin-bottom: 20px; font-weight: 700; }
+        h1 { font-size: 2.5rem; text-align: center; }
+        h2 { font-size: 2rem; }
+        h3 { font-size: 1.5rem; color: #0077b6; }
+        p, li { font-size: 1.1rem; line-height: 1.8; }
+        ul { list-style-type: none; padding-right: 0; }
+        .icon-list li::before { content: attr(data-icon); font-size: 1.2rem; margin-left: 0.7em; vertical-align: middle;}
+
+        blockquote { background-color: #e9f5ff; border-right: 5px solid #0077b6; margin: 20px 0; padding: 20px; font-size: 1.2rem; font-style: italic; font-weight: 600; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { border: 1px solid #ddd; padding: 12px; text-align: right; vertical-align: top; }
+        th { background-color: #e9f5ff; color: #005a9c; font-weight: 700; }
+        .flow-chart { text-align: center; font-size: 1.2rem; line-height: 1.5; }
+        .flow-chart .arrow { font-size: 2rem; color: #0077b6; margin: 10px 0; }
+        .multi-level-view { text-align: center; font-size: 1.5rem; font-weight: 600; margin: 20px 0; }
+
+        @media (max-width: 900px) {
+            body { padding: 5px; }
+            .header-nav { justify-content: flex-start; }
+            .header-nav button { font-size: 0.8rem; padding: 6px 8px; }
+            .slide { padding: 20px; min-height: auto; }
+            h1 { font-size: 2rem; }
+            h2 { font-size: 1.6rem; }
+            p, li { font-size: 1rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="presentation-container">
+        
+        <div class="header-nav">
+            <button data-nav-target="slide-intro">פתיחה</button>
+            <button data-nav-target="slide-background">הרקע</button>
+            <button data-nav-target="slide-innovation">החידוש</button>
+            <button data-nav-target="slide-theory">תיאוריית השינוי</button>
+            <button data-nav-target="slide-inputs">המודל: תשומות</button>
+            <button data-nav-target="slide-activities">המודל: פעילויות</button>
+            <button data-nav-target="slide-outputs">המודל: תפוקות ותוצאות</button>
+            <button data-nav-target="slide-in-action">בפעולה</button>
+            <button data-nav-target="slide-summary">סיכום</button>
+        </div>
+
+        <div id="slide-intro" class="slide active">
+            <h1>תפיסת יסודי עכשווי</h1>
+            <h3>תיאוריית השינוי ומודל לוגי להטמעה מערכתית</h3>
+            <p style="text-align:center; margin-top: 20px;">מטרת המצגת: להציג את הרציונל, המטרות והמודל המלא להטמעת תפיסת "יסודי עכשווי" במערכת החינוך.</p>
+        </div>
+
+        <div id="slide-background" class="slide">
+            <h2>💡 הרקע לפיתוח המהלך: למה עכשיו?</h2>
+            <p>אנו פועלים במציאות המחייבת היערכות מחודשת. מספר גורמים מרכזיים הניעו את פיתוח התפיסה:</p>
+            <ul class="icon-list">
+                <li data-icon="🌍"><strong>מציאות משתנה (VUCA):</strong> עולם תנודתי, לא צפוי, מורכב ועמום.</li>
+                <li data-icon="🤖"><strong>שינויים גלובליים:</strong> בינה מלאכותית, קיטוב חברתי וגיוון תרבותי.</li>
+                <li data-icon="🚨"><strong>אירועים משבריים:</strong> קורונה ו"חרבות ברזל" הדגישו את הצורך בחוסן.</li>
+                <li data-icon="🧒"><strong>התאמה לגיל היסודי:</strong> צורך לעורר סקרנות, פעלנות ויצירת משמעות.</li>
+                <li data-icon="🧩"><strong>עשייה לא מערכתית:</strong> יוזמות חדשניות קיימות אך הן נקודתיות ומצומצמות.</li>
+                <li data-icon="📉"><strong>פערים בהישגים לימודיים:</strong> צורך במענה שיטתי לצמצום פערים.</li>
+            </ul>
+        </div>
+        
+        <div id="slide-innovation" class="slide">
+            <h2>✨ החידוש: מסגרת מארגנת הוליסטית</h2>
+            <p>תפיסת "יסודי עכשווי" אינה עוד יוזמה, אלא <strong>מסגרת-על</strong> המאחדת את כלל המרכיבים.</p>
+            <ul class="icon-list">
+                <li data-icon="✅"><strong>הוליסטיות ואינטגרציה:</strong> התפיסה משלבת ומקשרת באופן שיטתי בין רכיבים פדגוגיים וארגוניים.</li>
+                <li data-icon="✅"><strong>התפתחות טבעית:</strong> היא מתבססת על עקרונות מוכחים ומהווה התפתחות של תפיסות קודמות.</li>
+                <li data-icon="✅"><strong>סינרגיה:</strong> במקום רכיבים הפועלים בנפרד, נוצרת שלמות המאפשרת למערכת להגיב באופן אפקטיבי יותר.</li>
+            </ul>
+            <h3 style="text-align:center; margin-top:1rem;">התוצאה: מערכת חזקה יותר מסך חלקיה.</h3>
+            <h2 style="margin-top:2rem;">🎯 מטרת העל</h2>
+            <blockquote>להתאים את מערכת החינוך היסודי למציאות המשתנה, כך שתוכל להתמודד עם אתגרי ההווה והעתיד.</blockquote>
+        </div>
+
+        <div id="slide-theory" class="slide">
+            <h2>⚙️ תיאוריית השינוי (מבט-על)</h2>
+            <p>זהו ההיגיון המנחה את התהליך כולו. כך ניצור את השינוי המיוחל:</p>
+            <div class="flow-chart">
+                <p><strong>אם נספק...</strong><br>תהליכי פיתוח מקצועי מתמשכים + אסדרות מערכתיות תומכות</p>
+                <div class="arrow">↓</div>
+                <p><strong>זה יקדם...</strong><br>יישום פרקטיקות פדגוגיות חדשניות</p>
+                <div class="arrow">↓</div>
+                <p><strong>ויוביל ל...</strong><br>פיתוח מיומנויות, Agency ו-Co-agency</p>
+                <div class="arrow">↓</div>
+                <p><strong>כדי להשיג...</strong><br>בוגרים משגשגים בעולם משתנה</p>
+            </div>
+        </div>
+        
+        <div id="slide-inputs" class="slide">
+            <h2>המודל הלוגי: 1. תשומות (Inputs) | 2025-2028</h2>
+            <p>אלו המשאבים שנשקיע כדי להניע את התהליך:</p>
+             <ul class="icon-list">
+                <li data-icon="🧑‍💼"><strong>משאבי אנוש:</strong> 14 מדריכות ארציות, רכזים פדגוגיים, צוותי מו"פ, מפקחים ומנהלים.</li>
+                <li data-icon="💰"><strong>משאבים כלכליים:</strong> תקצוב דיפרנציאלי, שעות פיתוח מקצועי, כלים טכנולוגיים.</li>
+                <li data-icon="🏗️"><strong>תשתיות:</strong> מרכזי פסג"ה, כלי הערכה ומעקב, פלטפורמות AI להדרכה.</li>
+            </ul>
+        </div>
+        
+        <div id="slide-activities" class="slide">
+            <h2>המודל הלוגי: 2. פעילויות מרכזיות (Activities)</h2>
+            <p>אלו הפעולות שיתבצעו באמצעות המשאבים. הפירוט המלא:</p>
+            <table>
+                 <thead>
+                    <tr>
+                        <th>דרכי פעולה ברמת המטה</th>
+                        <th>דרכי פעולה ברמת בית הספר</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>
+                            <ul>
+                                <li><strong>אסדרות מערכתיות:</strong> התאמת ארגון הלמידה, "זמן מוגן" למורים, הנחיות ללמידה חוץ-כיתתית.</li>
+                                <li><strong>שותפויות אסטרטגיות:</strong> שיתופי פעולה עם מחוזות, רשויות ואקדמיה.</li>
+                                <li><strong>פיתוח מקצועי מתמשך:</strong> הכשרה לרכזים, מנהלים וצוותים.</li>
+                                <li><strong>פיתוח תשתיות וכלים:</strong> תשתיות דיגיטליות, כלי הערכה, פלטפורמות שיתופיות.</li>
+                            </ul>
+                        </td>
+                        <td>
+                            <ul>
+                                <li><strong>מנהיגות פדגוגית:</strong> מינוי רכז וצוות מו"פ בית ספרי, התחלה עם "קואליציית רצון".</li>
+                                <li><strong>פיתוח מקצועי והדרכה:</strong> השתלמויות ייעודיות, ליווי מדריכים, למידת עמיתים.</li>
+                                <li><strong>הובלת שינוי:</strong> גיבוש פרקטיקות, התנסות בפרויקטים והרחבה הדרגתית.</li>
+                                <li><strong>הכלה ושיתוף קהילה:</strong> שיתוף הורים וטיפוח אקלים תומך.</li>
+                            </ul>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div id="slide-outputs" class="slide">
+            <h2>המודל הלוגי: 3. תפוקות ו-4. תוצאות</h2>
+            <h3>3. תפוקות צפויות (Outputs) | 2025-2028</h3>
+            <p>אלו התוצרים המיידיים והמדידים של הפעילויות:</p>
+            <ul>
+                <li><strong>150</strong> בתי ספר מיישמים את התפיסה ו-<strong>150</strong> רכזים פדגוגיים מוכשרים.</li>
+                <li>מסמך מדיניות מקיף מפותח ומיושם.</li>
+                <li>"תו תקן יסודי עכשווי" פעיל, המעניק הכרה לבתי ספר מובילים.</li>
+                <li>רשת קהילתית של בתי ספר מדגימים וכלי הערכה חדשניים פועלים בשטח.</li>
+            </ul>
+            <h3>4. תוצאות (Outcomes) | לפי טווחי זמן</h3>
+            <ul>
+                <li><strong>טווח קצר (1-2 שנים):</strong> עלייה במוטיבציית תלמידים, הורים מעורבים, מורים מיישמים פרקטיקות חדשניות.</li>
+                <li><strong>טווח בינוני (2-3 שנים):</strong> שיפור במדדי Agency ו-Co-Agency, עלייה במיומנויות חברתיות-רגשיות (SEL).</li>
+                <li><strong>טווח ארוך (3+ שנים):</strong> שיפור במדדי PISA ו-PIRLS, צמצום פערים, בוגרים מוכנים לאתגרי המאה ה-21.</li>
+            </ul>
+        </div>
+        
+        <div id="slide-in-action" class="slide">
+            <h2>המודל בפעולה: מה נראה בשטח?</h2>
+            <p>התפיסה פועלת כמערכת הוליסטית במקביל בכל הרמות. כל רמה משפיעה ומושפעת מהאחרות.</p>
+            <div class="multi-level-view">קהילה 🏘️ ↔️ בית הספר 🏫 ↔️ מורה 👩‍🏫 ↔️ תלמיד 👨‍🎓</div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>רמת התלמיד: פעלן עצמאי</th>
+                        <th>רמת המורה: מנטור ומנחה</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>מציב יעדים, מוביל יוזמות, מפתח חשיבה ביקורתית. שותף בתוכנית הלמידה האישית.</td>
+                        <td>מקיים חונכות, משלב שיטות הוראה מגוונות, מנהל קהילות למידה ומפעיל הרכבי לומדים.</td>
+                    </tr>
+                </tbody>
+            </table>
+            <table>
+                 <thead>
+                    <tr>
+                        <th>רמת בית הספר: ארגון גמיש</th>
+                        <th>רמת הקהילה: שותפות פעילה</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>מרחבי חקר, גמישות פדגוגית, תקצוב דיפרנציאלי, אקלים של אמון והכלה לכישלונות.</td>
+                        <td>פרויקטים קהילתיים, שיתופי פעולה, מעורבות הורים, מיצוי משאבים קהילתיים.</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        
+        <div id="slide-summary" class="slide">
+            <h2>סיכום וחזון</h2>
+            <p>תפיסת "יסודי עכשווי" היא המעבר מיוזמות נקודתיות למערכת חינוך <strong>קוהרנטית, הוליסטית ורלוונטית.</strong></p>
+            <p>באמצעות המודל הלוגי והטמעה שיטתית בכל הרמות, אנו שואפים לבנות מערכת חינוך יסודי שאינה רק מגיבה לשינויים, אלא <strong>מובילה</strong> אותם.</p>
+            <blockquote>מערכת המטפחת בוגרים סקרנים, בעלי חוסן, יכולת פעולה עצמאית ושיתופית, המוכנים לשגשג בעולם המחר.</blockquote>
+            <h3 style="text-align:center; color: #005a9c; margin-top:30px;">יחד, ניצור מערכת חינוך יסודי עכשווית, רלוונטית ומעצימה.</h3>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const slides = document.querySelectorAll('.slide');
+            const headerNavButtons = document.querySelectorAll('.header-nav button[data-nav-target]');
+
+            function updateHeaderNav(activeSlideId) {
+                headerNavButtons.forEach(btn => {
+                    btn.classList.remove('active-nav');
+                    if (btn.getAttribute('data-nav-target') === activeSlideId) {
+                        btn.classList.add('active-nav');
+                    }
+                });
+            }
+
+            function showSlide(targetId) {
+                slides.forEach(slide => {
+                    slide.classList.remove('active');
+                });
+                const targetSlide = document.getElementById(targetId);
+                if (targetSlide) {
+                    targetSlide.classList.add('active');
+                    updateHeaderNav(targetId);
+                }
+            }
+
+            headerNavButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    const targetId = button.getAttribute('data-nav-target');
+                    showSlide(targetId);
+                });
+            });
+            
+            showSlide('slide-intro'); 
+        });
+    </script>
+
+</body>
+</html>
