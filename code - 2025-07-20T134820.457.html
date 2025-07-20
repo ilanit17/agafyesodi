@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>כלי לסיכום שיח - תכנון הדרכה בהכלה</title>
+    <title>שיח מדריכת הכלה - מנהל/ת בית ספר</title>
     
     <!-- Tailwind CSS for styling -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -76,7 +76,6 @@
           'מנהל/ת בית ספר', 'רכזת הכלה', 'מדריכת הכלה', 'רכזת הערכה ומדידה', 'רכזת פדגוגית', 'יועצת בית הספר', 'סגן/ית מנהל/ת בית הספר', 'מחנכת הכיתה', 'פסיכולוגית', 'מורה מקצועית', 'מורת שילוב'
         ];
 
-        // NEW: Focused list of relevant training practices
         const teacherTrainingPractices = [
           'ליווי מורות בצוות החינוכי בתכנון השיעור',
           'חשיפת והדגמת מתודות בחדר המורים',
@@ -429,7 +428,9 @@
           <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 p-6 no-print">
             <div className="max-w-6xl mx-auto">
               <div className="bg-white rounded-xl shadow-lg p-8 mb-6">
-                <h1 className="text-3xl font-bold text-indigo-800 mb-6 text-center">כלי לתכנון הדרכה בהכלה</h1>
+                <h1 className="text-3xl font-bold text-indigo-800 mb-6 text-center">
+                  שיח מדריכת הכלה - מנהל/ת בית ספר לתכנון תוכנית הדרכה מותאמת בתחום ההכלה
+                </h1>
                 
                 <div className="grid md:grid-cols-3 gap-4 mb-6">
                   <div><label className="block text-sm font-medium text-gray-700 mb-1">שם בית הספר</label><input type="text" value={schoolName} onChange={(e) => setSchoolName(e.target.value)} className="w-full p-3 border border-gray-300 rounded-lg" placeholder="הכנס שם בית הספר"/></div>
