@@ -1,0 +1,630 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="he">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>אפליקציית הנדסת חוסן חינוכי</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Assistant:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            /* Original Color Palette */
+            --bg-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --header-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --main-text-color: #333;
+            --container-bg: rgba(255, 255, 255, 0.95);
+            --border-color: #e9ecef;
+            --shadow-color: rgba(0, 0, 0, 0.1);
+            --subtle-bg: #f8f9fa;
+            
+            /* Principle Colors (Vibrant & Engaging) */
+            --p1-grad: linear-gradient(135deg, #ff6b6b, #ee5a24); /* Red-Orange */
+            --p2-grad: linear-gradient(135deg, #74b9ff, #0984e3); /* Blue */
+            --p3-grad: linear-gradient(135deg, #55a3ff, #3742fa); /* Purple-Blue */
+            --p4-grad: linear-gradient(135deg, #26de81, #20bf6b); /* Green */
+            --p5-grad: linear-gradient(135deg, #a29bfe, #6c5ce7); /* Purple */
+            
+            /* Action Colors (Cohesive & Clear) */
+            --predict-bg: linear-gradient(135deg, #ff6b6b, #ee5a52); /* Red */
+            --monitor-bg: linear-gradient(135deg, #4ecdc4, #44a08d); /* Teal */
+            --learn-bg: linear-gradient(135deg, #45b7d1, #3498db); /* Blue */
+            --respond-bg: linear-gradient(135deg, #96ceb4, #85b895); /* Green */
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Assistant', 'Segoe UI', Arial, sans-serif;
+            background: var(--bg-gradient);
+            color: var(--main-text-color);
+            direction: rtl;
+            padding: 20px;
+            min-height: 100vh;
+        }
+
+        .model-container {
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+
+        .section-card {
+            background: var(--container-bg);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 25px;
+            margin-bottom: 20px;
+            box-shadow: 0 8px 32px var(--shadow-color);
+            border: 1px solid var(--border-color);
+        }
+
+        .model-header {
+            background: var(--header-gradient);
+            color: white;
+            text-align: center;
+            padding: 40px 25px;
+        }
+
+        .model-title {
+            font-size: 2.6em;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .model-subtitle {
+            font-size: 1.3em;
+            font-weight: 300;
+            opacity: 0.9;
+        }
+
+        .control-panel {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-top: 25px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 14px;
+            font-family: 'Assistant', sans-serif;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+
+        .btn-primary {
+            background: rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            color: white;
+        }
+        .btn-primary:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .btn-secondary {
+            background: var(--container-bg);
+            color: var(--main-text-color);
+            border: 1px solid var(--border-color);
+        }
+        .btn-secondary:hover {
+            background: var(--subtle-bg);
+            border-color: #c8d1da;
+        }
+
+        .section-card h3 {
+            font-size: 1.4em;
+            font-weight: 700;
+            color: var(--main-text-color);
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+        
+        .info-field {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .info-field label {
+            font-weight: 600;
+            margin-bottom: 8px;
+            font-size: 0.9em;
+            color: #495057;
+        }
+        
+        .info-field input {
+            padding: 12px;
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 1em;
+            font-family: inherit;
+            background-color: var(--subtle-bg);
+            transition: all 0.3s ease;
+        }
+        .info-field input:focus {
+            outline: none;
+            border-color: #667eea;
+            background-color: white;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .progress-container {
+            margin-top: 20px;
+        }
+
+        .progress-bar {
+            background: #e9ecef;
+            border-radius: 10px;
+            height: 10px;
+            margin-top: 10px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            background: var(--header-gradient);
+            height: 100%;
+            width: 0%;
+            transition: width 0.5s ease;
+            border-radius: 10px;
+        }
+
+        .principles-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 25px;
+        }
+        
+        .principle-card {
+            background: var(--container-bg);
+            border-radius: 20px;
+            overflow: hidden;
+            border: 1px solid var(--border-color);
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 20px var(--shadow-color);
+        }
+        .principle-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 40px var(--shadow-color);
+        }
+        
+        .principle-header {
+            color: white;
+            padding: 25px;
+        }
+        
+        .principle-1 .principle-header { background: var(--p1-grad); }
+        .principle-2 .principle-header { background: var(--p2-grad); }
+        .principle-3 .principle-header { background: var(--p3-grad); }
+        .principle-4 .principle-header { background: var(--p4-grad); }
+        .principle-5 .principle-header { background: var(--p5-grad); }
+
+        .principle-meta {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 10px;
+        }
+        .principle-number {
+            font-size: 1.5em;
+            font-weight: 700;
+            flex-shrink: 0;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .principle-title {
+            font-size: 1.4em;
+            font-weight: 700;
+        }
+        .principle-description {
+            font-size: 1em;
+            font-weight: 300;
+            line-height: 1.5;
+            opacity: 0.9;
+        }
+        
+        .actions-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            padding: 20px;
+            background-color: var(--subtle-bg);
+        }
+        
+        .action-item {
+            background: white;
+            border-radius: 12px;
+            padding: 15px;
+            border: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+            transition: all 0.3s ease;
+        }
+
+        .action-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        .action-title {
+            font-weight: 600;
+            font-size: 1.1em;
+            padding: 8px 12px;
+            border-radius: 8px;
+            color: white;
+            text-align: center;
+            margin-bottom: 10px;
+        }
+        .predict-title { background: var(--predict-bg); }
+        .monitor-title { background: var(--monitor-bg); }
+        .learn-title   { background: var(--learn-bg); }
+        .respond-title { background: var(--respond-bg); }
+
+        .action-explanation {
+            font-size: 0.85em;
+            color: #6c757d;
+            line-height: 1.4;
+            margin-bottom: 12px;
+            min-height: 42px;
+            text-align: center;
+        }
+        
+        .action-textarea {
+            width: 100%;
+            min-height: 120px;
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            padding: 12px;
+            font-size: 14px;
+            font-family: inherit;
+            resize: vertical;
+            transition: all 0.3s ease;
+            background-color: #fff;
+            flex-grow: 1;
+        }
+        .action-textarea:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .action-textarea::placeholder {
+            color: #adb5bd;
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            backdrop-filter: blur(5px);
+        }
+        
+        .modal-content {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            width: 90%;
+            max-width: 500px;
+            text-align: center;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+        }
+        
+        .modal-title {
+            font-size: 1.5em;
+            margin-bottom: 20px;
+            color: var(--main-text-color);
+        }
+        
+        .modal-buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-top: 20px;
+        }
+
+        @media print {
+            body { 
+                background: white !important; 
+                color: black !important; 
+                padding: 0 !important; 
+            }
+            .model-header, .section-card:not(.principles-container) { 
+                display: none !important; 
+            }
+            .model-container { 
+                max-width: none !important; 
+            }
+            .principle-card { 
+                break-inside: avoid; 
+                margin-bottom: 20px; 
+                box-shadow: none; 
+                border: 1px solid #ccc; 
+            }
+            .principle-header { 
+                background: #f0f0f0 !important; 
+                color: black !important; 
+                -webkit-print-color-adjust: exact; 
+                print-color-adjust: exact;
+            }
+            .action-title { 
+                -webkit-print-color-adjust: exact; 
+                print-color-adjust: exact; 
+            }
+        }
+
+        @media (max-width: 768px) {
+            body { padding: 15px; }
+            .model-title { font-size: 2.2em; }
+            .model-subtitle { font-size: 1.1em; }
+            .actions-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+    </style>
+</head>
+<body>
+    <div class="model-container">
+        <header class="section-card model-header">
+            <h1 class="model-title">🛡️ אפליקציית הנדסת חוסן חינוכי</h1>
+            <p class="model-subtitle">כלי עבודה גרפי לניהול סיכונים ובניית חוסן במוסדות חינוך</p>
+            <div class="control-panel">
+                <button class="btn btn-primary" onclick="saveToLocal()">💾 שמירה מקומית</button>
+                <button class="btn btn-primary" onclick="loadFromLocal()">📁 טעינה</button>
+                <button class="btn btn-secondary" onclick="printDocument()">🖨️ הדפסה / PDF</button>
+                <button class="btn btn-secondary" onclick="clearAll()">🗑️ נקה הכל</button>
+            </div>
+        </header>
+
+        <section class="section-card">
+            <h3>📋 פרטי המוסד והתקדמות</h3>
+            <div class="info-grid">
+                <div class="info-field">
+                    <label>שם בית הספר</label>
+                    <input type="text" id="schoolName" placeholder="הכנס שם בית הספר" oninput="updateProgress()">
+                </div>
+                <div class="info-field">
+                    <label>שם המנהל/ת</label>
+                    <input type="text" id="principalName" placeholder="הכנס שם המנהל/ת" oninput="updateProgress()">
+                </div>
+                <div class="info-field">
+                    <label>תאריך מילוי</label>
+                    <input type="date" id="fillDate" oninput="updateProgress()">
+                </div>
+            </div>
+            <div class="progress-container">
+                <label>השלמת המודל: <span id="progressText">0%</span></label>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progressFill"></div>
+                </div>
+            </div>
+        </section>
+
+        <main class="section-card principles-container">
+            <h3>🎯 עקרונות המודל</h3>
+            <div class="principles-grid" id="principlesGrid">
+                <!-- Principles will be generated by JavaScript -->
+            </div>
+        </main>
+    </div>
+
+    <!-- Save Modal -->
+    <div class="modal" id="saveModal">
+        <div class="modal-content">
+            <h3 class="modal-title">💾 שמירה מוצלחת!</h3>
+            <p>הנתונים נשמרו בהצלחה במחשב שלך</p>
+            <div class="modal-buttons">
+                <button class="btn btn-primary" onclick="closeModal()">אישור</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const principlesData = [
+            { id: 1, title: "מנהיגות מנווטת באי-ודאות", description: "יכולתה של ההנהגה החינוכית לנווט בתקופות של אי-ודאות ושינוי, תוך שמירה על יציבות וכיוון ברור." },
+            { id: 2, title: "פדגוגיה של תקומה", description: "פיתוח גישות פדגוגיות התומכות בהתאוששות, צמיחה ותקווה בקרב התלמידים והצוות החינוכי." },
+            { id: 3, title: "רציפות מחברת זהות", description: "שמירה על רצף חינוכי ותמיכה בבניית וחיזוק זהותם של התלמידים, גם במצבי משבר." },
+            { id: 4, title: "מוביליות ארגונית", description: "יכולתו של הארגון החינוכי להיות גמיש, להסתגל לשינויים ולהניע את עצמו קדימה." },
+            { id: 5, title: "תובענות אמפטית", description: "שילוב ציפיות גבוהות ודרישה למצוינות, יחד עם גישה אמפטית, מכילה ותומכת." }
+        ];
+
+        const actionsData = [
+            { id: 'predict', title: 'חיזוי' },
+            { id: 'monitor', title: 'ניטור' },
+            { id: 'learn', title: 'למידה' },
+            { id: 'respond', title: 'תגובה' }
+        ];
+
+        const actionExplanations = {
+            1: { // מנהיגות
+                predict: "חיזוי שינויים בסביבה החינוכית, מגמות עתידיות, או משברים פוטנציאליים.",
+                monitor: "ניטור מדדי ביצוע, משוב מהשטח, שינויים במדיניות או בתקנות.",
+                learn: "למידה מדרכי התמודדות קודמות עם אי-ודאות, וניתוח השפעתן של החלטות.",
+                respond: "קבלת החלטות מבוססת נתונים, תקשורת ברורה, והובלת שינויים נדרשים."
+            },
+            2: { // פדגוגיה
+                predict: "חיזוי צרכים רגשיים או לימודיים של תלמידים וצוות לאחר אירועי משבר.",
+                monitor: "ניטור המצב הרגשי והלימודי של התלמידים, וזיהוי סימני מצוקה או התקדמות.",
+                learn: "למידה מניסיון העבר בטיפול בטראומה ופיתוח שיטות הוראה תומכות.",
+                respond: "יישום תכניות התערבות, מתן תמיכה רגשית והתאמת תכניות הלימודים."
+            },
+            3: { // רציפות
+                predict: "חיזוי גורמים העלולים לערער את תחושת השייכות או הזהות של התלמידים.",
+                monitor: "ניטור רמת המעורבות של התלמידים ותחושת השייכות שלהם לקהילה.",
+                learn: "למידה מאירועים שחיזקו או החלישו את תחושת הזהות והשייכות בעבר.",
+                respond: "יצירת פעילויות מחברות, חיזוק קשרים קהילתיים ומתן מענה אישי תומך."
+            },
+            4: { // מוביליות
+                predict: "חיזוי צרכים ארגוניים לשינוי, פערים ביכולות או דרישות חדשות מהצוות.",
+                monitor: "ניטור יעילות תהליכים, שביעות רצון הצוות וקצב יישום השינויים.",
+                learn: "למידה מתהליכי שינוי קודמים, וזיהוי חסמים והזדמנויות לשיפור.",
+                respond: "ביצוע התאמות מבניות, הכשרת צוות ושינוי גמיש של תהליכי עבודה."
+            },
+            5: { // תובענות
+                predict: "חיזוי קשיים פוטנציאליים של תלמידים או צוות בעמידה בציפיות גבוהות.",
+                monitor: "ניטור התקדמות התלמידים והצוות תוך זיהוי מאוזן של נקודות חוזק וקשיים.",
+                learn: "למידה מאינטראקציות קודמות כדי לשפר את דרכי מתן המשוב והתמיכה.",
+                respond: "מתן פידבק ממוקד, בניית תכניות תמיכה אישיות ועידוד להתפתחות."
+            }
+        };
+
+        function initApp() {
+            document.getElementById('fillDate').valueAsDate = new Date();
+            generatePrinciples();
+            updateProgress();
+        }
+
+        function generatePrinciples() {
+            const container = document.getElementById('principlesGrid');
+            container.innerHTML = ''; // Clear previous content
+            
+            principlesData.forEach(principle => {
+                const principleHTML = `
+                    <div class="principle-card principle-${principle.id}">
+                        <div class="principle-header">
+                            <div class="principle-meta">
+                               <div class="principle-number">${principle.id}</div>
+                               <h4 class="principle-title">${principle.title}</h4>
+                            </div>
+                            <p class="principle-description">${principle.description}</p>
+                        </div>
+                        <div class="actions-grid">
+                            ${actionsData.map(action => `
+                                <div class="action-item">
+                                    <div class="action-title ${action.id}-title">${action.title}</div>
+                                    <p class="action-explanation">${actionExplanations[principle.id][action.id]}</p>
+                                    <textarea 
+                                        class="action-textarea" 
+                                        id="p${principle.id}_${action.id}"
+                                        placeholder="הכנס תכנית פעולה עד 4 משפטים..."
+                                        oninput="updateProgress()"
+                                        maxlength="500"
+                                    ></textarea>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                `;
+                container.innerHTML += principleHTML;
+            });
+        }
+
+        function updateProgress() {
+            const inputs = document.querySelectorAll('input[type="text"], input[type="date"], textarea');
+            if (inputs.length === 0) return;
+            const filled = Array.from(inputs).filter(input => input.value.trim() !== '').length;
+            const total = inputs.length;
+            const percentage = Math.round((filled / total) * 100);
+            
+            document.getElementById('progressText').textContent = `${percentage}%`;
+            document.getElementById('progressFill').style.width = `${percentage}%`;
+        }
+
+        function saveToLocal() {
+            const data = {
+                schoolInfo: {
+                    schoolName: document.getElementById('schoolName').value,
+                    principalName: document.getElementById('principalName').value,
+                    fillDate: document.getElementById('fillDate').value,
+                },
+                actions: {}
+            };
+
+            document.querySelectorAll('.action-textarea').forEach(textarea => {
+                data.actions[textarea.id] = textarea.value;
+            });
+
+            localStorage.setItem('resilienceModelData', JSON.stringify(data));
+            document.getElementById('saveModal').style.display = 'block';
+        }
+
+        function loadFromLocal() {
+            const saved = localStorage.getItem('resilienceModelData');
+            if (saved) {
+                const data = JSON.parse(saved);
+                
+                document.getElementById('schoolName').value = data.schoolInfo.schoolName || '';
+                document.getElementById('principalName').value = data.schoolInfo.principalName || '';
+                document.getElementById('fillDate').value = data.schoolInfo.fillDate || '';
+
+                Object.keys(data.actions).forEach(id => {
+                    const element = document.getElementById(id);
+                    if (element) {
+                        element.value = data.actions[id];
+                    }
+                });
+
+                updateProgress();
+                alert('הנתונים נטענו בהצלחה!');
+            } else {
+                alert('לא נמצאו נתונים שמורים.');
+            }
+        }
+        
+        function printDocument() {
+            window.print();
+        }
+
+        function clearAll() {
+            if (confirm('האם את/ה בטוח/ה שברצונך לנקות את כל הנתונים מהטופס?')) {
+                document.getElementById('schoolName').value = '';
+                document.getElementById('principalName').value = '';
+                document.getElementById('fillDate').valueAsDate = new Date();
+                document.querySelectorAll('.action-textarea').forEach(textarea => {
+                    textarea.value = '';
+                });
+                updateProgress();
+                window.scrollTo(0, 0);
+            }
+        }
+
+        function closeModal() {
+            document.getElementById('saveModal').style.display = 'none';
+        }
+
+        // Close modal when clicking outside
+        window.onclick = function(event) {
+            const modal = document.getElementById('saveModal');
+            if (event.target == modal) {
+                modal.style.display = 'none';
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', initApp);
+    </script>
+</body>
+</html>
