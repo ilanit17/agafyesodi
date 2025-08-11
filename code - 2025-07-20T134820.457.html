@@ -18,6 +18,40 @@
         body {
             font-family: 'Assistant', sans-serif;
         }
+        .tooltip {
+            position: relative;
+            display: inline-block;
+        }
+        .tooltip .tooltiptext {
+            visibility: hidden;
+            width: 220px;
+            background-color: #555;
+            color: #fff;
+            text-align: center;
+            border-radius: 6px;
+            padding: 5px;
+            position: absolute;
+            z-index: 1;
+            bottom: 125%;
+            left: 50%;
+            margin-left: -110px;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        .tooltip .tooltiptext::after {
+            content: "";
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            margin-left: -5px;
+            border-width: 5px;
+            border-style: solid;
+            border-color: #555 transparent transparent transparent;
+        }
+        .tooltip:hover .tooltiptext {
+            visibility: visible;
+            opacity: 1;
+        }
         @media print {
             body {
                 background-color: white !important;
@@ -40,6 +74,12 @@
             .page-break-inside-avoid {
                 page-break-inside: avoid;
             }
+            .tooltip {
+                border-bottom: none;
+            }
+            .tooltip .tooltiptext {
+                display: none;
+            }
         }
     </style>
 </head>
@@ -55,12 +95,20 @@
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
 
     <script type="text/babel">
-      const { useState } = React;
+      const { useState, useEffect, useRef } = React;
+
+      const Tooltip = ({ text, children }) => (
+        <span className="tooltip" style={{borderBottom: '1px dotted black'}}>
+          {children}
+          <span className="tooltiptext">{text}</span>
+        </span>
+      );
 
       const InclusionPlanningTool = () => {
         const [currentDomain, setCurrentDomain] = useState(0);
         const [selectedItems, setSelectedItems] = useState({});
         const [selectedPractices, setSelectedPractices] = useState({});
+        const [customPractices, setCustomPractices] = useState({});
         const [schoolName, setSchoolName] = useState('');
         const [principalName, setPrincipalName] = useState('');
         const [mentorName, setMentorName] = useState('');
@@ -71,6 +119,8 @@
         const [globalPartners, setGlobalPartners] = useState({});
         const [customGlobalPartner, setCustomGlobalPartner] = useState('');
         const [selectedTrainingPractices, setSelectedTrainingPractices] = useState({});
+        
+        const domainContentRef = useRef(null);
 
         const partnersList = [
           'מנהל/ת בית ספר', 'רכזת הכלה', 'מדריכת הכלה', 'רכזת הערכה ומדידה', 'רכזת פדגוגית', 'יועצת בית הספר', 'סגן/ית מנהל/ת בית הספר', 'מחנכת הכיתה', 'פסיכולוגית', 'מורה מקצועית', 'מורת שילוב'
@@ -96,8 +146,8 @@
                 title: 'תכנון הוראה מכוונת שונות וצורך (עיצוב אוניברסלי ללמידה)',
                 expectedOutcomes: [
                   { text: 'העלאת אחוז התלמידים המעורבים ופעילים בשיעור' },
-                  { text: 'עלייה באחוז המורות המדווחות על שימוש במתודות המזמנות הפחתת מעורבות מתמשכת בשיעור', selectablePractices: ['למידה בקבוצות', 'למידה בחברותות', 'למידת חקר', 'כרטיס פתיחה וכרטיס סיום', 'אקווריום', 'למידה בעמידה'] },
-                  { text: 'עלייה באחוז המורות המדווחות על תכנון השיעורים בהתאמה לעקרונות ה-UDL', selectablePractices: ['גיוון בדרכי ייצוג הידע', 'גיוון בדרכי ההבעה', 'גיוון בדרכים ליצירת הנעה ללמידה'] },
+                  { text: 'עלייה באחוז המורות המדווחות על שימוש במתודות המזמנות הפחתת מעורבות מתמשכת בשיעור', selectablePractices: ['למידה בקבוצות', 'למידה בחברותות', 'למידת חקר', 'כרטיס פתיחה וכרטיס סיום', 'אקווריום', 'למידה בעמידה', 'אחר'] },
+                  { text: 'עלייה באחוז המורות המדווחות על תכנון השיעורים בהתאמה לעקרונות ה-UDL', selectablePractices: ['גיוון בדרכי ייצוג הידע', 'גיוון בדרכי ההבעה', 'גיוון בדרכים ליצירת הנעה ללמידה', 'אחר'] },
                   { text: 'שיפור בהישגים של תלמידים במיקוד' }
                 ]
               },
@@ -105,7 +155,7 @@
                 id: 'pedagogical_flexibility',
                 title: 'גמישות פדגוגית (4 המארגנים)',
                 expectedOutcomes: [
-                  { text: 'עלייה באחוז המורים המדווחים על שימוש רב יותר בעקרונות של גמישות פדגוגית ותכנון יום ושבוע הלמידה', selectablePractices: ['ארגון זמן', 'ארגון לומדים', 'ארגון מרחב', 'ארגון תכנים'] }
+                  { text: 'עלייה באחוז המורים המדווחים על שימוש רב יותר בעקרונות של גמישות פדגוגית ותכנון יום ושבוע הלמידה', selectablePractices: ['ארגון זמן', 'ארגון לומדים', 'ארגון מרחב', 'ארגון תכנים', 'אחר'] }
                 ]
               },
               {
@@ -115,14 +165,14 @@
                   { text: 'עלייה באחוז המורים המדווחים על תחושת מסוגלות גבוהה יותר לניהול כיתה הטרוגנית' },
                   { text: 'ירידה באחוז התלמידים המושעים' },
                   { text: 'צמצום אירועים חריגים' },
-                  { text: 'עלייה בשימוש במתודות המזמנות הפחתת מעורבות מתמשכת בשיעור' }
+                  { text: 'עלייה בשימוש במתודות המזמנות הפחתת מעורבות מתמשכת בשיעור', selectablePractices: ['למידה בקבוצות', 'למידה בחברותות', 'למידת חקר', 'כרטיס פתיחה וכרטיס סיום', 'אקווריום', 'למידה בעמידה', 'אחר'] }
                 ]
               },
               {
                 id: 'inclusive_practices_application',
-                title: 'יישום פרקטיקות מכילות',
+                title: 'יישום פרקטיקות מכלילות',
                 expectedOutcomes: [
-                  { text: 'עלייה במספר המורים המיישמים פרקטיקות מכלילות באופן עקבי', selectablePractices: ['חיבור לידע קודם', 'הצגת מטרות', 'למידה מרווחת', 'זמן חשיבה', 'למידה מכוונת מגוון', 'משוב מכוון שונות', 'היכרות מעמיקה', 'הסרת חסמים', 'הוראה מפורשת של תהליכי תכנון ויישום', 'הנעה לפעולה', 'שיח פסיכופדגוגי', 'שיח לימודי בקבוצות קטנות'] }
+                  { text: 'עלייה במספר המורים המיישמים פרקטיקות מכלילות באופן עקבי', selectablePractices: ['חיבור לידע קודם', 'הצגת מטרות', 'למידה מרווחת', 'זמן חשיבה', 'למידה מכוונת מגוון', 'משוב מכוון שונות', 'היכרות מעמיקה', 'הוראה מכוונת להסרת חסמים', 'הוראה מפורשת של תהליכי תכנון ויישום', 'הנעה לפעולה', 'שיח פסיכופדגוגי', 'שיח לימודי בקבוצות קטנות', 'אחר'] }
                 ]
               },
               {
@@ -130,7 +180,7 @@
                 title: 'משוב והערכה מכווני שונות',
                 expectedOutcomes: [
                   { text: 'רכיבי התעודה משקפים את תפיסת ההכלה' },
-                  { text: 'עלייה בשימוש במגוון כלי הערכה פנימיים', selectablePractices: ['מטלת ביצוע', 'תלקיט', 'יומן רפלקטיבי', 'הערכה חלופית'] },
+                  { text: 'עלייה בשימוש במגוון כלי הערכה פנימיים', selectablePractices: ['מטלת ביצוע', 'תלקיט', 'יומן רפלקטיבי', 'הערכה חלופית', 'אחר'] },
                   { text: 'מתקיים שיח ללמידה מנתונים לצורך תכנון תהליכי משוב והערכה מכווני שונות' }
                 ]
               },
@@ -138,7 +188,8 @@
                 id: 'focused_student_work',
                 title: 'עבודה עם תלמידים במיקוד',
                 expectedOutcomes: [
-                  { text: 'עלייה במספר תכניות העבודה הנכתבות לתלמידים במיקוד (שאינם זכאי שירותי חינוך מיוחדים)' }
+                  { text: 'עלייה במספר תכניות העבודה הנכתבות לתלמידים במיקוד (שאינם זכאי שירותי חינוך מיוחדים)' },
+                  { text: 'שיפור באפקטיביות תכניות העבודה עבור תלמידים במיקוד (שאינם זכאי שירותי חינוך מיוחדים)' }
                 ]
               }
             ]
@@ -152,10 +203,8 @@
                 title: 'ביסוס תפיסה מכילה ותרגומה לתהליכים בית ספריים',
                 expectedOutcomes: [
                   { text: 'תכנון המענים בראייה בית ספרית ייעשה בהתאם למודל ה-MTSS' },
-                  { text: 'עלייה בשימוש של צוות המורים במושגים, עקרונות ושיח מעולם ההכלה', selectablePractices: ['הכללה', 'שותפות עם הורים', 'עיצוב אוניברסלי', 'פסיכופדגוגיה', 'יחסי קרבה ואכפתיות', 'תרבות מדיניות ויישום', 'חסמי למידה והשתתפות', 'הורדת מעמ', 'הכלה פדגוגית', 'תוכנית עבודה מרובדת'] },
-                  { text: 'הצוות מבנה מדיניות משותפת לביסוס תרבות מכילה ויישומה', selectablePractices: ['שיח מכיל עם הורים', 'יום למידה מסתיים בשיח מצמיח', 'ישיבות פדגוגיות מדגישות חוזקות', 'מדיניות אחידה להתמודדות עם בעיות משמעת'] },
-                  { text: 'רכיבי התעודה משקפים את תפיסת ההכלה' },
-                  { text: 'הדיאלוג בימי הורים משקף את תפיסת ההכלה' },
+                  { text: 'עלייה בשימוש של צוות המורים במושגים, עקרונות ושיח מעולם ההכלה', selectablePractices: ['הכללה', 'שותפות עם הורים', 'עיצוב אוניברסלי', 'פסיכופדגוגיה', 'יחסי קרבה ואכפתיות', 'תרבות מדיניות ויישום', 'חסמי למידה והשתתפות', 'הורדת זמן מע"מ', 'הכלה פדגוגית', 'תוכנית עבודה מרובדת', 'אחר'] },
+                  { text: 'הדיאלוג בימי הורים המשקף את תפיסת ההכלה דיאלוג עם ההורים המושתת על עקרונות מכילים.' },
                   { text: 'ישיבות פדגוגיות מבוססות נתונים ומכוונות לתלמיד השלם' },
                   { text: 'בניית סדירויות בית ספריות קבועות המאפשרות ביסוס שיח מכיל ותרגומו לפרקטיקות' },
                   { text: 'תקנון ו"האני מאמין" של בית הספר משקפים את תפיסת ההכלה' }
@@ -174,8 +223,8 @@
                 id: 'interdisciplinary_team',
                 title: 'צוות בין-מקצועי מוביל הכלה',
                 expectedOutcomes: [
-                  { text: 'מתקיימת למידת עמיתים במגוון דרכים', selectablePractices: ['קהילת היוועצות בית ספרית', 'צפיית עמיתים', 'ישיבות צוותים', 'מליאות מורים', 'מורה חונך מורה'] },
-                  { text: 'מתקיימים שיתופי פעולה בקרב מנהיגות הביניים לקידום יעדי הכלה' }
+                  { text: 'מתקיימת למידת עמיתים במגוון דרכים', selectablePractices: ['קהילת היוועצות בית ספרית (חקר הפרקטיקה)', 'צפיית עמיתים', 'ישיבות צוותים', 'מליאות מורים', 'מורה חונך מורה', 'סימולציות', 'מרחבי חקר ולמידה למורים', 'אחר'] },
+                  { text: 'מתקיימים שיתופי פעולה בקרב מנהיגות הביניים לקידום יעדי הכלה/הוראה בכיתה הטרוגנית' }
                 ]
               },
                {
@@ -184,14 +233,16 @@
                 expectedOutcomes: [
                   { text: 'עלייה באחוז התלמידים המדווחים על תחושת ביטחון' },
                   { text: 'עלייה באחוז התלמידים המדווחים על תחושת שייכות' },
-                  { text: 'בית הספר מיישם תפיסה של הוגנות במרחבים שונים', selectablePractices: ['אכפתיות', 'גמישות', 'נגישות', 'אמון', 'איכות', 'שקיפות', 'מגוון'] }
+                  { text: 'בית הספר מיישם תפיסה של הוגנות במרחבים שונים', selectablePractices: ['אכפתיות', 'גמישות', 'נגישות', 'אמון', 'איכות', 'שקיפות', 'מגוון', 'אחר'] }
                 ]
               },
               {
                 id: 'parent_partnership',
-                title: 'שותפות עם הורים וקהילה מנקודת מבט מכילה',
+                title: 'שותפות עם הורים וקהילה מנקודת מבט מכילה והוגנת',
                 expectedOutcomes: [
-                  { text: 'ימי הורים מתקיימים על פי תפיסת ההכלה' }
+                  { text: 'ימי הורים מתקיימים על פי תפיסת ההכלה המשקפים הכלה והוגנות' },
+                  { text: 'מתן ייצוג להון התרבותי של קהילת בית-הספר (פדגוגיה של זהויות)'},
+                  { text: 'שותפות חינוכית עם ההורים' }
                 ]
               }
             ]
@@ -202,7 +253,7 @@
             subtopics: [
               {
                 id: 'coordinator_efficacy',
-                title: 'חיזוק תחושת המסוגלות של רכזת ההכלה',
+                title: 'חיזוק תחושת המסוגלות של ליווי רכזת ההכלה בעבודתה',
                 expectedOutcomes: [
                   { text: 'עלייה בתחושת המסוגלות של רכזת ההכלה ליישם את תכנית העבודה שלה' },
                   { text: 'הצלחה ביישום יעדי העבודה של רכזת הכלה בהתאם למסמך אבני דרך' }
@@ -213,17 +264,17 @@
                 title: 'העמקת הידע המקצועי של המורים',
                 expectedOutcomes: [
                   { text: 'עלייה בשימוש של צוות המורים במושגים, עקרונות ושיח מעולם ההכלה' },
-                  { text: 'הצוות מתפתח מקצועית בתחום ההכלה', selectablePractices: ['בעיות התנהגות', 'בעיות קשב', 'מחוננים', 'ילדים בסיכון', 'הוראה בכיתה הטרוגנית', 'נוירופדגוגיה', 'הערכה מבוססת מגוון', 'אוכלוסיות ייחודיות', 'הוראה מתוקנת', 'ויסות עצמי ללמידה', 'מוטיבציה ללמידה', 'בניית תכניות אישיות ו/או כיתתיות', 'תכנון הוראה מבוססת נתונים', 'כלים טכנו-פדגוגיים'] },
+                  { text: 'הצוות מתפתח מקצועית בתחום ההכלה', selectablePractices: ['ליווי תלמידים עם בעיות התנהגות', 'ליווי תלמידים עם בעיות קשב', 'מחוננים-המחונן בכיתתו', 'ילדים בסיכון', 'הוראה בכיתה הטרוגנית', 'נוירופדגוגיה', 'הערכה מבוססת מגוון', 'אוכלוסיות ייחודיות', 'הוראה מתוקנת מותאמת פרט', 'ויסות עצמי ללמידה', 'מוטיבציה ללמידה', 'בניית תכניות אישיות ו/או כיתתיות', 'תכנון הוראה מבוססת נתונים', 'כלים טכנו-פדגוגיים', 'אחר'] },
                   { text: 'מתקיים שיח ללמידה מנתונים לצורך תכנון העבודה, קבלת החלטות ובניית תכניות התערבות' },
-                  { text: 'מתקיימת למידת עמיתים במגוון דרכים', selectablePractices: ['קהילת היוועצות בית ספרית', 'צפיית עמיתים', 'ישיבות צוותים', 'מליאות מורים', 'מורה חונך מורה', 'סדנאות פיתוח מקצועי', 'השתלמות מוסדית', 'פורמט דיגיטלי לשיתוף חומרים'] }
+                  { text: 'מתקיימת למידת עמיתים במגוון דרכים', selectablePractices: ['קהילת היוועצות בית ספרית (חקר הפרטקטיקה)', 'צפיית עמיתים', 'ישיבות צוותים', 'מליאות מורים', 'מורה חונך מורה', 'סדנאות פיתוח מקצועי', 'השתלמות מוסדית', 'פורמט דיגיטלי לשיתוף חומרים', 'סימולציות', 'מרחבי חקר ולמידה למורים', 'אחר'] }
                 ]
               },
               {
                 id: 'teacher_efficacy',
                 title: 'חיזוק תחושת המסוגלות של המורה להכיל',
                 expectedOutcomes: [
-                  { text: 'עלייה בתחושת המסוגלות של המורים לניהול כיתה הטרוגנית' },
-                  { text: 'עלייה בתחושת המסוגלות של המורים בניהול קשר של שותפות עם הורים' },
+                  { text: 'עלייה בתחושת המסוגלות של המורים לניהול כיתה הטרוגנית במימדים שונים מקדמי הכלה והוגנות' },
+                  { text: 'עלייה בתחושת המסוגלות של המורים בניהול קשר של שותפות עם הורים לניהול שיח מצמיח עם התלמידים ותחושת אכפתיות' },
                   { text: 'עלייה במספר התלמידים המעורבים בשיעור' }
                 ]
               }
@@ -238,14 +289,15 @@
                 title: 'שייכות ומעורבות',
                 expectedOutcomes: [
                   { text: 'עלייה באחוז התלמידים המדווחים על תחושת שייכות וביטחון בבית הספר' },
-                  { text: 'עלייה בדיווח המורים על היכרות מעמיקה עם תלמידיהם ממגוון נקודות מבט' }
+                  { text: 'עלייה באחוז התלמידים המדווחים על תחושת ביטחון בבית הספר' },
+                  { text: 'עלייה בדיווח המורים על היכרות מעמיקה עם תלמידיהם ממגוון נקודות מבט (התלמיד השלם)' }
                 ]
               },
               {
                 id: 'teacher_student_dialogue',
                 title: 'דיאלוג מורה-תלמיד',
                 expectedOutcomes: [
-                  { text: 'עלייה בדיווח המורים על שימוש בכלים פסיכופדגוגיים לחיזוק הקשר בין מורה-תלמיד' }
+                  { text: 'עלייה בדיווח המורים על שימוש בכלים פסיכופדגוגיים לחיזוק הקשר בין מורה-תלמיד', selectablePractices: ['"פסיפס"?', 'משוב לקידום פסיכופדגוגיה', 'שאלות מוקירות', 'בניית אמון בין מורה לתלמיד', 'ניהול שיח אישי מצמיח', 'מבוגר משמעותי', 'ציפיות גבוהות', 'אחר'] }
                 ]
               },
               {
@@ -278,21 +330,21 @@
                 id: 'learning_spaces',
                 title: 'מרחבי למידה',
                 expectedOutcomes: [
-                  { text: 'עלייה בשימוש במגוון מרחבי למידה', selectablePractices: ['מגוון מרחבים בכיתה', 'מרחבי למידה חוץ כיתתיים', 'מרחבי למידה חוץ בית ספריים'] }
+                  { text: 'עלייה בשימוש במגוון מרחבי למידה', selectablePractices: ['מגוון מרחבים בכיתה', 'מרחבי למידה חוץ כיתתיים', 'מרחבי למידה חוץ בית ספריים', 'אחר'] }
                 ]
               },
               {
                 id: 'techno_pedagogical_tools',
                 title: 'כלים טכנו-פדגוגיים',
                 expectedOutcomes: [
-                  { text: 'עלייה בשימוש בכלים דיגיטליים המסייעים בהסרת חסמי למידה ומעורבות' }
+                  { text: 'עלייה בשימוש בכלים דיגיטליים המסייעים בהסרת חסמי למידה ומגבירים מעורבות' }
                 ]
               },
               {
                 id: 'green_learning_spaces',
                 title: 'מרחבי למידה ירוקים',
                 expectedOutcomes: [
-                  { text: 'עלייה בשימוש במגוון מרחבי למידה ירוקים' }
+                  { text: 'ניצול מיטבי של מרחבי למידה ירוקים' }
                 ]
               },
               {
@@ -312,6 +364,7 @@
           setSelectedItems(prev => ({ ...prev, [key]: !prev[key] }));
            if (selectedItems[key]) {
             setSelectedPractices(prev => { const newPractices = { ...prev }; delete newPractices[key]; return newPractices; });
+            setCustomPractices(prev => { const newCustom = { ...prev }; delete newCustom[key]; return newCustom; });
           }
         };
         
@@ -322,10 +375,28 @@
           }));
         };
 
+        const handleCustomPracticeChange = (key, value) => {
+            setCustomPractices(prev => ({ ...prev, [key]: value }));
+        };
+
         const toggleGlobalPartner = (partner) => setGlobalPartners(prev => ({ ...prev, [partner]: !prev[partner] }));
         const toggleTrainingPractice = (practice) => setSelectedTrainingPractices(prev => ({ ...prev, [practice]: !prev[practice] }));
         const addCustomGlobalPartner = () => { if (customGlobalPartner.trim()) { setGlobalPartners(prev => ({ ...prev, [customGlobalPartner]: true })); setCustomGlobalPartner(''); } };
         const getSelectedCount = () => Object.values(selectedItems).filter(Boolean).length;
+
+        const handleNextDomain = () => {
+          setCurrentDomain(Math.min(domains.length - 1, currentDomain + 1));
+          if (domainContentRef.current) {
+             domainContentRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          }
+        };
+
+        const handlePrevDomain = () => {
+          setCurrentDomain(Math.max(0, currentDomain - 1));
+           if (domainContentRef.current) {
+             domainContentRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          }
+        };
 
         const generateSummary = () => {
           const summary = {};
@@ -339,7 +410,11 @@
                 if (selectedItems[key]) {
                   if (!summary[domain.title]) summary[domain.title] = {};
                   if (!summary[domain.title][subtopic.title]) summary[domain.title][subtopic.title] = [];
-                  const practices = selectedPractices[key] ? Object.keys(selectedPractices[key]).filter(p => selectedPractices[key][p]) : [];
+                  let practices = selectedPractices[key] ? Object.keys(selectedPractices[key]).filter(p => selectedPractices[key][p]) : [];
+                  if (selectedPractices[key]?.['אחר'] && customPractices[key]) {
+                    practices = practices.filter(p => p !== 'אחר');
+                    practices.push(`אחר: ${customPractices[key]}`);
+                  }
                   summary[domain.title][subtopic.title].push({ outcome: outcome.text, practices: practices });
                 }
               });
@@ -364,7 +439,7 @@
                     <p><span className="font-semibold">מנהל/ת:</span> {principalName || "לא צוין"}</p>
                     <p><span className="font-semibold">מדריכת הכלה:</span> {mentorName || "לא צוין"}</p>
                     <p><span className="font-semibold">רכזת הכלה:</span> {coordinatorName || "לא צוין"}</p>
-                    <p><span className="font-semibold">שעות הדרכה בהכלה:</span> {guidanceHours || "לא צוין"}</p>
+                    <p><span className="font-semibold">מספר שעות הדרכה בהכלה:</span> {guidanceHours || "לא צוין"}</p>
                     {additionalResources && (
                       <div className="pt-2">
                         <p className="font-semibold">מעני/ משאבי הכלה נוספים:</p>
@@ -382,7 +457,7 @@
 
                   {trainingPractices.length > 0 && (
                     <div className="mb-8 p-4 bg-green-50 rounded-lg page-break-inside-avoid">
-                      <h2 className="text-lg font-bold text-green-700 mb-3">פרקטיקות שנבחרו להכשרת וליווי הצוות:</h2>
+                      <h2 className="text-lg font-bold text-green-700 mb-3">פרקטיקות הדרכה וליווי של מדריכת ההכלה:</h2>
                       <p className="text-green-600">{trainingPractices.join('; ')}</p>
                     </div>
                   )}
@@ -429,50 +504,52 @@
             <div className="max-w-6xl mx-auto">
               <div className="bg-white rounded-xl shadow-lg p-8 mb-6">
                 <h1 className="text-3xl font-bold text-indigo-800 mb-6 text-center">
-                  שיח מדריכת הכלה - מנהל/ת בית ספר לתכנון תוכנית הדרכה מותאמת בתחום ההכלה
+                  שיח מדריך/כת הכלה - מנהל/ת בית ספר לתכנון תוכנית הדרכה מותאמת בתחום ההכלה
                 </h1>
                 
                 <div className="grid md:grid-cols-3 gap-4 mb-6">
                   <div><label className="block text-sm font-medium text-gray-700 mb-1">שם בית הספר</label><input type="text" value={schoolName} onChange={(e) => setSchoolName(e.target.value)} className="w-full p-3 border border-gray-300 rounded-lg" placeholder="הכנס שם בית הספר"/></div>
                   <div><label className="block text-sm font-medium text-gray-700 mb-1">שם המנהל/ת</label><input type="text" value={principalName} onChange={(e) => setPrincipalName(e.target.value)} className="w-full p-3 border border-gray-300 rounded-lg" placeholder="הכנס שם המנהל/ת"/></div>
-                  <div><label className="block text-sm font-medium text-gray-700 mb-1">שם מדריכת ההכלה</label><input type="text" value={mentorName} onChange={(e) => setMentorName(e.target.value)} className="w-full p-3 border border-gray-300 rounded-lg" placeholder="הכנס שם מדריכת ההכלה"/></div>
-                  <div><label className="block text-sm font-medium text-gray-700 mb-1">שם רכזת ההכלה</label><input type="text" value={coordinatorName} onChange={(e) => setCoordinatorName(e.target.value)} className="w-full p-3 border border-gray-300 rounded-lg" placeholder="הכנס/י שם"/></div>
+                  <div><label className="block text-sm font-medium text-gray-700 mb-1">שם מדריך/כת ההכלה</label><input type="text" value={mentorName} onChange={(e) => setMentorName(e.target.value)} className="w-full p-3 border border-gray-300 rounded-lg" placeholder="הכנס שם מדריך/כת ההכלה"/></div>
+                  <div><label className="block text-sm font-medium text-gray-700 mb-1">שם רכז/ת ההכלה</label><input type="text" value={coordinatorName} onChange={(e) => setCoordinatorName(e.target.value)} className="w-full p-3 border border-gray-300 rounded-lg" placeholder="הכנס/י שם"/></div>
                   <div><label className="block text-sm font-medium text-gray-700 mb-1">מספר שעות הדרכה בהכלה</label><input type="text" value={guidanceHours} onChange={(e) => setGuidanceHours(e.target.value)} className="w-full p-3 border border-gray-300 rounded-lg" placeholder="לדוגמה: 20"/></div>
                 </div>
                 <div className="mb-6"><label className="block text-sm font-medium text-gray-700 mb-1">מעני/ משאבי הכלה נוספים <span className="text-xs text-gray-500">(הוראה מתקנת, גפ"ן, וכו')</span></label><textarea value={additionalResources} onChange={(e) => setAdditionalResources(e.target.value)} className="w-full p-3 border border-gray-300 rounded-lg" rows="3" placeholder="פרטו כאן את המשאבים הקיימים..."></textarea></div>
+                
+                 <div className="mb-6 p-4 bg-indigo-50 rounded-lg border border-indigo-200">
+                    <h2 className="text-xl font-bold text-indigo-800 mb-4">זירות פעולה</h2>
+                     <div className="flex flex-wrap gap-2">
+                        {domains.map((domain, index) => (<button key={domain.id} onClick={() => setCurrentDomain(index)} className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${currentDomain === index ? 'bg-indigo-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}`}>{domain.title}</button>))}
+                    </div>
+                    <div className="flex justify-between items-center mt-4"><div className="text-sm text-gray-600">שלב בחירת המטרות - תחום {currentDomain + 1} מתוך {domains.length}</div><div className="text-sm text-indigo-600 font-medium">נבחרו {getSelectedCount()} מטרות</div></div>
+                    <div className="w-full bg-gray-200 rounded-full h-2 mt-2"><div className="bg-indigo-600 h-2 rounded-full transition-all duration-300" style={{ width: `${((currentDomain + 1) / domains.length) * 100}%` }}></div></div>
+                </div>
+              </div>
+              
+              <div ref={domainContentRef} className="bg-white rounded-xl shadow-lg p-8">
+                 <div className="grid md:grid-cols-2 gap-x-8 gap-y-6 mb-8">
+                    <div className="p-4 bg-green-50 rounded-lg border border-green-200">
+                        <h2 className="text-lg font-bold text-green-800 mb-4">פרקטיקות הדרכה וליווי של מדריכת ההכלה</h2>
+                        <div className="space-y-2">
+                            {teacherTrainingPractices.map(practice => (
+                                <label key={practice} className="flex items-center gap-2 text-sm cursor-pointer p-1 rounded hover:bg-green-100">
+                                    <input type="checkbox" checked={selectedTrainingPractices[practice] || false} onChange={() => toggleTrainingPractice(practice)} className="rounded border-gray-300 text-green-600 focus:ring-green-500"/>
+                                    <span className="text-gray-700">{practice}</span>
+                                </label>
+                            ))}
+                        </div>
+                    </div>
 
-                <div className="mb-6 p-4 bg-green-50 rounded-lg border border-green-200">
-                    <h2 className="text-xl font-bold text-green-800 mb-4">פרקטיקות הדרכה וליווי של מדריכת ההכלה</h2>
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-4 gap-y-2">
-                        {teacherTrainingPractices.map(practice => (
-                            <label key={practice} className="flex items-center gap-2 text-sm cursor-pointer p-1 rounded hover:bg-green-100">
-                                <input type="checkbox" checked={selectedTrainingPractices[practice] || false} onChange={() => toggleTrainingPractice(practice)} className="rounded border-gray-300 text-green-600 focus:ring-green-500"/>
-                                <span className="text-gray-700">{practice}</span>
-                            </label>
-                        ))}
+                    <div className="p-4 bg-blue-50 rounded-lg border border-blue-200">
+                      <h3 className="text-lg font-semibold text-blue-800 mb-3">👥 שותפים לקידום תחום ההכלה בבית הספר</h3>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-2 mb-3">
+                        {partnersList.map((partner) => (<label key={partner} className="flex items-center gap-2 text-sm cursor-pointer"><input type="checkbox" checked={globalPartners[partner] || false} onChange={() => toggleGlobalPartner(partner)} className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"/><span className="text-gray-700">{partner}</span></label>))}
+                      </div>
+                      <div className="flex gap-2"><input type="text" value={customGlobalPartner} onChange={(e) => setCustomGlobalPartner(e.target.value)} placeholder="הוסף שותף/פה (אחר)" className="flex-1 p-2 text-sm border border-gray-300 rounded focus:ring-1 focus:ring-blue-500"/><button onClick={addCustomGlobalPartner} className="px-3 py-2 bg-blue-600 text-white rounded text-sm hover:bg-blue-700 transition-colors">➕</button></div>
                     </div>
                 </div>
 
 
-                <div className="mb-6 p-4 bg-indigo-50 rounded-lg border border-indigo-200">
-                  <h3 className="text-lg font-semibold text-indigo-700 mb-3">👥 שותפים לקידום תחום ההכלה בבית הספר</h3>
-                  <div className="grid grid-cols-2 md:grid-cols-3 gap-2 mb-3">
-                    {partnersList.map((partner) => (<label key={partner} className="flex items-center gap-2 text-sm cursor-pointer"><input type="checkbox" checked={globalPartners[partner] || false} onChange={() => toggleGlobalPartner(partner)} className="rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"/><span className="text-gray-700">{partner}</span></label>))}
-                  </div>
-                  <div className="flex gap-2"><input type="text" value={customGlobalPartner} onChange={(e) => setCustomGlobalPartner(e.target.value)} placeholder="הוסף שותף נוסף..." className="flex-1 p-2 text-sm border border-gray-300 rounded focus:ring-1 focus:ring-indigo-500"/><button onClick={addCustomGlobalPartner} className="px-3 py-2 bg-indigo-600 text-white rounded text-sm hover:bg-indigo-700 transition-colors">➕</button></div>
-                </div>
-
-                <div className="flex justify-between items-center"><div className="text-sm text-gray-600">שלב בחירת המטרות - תחום {currentDomain + 1} מתוך {domains.length}</div><div className="text-sm text-indigo-600 font-medium">נבחרו {getSelectedCount()} מטרות</div></div>
-                <div className="w-full bg-gray-200 rounded-full h-2 mt-2"><div className="bg-indigo-600 h-2 rounded-full transition-all duration-300" style={{ width: `${((currentDomain + 1) / domains.length) * 100}%` }}></div></div>
-              </div>
-
-              <div className="bg-white rounded-xl shadow-lg p-6 mb-6">
-                <div className="flex flex-wrap gap-2">
-                  {domains.map((domain, index) => (<button key={domain.id} onClick={() => setCurrentDomain(index)} className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${currentDomain === index ? 'bg-indigo-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}`}>{domain.title}</button>))}
-                </div>
-              </div>
-
-              <div className="bg-white rounded-xl shadow-lg p-8">
                 <div className="mb-6"><h2 className="text-2xl font-bold text-indigo-800 mb-2">{domains[currentDomain].title}</h2></div>
                 <div className="space-y-6">
                   {domains[currentDomain].subtopics.map((subtopic) => (
@@ -482,24 +559,43 @@
                         {subtopic.expectedOutcomes.map((outcome, index) => {
                           const key = `${domains[currentDomain].id}_${subtopic.id}_${index}`;
                           const isSelected = selectedItems[key];
+                          const hasSelectablePractices = outcome.selectablePractices && outcome.selectablePractices.length > 0;
+                          
                           return (
-                            <div key={index} className="space-y-4">
+                            <div key={index}>
                               <div onClick={() => toggleSelection(domains[currentDomain].id, subtopic.id, index)} className={`p-4 rounded-lg border-2 cursor-pointer transition-all ${isSelected ? 'border-indigo-500 bg-indigo-50' : 'border-gray-200 hover:border-indigo-300 hover:bg-gray-50'}`}>
                                 <div className="flex items-start gap-3">
                                   <div className={`w-5 h-5 rounded-full border-2 mt-1 flex-shrink-0 flex items-center justify-center ${isSelected ? 'bg-indigo-600 border-indigo-600' : 'border-gray-400'}`}>{isSelected && <div className="w-2 h-2 bg-white rounded-full"></div>}</div>
-                                  <span className={`${isSelected ? 'text-indigo-800 font-medium' : 'text-gray-700'}`}>{outcome.text}</span>
+                                  <div className="flex-grow">
+                                    <span className={`${isSelected ? 'text-indigo-800 font-medium' : 'text-gray-700'}`}>
+                                        {outcome.text.includes('הורדת זמן מע"מ') ? 
+                                          <Tooltip text="צמצום שלב ההקדמה לטובת מקסום זמן הלמידה הפעילה">{outcome.text}</Tooltip> : 
+                                          outcome.text
+                                        }
+                                    </span>
+                                    {hasSelectablePractices && !isSelected && (
+                                        <p className="mt-2 text-sm font-medium text-indigo-600">
+                                            לחצו לבחירת פרקטיקות ודגשים ליישום:
+                                        </p>
+                                    )}
+                                  </div>
                                 </div>
                               </div>
-                               {isSelected && outcome.selectablePractices && outcome.selectablePractices.length > 0 && (
-                                <div className="mr-8 space-y-4 bg-gray-50 p-4 rounded-lg">
+                               {isSelected && hasSelectablePractices && (
+                                <div className="mr-8 mt-4 space-y-4 bg-gray-50 p-4 rounded-lg">
                                   <div>
                                     <h4 className="text-sm font-semibold text-gray-700 mb-3">📝 בחירת פרקטיקות ודגשים ליישום:</h4>
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
                                       {outcome.selectablePractices.map((practice) => (
-                                        <label key={practice} className="flex items-center gap-2 text-sm cursor-pointer">
-                                            <input type="checkbox" checked={selectedPractices[key]?.[practice] || false} onChange={() => togglePractice(key, practice)} className="rounded border-gray-300 text-green-600 focus:ring-green-500"/>
-                                            <span className="text-gray-700">{practice}</span>
-                                        </label>
+                                        <div key={practice}>
+                                          <label className="flex items-center gap-2 text-sm cursor-pointer">
+                                              <input type="checkbox" checked={selectedPractices[key]?.[practice] || false} onChange={() => togglePractice(key, practice)} className="rounded border-gray-300 text-green-600 focus:ring-green-500"/>
+                                              <span className="text-gray-700">{practice}</span>
+                                          </label>
+                                          {practice === 'אחר' && selectedPractices[key]?.['אחר'] && (
+                                            <input type="text" placeholder="פירוט" value={customPractices[key] || ''} onChange={(e) => handleCustomPracticeChange(key, e.target.value)} className="w-full mt-1 p-2 text-sm border-gray-300 rounded"/>
+                                          )}
+                                        </div>
                                       ))}
                                     </div>
                                   </div>
@@ -514,11 +610,11 @@
                 </div>
 
                 <div className="flex justify-between items-center mt-8">
-                  <button onClick={() => setCurrentDomain(Math.max(0, currentDomain - 1))} disabled={currentDomain === 0} className="px-6 py-3 bg-gray-500 text-white rounded-lg hover:bg-gray-600 disabled:opacity-50">תחום קודם</button>
+                  <button onClick={handlePrevDomain} disabled={currentDomain === 0} className="px-6 py-3 bg-gray-500 text-white rounded-lg hover:bg-gray-600 disabled:opacity-50">תחום קודם</button>
                   {currentDomain === domains.length - 1 ? (
                     <button onClick={() => setShowSummary(true)} className="px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700">🎯 סיום ויצירת סיכום שיח</button>
                   ) : (
-                    <button onClick={() => setCurrentDomain(Math.min(domains.length - 1, currentDomain + 1))} className="px-6 py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700">תחום הבא</button>
+                    <button onClick={handleNextDomain} className="px-6 py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700">תחום הבא</button>
                   )}
                 </div>
               </div>
