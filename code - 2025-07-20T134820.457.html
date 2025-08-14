@@ -125,6 +125,7 @@
         const [customGlobalPartner, setCustomGlobalPartner] = useState('');
         const [selectedTrainingPractices, setSelectedTrainingPractices] = useState({});
         
+        const [summaryData, setSummaryData] = useState(null);
         const contentRef = useRef(null);
 
         const partnersList = [
@@ -401,9 +402,42 @@
 
         const handleNavigate = (targetView) => {
             setView(targetView);
-            if(contentRef.current) {
+            // Scroll to top only for non-summary views
+            if (targetView !== 'summary' && contentRef.current) {
                 contentRef.current.scrollIntoView({ behavior: 'smooth' });
             }
+        };
+        
+        const handleCreateSummary = () => {
+            const summary = {};
+            const selectedGlobalPartnersList = Object.keys(globalPartners).filter(p => globalPartners[p]);
+            let selectedTrainingList = Object.keys(selectedTrainingPractices).filter(p => selectedTrainingPractices[p]);
+
+            if (selectedTrainingPractices['אחר'] && customPractices['training_other']) {
+                selectedTrainingList = selectedTrainingList.filter(p => p !== 'אחר');
+                selectedTrainingList.push(`אחר: ${customPractices['training_other']}`);
+            }
+            
+            domains.forEach(domain => {
+                domain.subtopics.forEach(subtopic => {
+                    subtopic.expectedOutcomes.forEach((outcome, index) => {
+                        const key = `${domain.id}_${subtopic.id}_${index}`;
+                        if (selectedItems[key]) {
+                            if (!summary[domain.title]) summary[domain.title] = {};
+                            if (!summary[domain.title][subtopic.title]) summary[domain.title][subtopic.title] = [];
+                            let practices = selectedPractices[key] ? Object.keys(selectedPractices[key]).filter(p => selectedPractices[key][p]) : [];
+                            if (selectedPractices[key]?.['אחר'] && customPractices[key]) {
+                                practices = practices.filter(p => p !== 'אחר');
+                                practices.push(`אחר: ${customPractices[key]}`);
+                            }
+                            summary[domain.title][subtopic.title].push({ outcome: outcome.text, practices: practices });
+                        }
+                    });
+                });
+            });
+            
+            setSummaryData({ summary, partners: selectedGlobalPartnersList, trainingPractices: selectedTrainingList });
+            handleNavigate('summary');
         };
 
         const handleNextDomain = () => {
@@ -424,40 +458,12 @@
           }
         };
 
-        const generateSummary = () => {
-          const summary = {};
-          const selectedGlobalPartnersList = Object.keys(globalPartners).filter(p => globalPartners[p]);
-          let selectedTrainingList = Object.keys(selectedTrainingPractices).filter(p => selectedTrainingPractices[p]);
-          // Handle custom 'other' for training practices
-          if (selectedTrainingPractices['אחר'] && customPractices['training_other']) {
-            selectedTrainingList = selectedTrainingList.filter(p => p !== 'אחר');
-            selectedTrainingList.push(`אחר: ${customPractices['training_other']}`);
-          }
-          
-          domains.forEach(domain => {
-            domain.subtopics.forEach(subtopic => {
-              subtopic.expectedOutcomes.forEach((outcome, index) => {
-                const key = `${domain.id}_${subtopic.id}_${index}`;
-                if (selectedItems[key]) {
-                  if (!summary[domain.title]) summary[domain.title] = {};
-                  if (!summary[domain.title][subtopic.title]) summary[domain.title][subtopic.title] = [];
-                  let practices = selectedPractices[key] ? Object.keys(selectedPractices[key]).filter(p => selectedPractices[key][p]) : [];
-                  if (selectedPractices[key]?.['אחר'] && customPractices[key]) {
-                    practices = practices.filter(p => p !== 'אחר');
-                    practices.push(`אחר: ${customPractices[key]}`);
-                  }
-                  summary[domain.title][subtopic.title].push({ outcome: outcome.text, practices: practices });
-                }
-              });
-            });
-          });
-          return { summary, partners: selectedGlobalPartnersList, trainingPractices: selectedTrainingList };
-        };
 
         const renderView = () => {
             switch(view) {
                 case 'summary':
-                    const { summary, partners, trainingPractices } = generateSummary();
+                    if (!summaryData) return <div>טוען סיכום...</div>;
+                    const { summary, partners, trainingPractices } = summaryData;
                     return (
                         <div className="min-h-screen bg-gray-50 p-6 print-container">
                           <div className="max-w-5xl mx-auto">
@@ -580,7 +586,7 @@
                             </div>
                             <div className="flex justify-between items-center mt-8">
                                 <button onClick={() => handleNavigate('domains')} className="px-6 py-3 bg-gray-500 text-white rounded-lg hover:bg-gray-600">חזרה לבחירת זירות פעולה ותוצרים</button>
-                                <button onClick={() => handleNavigate('summary')} className="px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700">🎯 סיום ויצירת סיכום שיח</button>
+                                <button onClick={handleCreateSummary} className="px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700">🎯 סיום ויצירת סיכום שיח</button>
                             </div>
                        </div>
                     );
@@ -596,7 +602,7 @@
                             <div className="flex justify-between items-center mt-4"><div className="text-sm text-gray-600">זירה {currentDomain + 1} מתוך {domains.length}</div><div className="text-sm text-indigo-600 font-medium">נבחרו {getSelectedCount()} תוצרים</div></div>
                             <div className="w-full bg-gray-200 rounded-full h-2 mt-2"><div className="bg-indigo-600 h-2 rounded-full transition-all duration-300" style={{ width: `${((currentDomain + 1) / domains.length) * 100}%` }}></div></div>
                          </div>
-                         <div ref={contentRef} className="bg-white rounded-xl shadow-lg p-8">
+                         <div className="bg-white rounded-xl shadow-lg p-8">
                             <div className="mb-6"><h2 className="text-2xl font-bold text-indigo-800 mb-2">{domains[currentDomain].title}</h2></div>
                             <div className="space-y-6">
                               {domains[currentDomain].subtopics.map((subtopic) => (
@@ -706,6 +712,17 @@
             }
         };
 
+        // --- START OF THE FIX ---
+        // This is the corrected logic.
+        // It checks the current view. If it's the 'summary' view, it renders it directly.
+        // The summary view already has its own full-page layout and print-specific styles.
+        if (view === 'summary') {
+          return renderView();
+        }
+
+        // For all other views (the editing steps), it wraps them in the original layout
+        // which includes the 'no-print' class. This ensures the editing interface
+        // does not appear on the final printed document.
         return (
           <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 p-6 no-print">
             <div ref={contentRef} className="max-w-6xl mx-auto">
@@ -713,6 +730,7 @@
             </div>
           </div>
         );
+        // --- END OF THE FIX ---
       };
 
       const container = document.getElementById('root');
