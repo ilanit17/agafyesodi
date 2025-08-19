@@ -8,50 +8,17 @@
     <!-- Tailwind CSS for styling -->
     <script src="https://cdn.tailwindcss.com"></script>
     
-    <!-- Google Font for Hebrew -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Assistant:wght@400;500;600;700&display=swap" rel="stylesheet">
-    
-    <!-- Custom Styles for font and printing -->
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Assistant:wght@400;500;600;700&display=swap');
+        
         body {
             font-family: 'Assistant', sans-serif;
         }
-        .tooltip {
-            position: relative;
-            display: inline-block;
+        
+        .hidden {
+            display: none !important;
         }
-        .tooltip .tooltiptext {
-            visibility: hidden;
-            width: 240px;
-            background-color: #555;
-            color: #fff;
-            text-align: center;
-            border-radius: 6px;
-            padding: 8px;
-            position: absolute;
-            z-index: 10;
-            bottom: 125%;
-            left: 50%;
-            margin-left: -120px;
-            opacity: 0;
-            transition: opacity 0.3s;
-        }
-        .tooltip .tooltiptext::after {
-            content: "";
-            position: absolute;
-            top: 100%;
-            left: 50%;
-            margin-left: -5px;
-            border-width: 5px;
-            border-style: solid;
-            border-color: #555 transparent transparent transparent;
-        }
-        .tooltip:hover .tooltiptext {
-            visibility: visible;
-            opacity: 1;
-        }
+        
         @media print {
             body {
                 background-color: white !important;
@@ -74,60 +41,39 @@
             .page-break-inside-avoid {
                 page-break-inside: avoid;
             }
-            .tooltip {
-                border-bottom: none;
-            }
-            .tooltip .tooltiptext {
-                display: none;
-            }
         }
     </style>
 </head>
 <body class="bg-gray-100">
 
-    <div id="root"></div>
+    <div id="app"></div>
 
-    <!-- React Libraries -->
-    <script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
-    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
-    
-    <!-- Babel to transpile JSX in the browser -->
-    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script>
+        // Application State
+        const state = {
+            view: 'initial',
+            currentDomain: 0,
+            selectedItems: {},
+            selectedPractices: {},
+            customPractices: {},
+            schoolName: '',
+            principalName: '',
+            mentorName: '',
+            coordinatorName: '',
+            guidanceHours: '',
+            guidanceDays: {},
+            additionalTraining: {},
+            customTraining: '',
+            schoolData: '',
+            challenges: '',
+            additionalResources: '',
+            globalPartners: {},
+            customGlobalPartner: '',
+            selectedTrainingPractices: {},
+            summaryData: null
+        };
 
-    <script type="text/babel">
-      const { useState, useEffect, useRef } = React;
-
-      const Tooltip = ({ text, children }) => (
-        <span className="tooltip" style={{borderBottom: '1px dotted black'}}>
-          {children}
-          <span className="tooltiptext">{text}</span>
-        </span>
-      );
-
-      const InclusionPlanningTool = () => {
-        const [view, setView] = useState('initial'); // initial, domains, additionalData, summary
-        const [currentDomain, setCurrentDomain] = useState(0);
-        const [selectedItems, setSelectedItems] = useState({});
-        const [selectedPractices, setSelectedPractices] = useState({});
-        const [customPractices, setCustomPractices] = useState({});
-        
-        const [schoolName, setSchoolName] = useState('');
-        const [principalName, setPrincipalName] = useState('');
-        const [mentorName, setMentorName] = useState('');
-        const [coordinatorName, setCoordinatorName] = useState('');
-        const [guidanceHours, setGuidanceHours] = useState('');
-        const [guidanceYears, setGuidanceYears] = useState('');
-        const [schoolData, setSchoolData] = useState('');
-        const [challenges, setChallenges] = useState('');
-        const [additionalResources, setAdditionalResources] = useState('');
-
-        const [globalPartners, setGlobalPartners] = useState({});
-        const [customGlobalPartner, setCustomGlobalPartner] = useState('');
-        const [selectedTrainingPractices, setSelectedTrainingPractices] = useState({});
-        
-        const [summaryData, setSummaryData] = useState(null);
-        const contentRef = useRef(null);
-
+        // Data
         const partnersList = [
             'מנהל/ת בית ספר', 'רכזת הכלה', 'מדריכת הכלה', 'רכזת הערכה ומדידה', 
             'רכזת פדגוגית', 'יועצת בית הספר', 'סגן/ית מנהל/ת בית הספר', 
@@ -140,6 +86,9 @@
             'מודלינג', 'הליכה לימודית', 'ליווי מנהיגות הביניים בהובלת תהליכים', 'אחר'
         ];
         
+        const daysOfWeek = ['יום א\'', 'יום ב\'', 'יום ג\'', 'יום ד\'', 'יום ה\''];
+        const trainingAreas = ['חינוך לשוני', 'חינוך חברתי', 'עלמ"א', 'מתמטיקה', 'מחוננים', 'אמירים', 'אחר'];
+
         const domains = [
           {
             id: 'arena1',
@@ -194,7 +143,7 @@
                 id: 'assessment_feedback',
                 title: 'משוב והערכה מכווני שונות',
                 expectedOutcomes: [
-                  { text: 'רכיבי התעודה משקפים את תפיסת ההכלה' },
+                  { text: 'רכיבי התעודה משקפים את תפיסת ההכלה וההוגנות' },
                   { 
                     text: 'עלייה בשימוש במגוון כלי הערכה פנימיים:',
                     practiceListTitle: 'בחירת פרקטיקות של תהליכי הערכה ומשוב:',
@@ -214,22 +163,22 @@
           },
           {
             id: 'arena2',
-            title: 'תרבות ומדיניות הכלה בית ספרית',
+            title: 'תרבות ומדיניות הכלה והוגנות בית ספרית',
             subtopics: [
               {
                 id: 'inclusive_vision',
-                title: 'ביסוס תפיסה מכילה ותרגומה לתהליכים בית-ספריים',
+                title: 'ביסוס תפיסה מכילה והוגנת ותרגומה לתהליכים בית-ספריים',
                 expectedOutcomes: [
                   { text: 'תכנון המענים בראייה בית ספרית ייעשה בהתאם למודל ה-MTSS' },
                   { 
-                    text: 'עלייה בשימוש של צוות המורים במושגים, עקרונות ושיח מעולם ההכלה:',
+                    text: 'עלייה בשימוש של צוות המורים במושגים, עקרונות ושיח מעולם ההכלה וההוגנות:',
                     practiceListTitle: 'בחירת מושגים/עקרונות:',
                     selectablePractices: ['הכללה', 'שותפות עם הורים', 'עיצוב אוניברסלי', 'פסיכופדגוגיה', 'יחסי קרבה ואכפתיות', 'תרבות מדיניות ויישום', 'חסמי למידה והשתתפות', 'הורדת זמן מע"מ (צמצום שלב ההקדמה לטובת מקסום זמן הלמידה הפעילה)', 'הכלה פדגוגית', 'תוכנית עבודה מרובדת', 'אחר'] 
                   },
                   { 
-                    text: 'הצוות מבנה מדיניות משותפת לביסוס תרבות מכילה ויישומה (להלן מבחר דוגמאות להטמעה):',
+                    text: 'הצוות מבנה מדיניות משותפת לביסוס תרבות מכילה והוגנת ויישומה (להלן מבחר דוגמאות להטמעה):',
                     practiceListTitle: 'דוגמאות להטמעת מדיניות בית-ספרית:',
-                    selectablePractices: ['דיאלוג עם ההורים המושתת על עקרונות מכילים (אסיפות הורים, שיחות, הרצאות, ימי שיא, ישיבות הנהגת הורים)', 'דיאלוג בימי הורים המשקף את תפיסת ההכלה', 'ישיבות פדגוגיות מבוססות נתונים ומכוונות לתלמיד השלם', 'יום למידה מסתיים/מתחיל בשיח מצמיח', 'תקנון ו"האני מאמין" של בית הספר משקפים את תפיסת ההכלה', 'רכיבי התעודה משקפים את תפיסת ההכלה']
+                    selectablePractices: ['דיאלוג עם ההורים המושתת על עקרונות מכילים (אסיפות הורים, שיחות, הרצאות, ימי שיא, ישיבות הנהגת הורים)', 'דיאלוג בימי הורים המשקף את תפיסת ההכלה וההוגנות', 'ישיבות פדגוגיות מבוססות נתונים ומכוונות לתלמיד השלם', 'יום למידה מסתיים/מתחיל בשיח מצמיח', 'תקנון ו"האני מאמין" של בית הספר משקפים את תפיסת ההכלה וההוגנות', 'רכיבי התעודה משקפים את תפיסת ההכלה וההוגנות']
                   }
                 ]
               },
@@ -244,13 +193,13 @@
               },
               {
                 id: 'interdisciplinary_team',
-                title: 'צוות בין-מקצועי מוביל הכלה',
+                title: 'צוות בין-מקצועי מוביל הכלה והוגנות',
                 expectedOutcomes: [
                   { 
                     text: 'מתקיימת למידת עמיתים במגוון דרכים:',
                     selectablePractices: ['קהילת היוועצות בית ספרית (חקר הפרקטיקה)', 'צפיית עמיתים', 'ישיבות צוותים', 'מליאות מורים', 'מורה חונך מורה', 'סימולציות', 'מרחבי חקר ולמידה למורים', 'אחר'] 
                   },
-                  { text: 'מתקיימים שיתופי פעולה בקרב מנהיגות הביניים לקידום יעדי הכלה/הוראה בכיתה הטרוגנית' }
+                  { text: 'מתקיימים שיתופי פעולה בקרב מנהיגות הביניים לקידום יעדי הכלה והוגנות/הוראה בכיתה הטרוגנית' }
                 ]
               },
                {
@@ -259,6 +208,7 @@
                 expectedOutcomes: [
                   { text: 'עלייה באחוז התלמידים המדווחים על תחושת ביטחון' },
                   { text: 'עלייה באחוז התלמידים המדווחים על תחושת שייכות' },
+                  { text: 'עלייה באחוז התלמידים המדווחים על אג\'נסי' },
                   { 
                     text: 'בית הספר מיישם תפיסה של הוגנות במרחבים שונים:',
                     practiceListTitle: 'בחירת פרקטיקות ודגשים ליישום באחד או יותר מהעקרונות הבאים:',
@@ -297,12 +247,12 @@
                     title: 'העמקת הידע המקצועי של המורים',
                     expectedOutcomes: [
                         { 
-                            text: 'עלייה בשימוש של צוות המורים במושגים, עקרונות ושיח מעולם ההכלה:',
+                            text: 'עלייה בשימוש של צוות המורים במושגים, עקרונות ושיח מעולם ההכלה וההוגנות:',
                             practiceListTitle: 'בחירת מושגים/עקרונות:',
                             selectablePractices: ['הכללה', 'שותפות עם הורים', 'עיצוב אוניברסלי', 'פסיכופדגוגיה', 'יחסי קרבה ואכפתיות', 'תרבות מדיניות ויישום', 'חסמי למידה והשתתפות', 'הורדת זמן מע"מ', 'הכלה פדגוגית', 'תוכנית עבודה מרובדת', 'אחר']
                         },
                         { 
-                            text: 'הצוות לומד ומתפתח מקצועית בתחום ההכלה (יש לבחור יעדים/נושאים מתוך הרשימה הבאה):',
+                            text: 'הצוות לומד ומתפתח מקצועית בתחום ההכלה וההוגנות (יש לבחור יעדים/נושאים מתוך הרשימה הבאה):',
                             practiceListTitle: 'בחירת יעדים/נושאים להתפתחות מקצועית:',
                             selectablePractices: ['ליווי תלמידים עם בעיות התנהגות', 'ליווי תלמידים עם בעיות קשב', 'המחונן בכיתתו', 'ילדים בסיכון', 'הוראה בכיתה הטרוגנית', 'נוירופדגוגיה', 'הערכה מבוססת מגוון', 'אוכלוסיות ייחודיות', 'הוראה מותאמת פרט', 'ויסות עצמי ללמידה', 'מוטיבציה ללמידה', 'בניית תכניות אישיות ו/או כיתתיות', 'תכנון הוראה מבוססת נתונים', 'כלים טכנו-פדגוגיים']
                         },
@@ -351,7 +301,7 @@
           },
           {
             id: 'arena5',
-            title: 'סביבת למידה מקדמת הכלה',
+            title: 'סביבת למידה מקדמת הכלה והוגנות',
             subtopics: [
               {
                 id: 'learning_spaces',
@@ -374,61 +324,63 @@
           }
         ];
 
+        // Helper functions
+        function navigateTo(view) {
+            state.view = view;
+            render();
+            window.scrollTo(0, 0);
+        }
 
-        const toggleSelection = (domainId, subtopicId, outcomeIndex) => {
-          const key = `${domainId}_${subtopicId}_${outcomeIndex}`;
-          setSelectedItems(prev => ({ ...prev, [key]: !prev[key] }));
-           if (selectedItems[key]) {
-            setSelectedPractices(prev => { const newPractices = { ...prev }; delete newPractices[key]; return newPractices; });
-            setCustomPractices(prev => { const newCustom = { ...prev }; delete newCustom[key]; return newCustom; });
-          }
-        };
-        
-        const togglePractice = (outcomeKey, practice) => {
-          setSelectedPractices(prev => ({
-            ...prev,
-            [outcomeKey]: { ...prev[outcomeKey], [practice]: !prev[outcomeKey]?.[practice] }
-          }));
-        };
-
-        const handleCustomPracticeChange = (key, value) => {
-            setCustomPractices(prev => ({ ...prev, [key]: value }));
-        };
-
-        const toggleGlobalPartner = (partner) => setGlobalPartners(prev => ({ ...prev, [partner]: !prev[partner] }));
-        const toggleTrainingPractice = (practice) => setSelectedTrainingPractices(prev => ({ ...prev, [practice]: !prev[practice] }));
-        const addCustomGlobalPartner = () => { if (customGlobalPartner.trim()) { setGlobalPartners(prev => ({ ...prev, [customGlobalPartner]: true })); setCustomGlobalPartner(''); } };
-        const getSelectedCount = () => Object.values(selectedItems).filter(Boolean).length;
-
-        const handleNavigate = (targetView) => {
-            setView(targetView);
-            // Scroll to top only for non-summary views
-            if (targetView !== 'summary' && contentRef.current) {
-                contentRef.current.scrollIntoView({ behavior: 'smooth' });
+        function toggleSelection(domainId, subtopicId, outcomeIndex) {
+            const key = `${domainId}_${subtopicId}_${outcomeIndex}`;
+            state.selectedItems[key] = !state.selectedItems[key];
+            if (!state.selectedItems[key]) {
+                delete state.selectedPractices[key];
+                delete state.customPractices[key];
             }
-        };
-        
-        const handleCreateSummary = () => {
-            const summary = {};
-            const selectedGlobalPartnersList = Object.keys(globalPartners).filter(p => globalPartners[p]);
-            let selectedTrainingList = Object.keys(selectedTrainingPractices).filter(p => selectedTrainingPractices[p]);
+            render();
+        }
 
-            if (selectedTrainingPractices['אחר'] && customPractices['training_other']) {
+        function togglePractice(outcomeKey, practice) {
+            if (!state.selectedPractices[outcomeKey]) {
+                state.selectedPractices[outcomeKey] = {};
+            }
+            state.selectedPractices[outcomeKey][practice] = !state.selectedPractices[outcomeKey][practice];
+            render();
+        }
+
+        function getSelectedCount() {
+            return Object.values(state.selectedItems).filter(Boolean).length;
+        }
+
+        function createSummary() {
+            const summary = {};
+            const selectedGlobalPartnersList = Object.keys(state.globalPartners).filter(p => state.globalPartners[p]);
+            let selectedTrainingList = Object.keys(state.selectedTrainingPractices).filter(p => state.selectedTrainingPractices[p]);
+            
+            const selectedDays = Object.keys(state.guidanceDays).filter(day => state.guidanceDays[day]).join(', ');
+            let selectedTrainingAreas = Object.keys(state.additionalTraining).filter(area => state.additionalTraining[area]);
+            if (state.additionalTraining['אחר'] && state.customTraining) {
+                selectedTrainingAreas = selectedTrainingAreas.filter(area => area !== 'אחר');
+                selectedTrainingAreas.push(`אחר: ${state.customTraining}`);
+            }
+
+            if (state.selectedTrainingPractices['אחר'] && state.customPractices['training_other']) {
                 selectedTrainingList = selectedTrainingList.filter(p => p !== 'אחר');
-                selectedTrainingList.push(`אחר: ${customPractices['training_other']}`);
+                selectedTrainingList.push(`אחר: ${state.customPractices['training_other']}`);
             }
             
             domains.forEach(domain => {
                 domain.subtopics.forEach(subtopic => {
                     subtopic.expectedOutcomes.forEach((outcome, index) => {
                         const key = `${domain.id}_${subtopic.id}_${index}`;
-                        if (selectedItems[key]) {
+                        if (state.selectedItems[key]) {
                             if (!summary[domain.title]) summary[domain.title] = {};
                             if (!summary[domain.title][subtopic.title]) summary[domain.title][subtopic.title] = [];
-                            let practices = selectedPractices[key] ? Object.keys(selectedPractices[key]).filter(p => selectedPractices[key][p]) : [];
-                            if (selectedPractices[key]?.['אחר'] && customPractices[key]) {
+                            let practices = state.selectedPractices[key] ? Object.keys(state.selectedPractices[key]).filter(p => state.selectedPractices[key][p]) : [];
+                            if (state.selectedPractices[key]?.['אחר'] && state.customPractices[key]) {
                                 practices = practices.filter(p => p !== 'אחר');
-                                practices.push(`אחר: ${customPractices[key]}`);
+                                practices.push(`אחר: ${state.customPractices[key]}`);
                             }
                             summary[domain.title][subtopic.title].push({ outcome: outcome.text, practices: practices });
                         }
@@ -436,306 +388,354 @@
                 });
             });
             
-            setSummaryData({ summary, partners: selectedGlobalPartnersList, trainingPractices: selectedTrainingList });
-            handleNavigate('summary');
-        };
-
-        const handleNextDomain = () => {
-          if (currentDomain < domains.length - 1) {
-            setCurrentDomain(currentDomain + 1);
-          } else {
-            handleNavigate('additionalData');
-          }
-          if(contentRef.current) {
-             contentRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
-          }
-        };
-
-        const handlePrevDomain = () => {
-          setCurrentDomain(Math.max(0, currentDomain - 1));
-           if(contentRef.current) {
-             contentRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
-          }
-        };
-
-
-        const renderView = () => {
-            switch(view) {
-                case 'summary':
-                    if (!summaryData) return <div>טוען סיכום...</div>;
-                    const { summary, partners, trainingPractices } = summaryData;
-                    return (
-                        <div className="min-h-screen bg-gray-50 p-6 print-container">
-                          <div className="max-w-5xl mx-auto">
-                            <div className="bg-white rounded-xl shadow-lg p-8 print-content">
-                              <div className="text-center mb-8">
-                                 <h1 className="text-3xl font-bold text-indigo-800 mb-2">כלי לניהול שיח בין מדריכת הכלה</h1>
-                                 <h2 className="text-3xl font-bold text-indigo-800">למנהל/מנהלת בית ספר לתכנון תוכנית הדרכה מותאמת בתחום ההכלה</h2>
-                              </div>
-
-                              <div className="mb-8 p-4 bg-gray-50 rounded-lg border border-gray-200 text-right space-y-3 page-break-inside-avoid">
-                                <h3 className="text-xl font-bold text-gray-800">מידע כללי:</h3>
-                                <p><span className="font-semibold">שם בית הספר:</span> {schoolName || "____________________"}</p>
-                                <p><span className="font-semibold">שם המנהל/המנהלת:</span> {principalName || "____________________"}</p>
-                                <p><span className="font-semibold">שם מדריכת ההכלה:</span> {mentorName || "____________________"}</p>
-                                <p><span className="font-semibold">שם רכזת ההכלה:</span> {coordinatorName || "____________________"}</p>
-                                <p><span className="font-semibold">מספר שעות הדרכה בהכלה:</span> {guidanceHours || "____________________"}</p>
-                                <p><span className="font-semibold">מספר השנים שבית הספר מקבל הדרכה בהכלה:</span> {guidanceYears || "____________________"}</p>
-                              </div>
-
-                              <div className="mb-8 p-4 bg-gray-50 rounded-lg border border-gray-200 text-right space-y-3 page-break-inside-avoid">
-                                <h3 className="text-xl font-bold text-gray-800">נתונים בית-ספריים:</h3>
-                                 <p className="text-sm text-gray-600">(בחלק זה יש להציג תמונת מצב נוכחית של בית הספר, מומלץ להתבסס גם על דשבורד המנהל של כלי העוגן).</p>
-                                <p className="font-semibold">תיאור העשייה הנוכחית בתחום ההכלה וההוגנות בבית הספר (מה נעשה עד כה, אילו פרקטיקות מיושמות ומוטמעות, אילו מתודות נמצאות בשימוש, באילו תחומים הצוות לומד ומתפתח מקצועית):</p>
-                                <p className="whitespace-pre-wrap mt-1 text-gray-700 min-h-[50px]">{schoolData || ""}</p>
-                              </div>
-
-                               <div className="mb-8 p-4 bg-gray-50 rounded-lg border border-gray-200 text-right space-y-3 page-break-inside-avoid">
-                                <h3 className="text-xl font-bold text-gray-800">תובנות מרכזיות וזיהוי אתגרים:</h3>
-                                <p className="font-semibold">מהם האתגרים המרכזיים ולאן שואפים להגיע?</p>
-                                <p className="whitespace-pre-wrap mt-1 text-gray-700 min-h-[50px]">{challenges || ""}</p>
-                              </div>
-
-                              {Object.keys(summary).length === 0 && (
-                                <div className="text-center py-8">
-                                  <p className="text-gray-600">לא נבחרו זירות פעולה, תוצרים או פרקטיקות.</p>
-                                </div>
-                              )}
-                              {Object.entries(summary).map(([domainTitle, subtopics]) => (
-                                <div key={domainTitle} className="mb-8 page-break-inside-avoid">
-                                  <h2 className="text-2xl font-bold text-indigo-700 mb-4 border-b-2 border-indigo-200 pb-2">{domainTitle}</h2>
-                                  {Object.entries(subtopics).map(([subtopicTitle, outcomes]) => (
-                                    <div key={subtopicTitle} className="mb-6 mr-4 page-break-inside-avoid">
-                                      <h3 className="text-xl font-semibold text-indigo-600 mb-3">{subtopicTitle}</h3>
-                                      <ul className="list-disc pr-5 space-y-4">
-                                      {outcomes.map((item, index) => (
-                                        <li key={index} className="mb-4 p-3 bg-gray-50 rounded-lg">
-                                            <p className="font-medium text-gray-800">{item.outcome.replace(":", "")}</p>
-                                            {item.practices.length > 0 && (
-                                            <div className="mt-2">
-                                              <p className="text-sm font-medium text-green-700">פרקטיקות ודגשים שנבחרו: </p>
-                                              <p className="text-sm text-gray-700">{item.practices.join('; ')}</p>
-                                            </div>
-                                          )}
-                                        </li>
-                                      ))}
-                                      </ul>
-                                    </div>
-                                  ))}
-                                </div>
-                              ))}
-                              
-                               <div className="mt-8 p-4 bg-green-50 rounded-lg page-break-inside-avoid">
-                                  <h2 className="text-lg font-bold text-green-800 mb-3">פרקטיקות הדרכה וליווי של מדריכת ההכלה:</h2>
-                                  <p className="text-green-700">{trainingPractices.join('; ')}</p>
-                               </div>
-
-                               <div className="mt-4 p-4 bg-blue-50 rounded-lg page-break-inside-avoid">
-                                  <h2 className="text-lg font-bold text-blue-800 mb-3">שותפים לקידום תחום ההכלה בבית הספר:</h2>
-                                  <p className="text-blue-700">{partners.join(', ')}</p>
-                               </div>
-
-                               <div className="mt-4 p-4 bg-gray-50 rounded-lg page-break-inside-avoid">
-                                 <h3 className="text-lg font-bold text-gray-800 mb-3">מעני/ משאבי הכלה נוספים:</h3>
-                                 <p className="whitespace-pre-wrap mt-1 text-gray-700 min-h-[30px]">{additionalResources || ""}</p>
-                               </div>
-
-
-                              <div className="flex gap-4 mt-8 no-print">
-                                <button onClick={() => handleNavigate('additionalData')} className="px-6 py-3 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition-colors">חזרה לעריכה</button>
-                                <button onClick={() => window.print()} className="px-6 py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors">🖨️ הדפסה/שמירה</button>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                    );
-                case 'additionalData':
-                    return (
-                        <div className="bg-white rounded-xl shadow-lg p-8 mt-6">
-                            <h2 className="text-2xl font-bold text-gray-800 mb-4 border-b pb-2">שלב 3: נתונים נוספים לבניית תכנית העבודה</h2>
-                             <div className="space-y-6">
-                                <div>
-                                    <label className="block text-lg font-bold text-gray-800 mb-3">מעני/ משאבי הכלה נוספים <span className="text-sm font-normal">(הוראה מתקנת, גפ"ן, וכו'):</span></label>
-                                    <textarea value={additionalResources} onChange={(e) => setAdditionalResources(e.target.value)} className="w-full p-2 border border-gray-300 rounded-lg" rows="3"></textarea>
-                                </div>
-                                <div className="grid md:grid-cols-2 gap-8">
-                                    <div className="p-4 bg-green-50 rounded-lg border border-green-200">
-                                         <h3 className="text-lg font-bold text-green-800 mb-3">פרקטיקות הדרכה וליווי של מדריכת ההכלה (יש לבחון מבין הפרקטיקות הבאות):</h3>
-                                         <div className="space-y-2">
-                                            {teacherTrainingPractices.map(practice => (
-                                                <div key={practice}>
-                                                  <label className="flex items-center gap-2 text-sm cursor-pointer">
-                                                      <input type="checkbox" checked={selectedTrainingPractices[practice] || false} onChange={() => toggleTrainingPractice(practice)} className="rounded border-gray-300 text-green-600 focus:ring-green-500"/>
-                                                      <span className="text-gray-700">{practice}</span>
-                                                  </label>
-                                                  {practice === 'אחר' && selectedTrainingPractices['אחר'] && (
-                                                     <input type="text" placeholder="פירוט" value={customPractices['training_other'] || ''} onChange={(e) => handleCustomPracticeChange('training_other', e.target.value)} className="w-full mt-1 p-2 text-sm border-gray-300 rounded"/>
-                                                  )}
-                                                </div>
-                                            ))}
-                                         </div>
-                                    </div>
-                                    <div className="p-4 bg-blue-50 rounded-lg border border-blue-200">
-                                         <h3 className="text-lg font-bold text-blue-800 mb-3">שותפים לקידום תחום ההכלה בבית הספר:</h3>
-                                         <div className="grid grid-cols-1 md:grid-cols-2 gap-2 mb-3">
-                                            {partnersList.map((partner) => (<label key={partner} className="flex items-center gap-2 text-sm cursor-pointer"><input type="checkbox" checked={globalPartners[partner] || false} onChange={() => toggleGlobalPartner(partner)} className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"/><span className="text-gray-700">{partner}</span></label>))}
-                                         </div>
-                                         <div className="flex gap-2"><input type="text" value={customGlobalPartner} onChange={(e) => setCustomGlobalPartner(e.target.value)} placeholder="הוסף שותף/פה (אחר)" className="flex-1 p-2 text-sm border border-gray-300 rounded focus:ring-1 focus:ring-blue-500"/><button onClick={addCustomGlobalPartner} className="px-3 py-2 bg-blue-600 text-white rounded text-sm hover:bg-blue-700 transition-colors">➕</button></div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div className="flex justify-between items-center mt-8">
-                                <button onClick={() => handleNavigate('domains')} className="px-6 py-3 bg-gray-500 text-white rounded-lg hover:bg-gray-600">חזרה לבחירת זירות פעולה ותוצרים</button>
-                                <button onClick={handleCreateSummary} className="px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700">🎯 סיום ויצירת סיכום שיח</button>
-                            </div>
-                       </div>
-                    );
-                case 'domains':
-                    return (
-                        <>
-                         <div className="bg-white rounded-xl shadow-lg p-8 mb-6">
-                            <h2 className="text-2xl font-bold text-indigo-800 mb-2">שלב 2: בחירת זירות פעולה ותוצרים</h2>
-                            <p className="text-sm text-red-600 font-semibold mb-4">הערה חשובה! הבחירה צריכה להיות מותאמת לאינטנסיביות ההדרכה ולאתגרי בית-הספר.</p>
-                             <div className="flex flex-wrap gap-2">
-                                {domains.map((domain, index) => (<button key={domain.id} onClick={() => setCurrentDomain(index)} className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${currentDomain === index ? 'bg-indigo-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}`}>{domain.title}</button>))}
-                            </div>
-                            <div className="flex justify-between items-center mt-4"><div className="text-sm text-gray-600">זירה {currentDomain + 1} מתוך {domains.length}</div><div className="text-sm text-indigo-600 font-medium">נבחרו {getSelectedCount()} תוצרים</div></div>
-                            <div className="w-full bg-gray-200 rounded-full h-2 mt-2"><div className="bg-indigo-600 h-2 rounded-full transition-all duration-300" style={{ width: `${((currentDomain + 1) / domains.length) * 100}%` }}></div></div>
-                         </div>
-                         <div className="bg-white rounded-xl shadow-lg p-8">
-                            <div className="mb-6"><h2 className="text-2xl font-bold text-indigo-800 mb-2">{domains[currentDomain].title}</h2></div>
-                            <div className="space-y-6">
-                              {domains[currentDomain].subtopics.map((subtopic) => (
-                                <div key={subtopic.id} className="border border-gray-200 rounded-lg p-6">
-                                  <h3 className="text-xl font-semibold text-indigo-700 mb-4">{subtopic.title}</h3>
-                                  <div className="space-y-4">
-                                    {subtopic.expectedOutcomes.map((outcome, index) => {
-                                      const key = `${domains[currentDomain].id}_${subtopic.id}_${index}`;
-                                      const isSelected = selectedItems[key];
-                                      const hasSelectablePractices = outcome.selectablePractices && outcome.selectablePractices.length > 0;
-                                      
-                                      return (
-                                        <div key={index}>
-                                          <div onClick={() => toggleSelection(domains[currentDomain].id, subtopic.id, index)} className={`p-4 rounded-lg border-2 cursor-pointer transition-all ${isSelected ? 'border-indigo-500 bg-indigo-50' : 'border-gray-200 hover:border-indigo-300 hover:bg-gray-50'}`}>
-                                            <div className="flex items-start gap-3">
-                                              <div className={`w-5 h-5 rounded-full border-2 mt-1 flex-shrink-0 flex items-center justify-center ${isSelected ? 'bg-indigo-600 border-indigo-600' : 'border-gray-400'}`}>{isSelected && <div className="w-2 h-2 bg-white rounded-full"></div>}</div>
-                                              <div className="flex-grow">
-                                                <span className={`${isSelected ? 'text-indigo-800 font-medium' : 'text-gray-700'}`}>
-                                                   {outcome.text}
-                                                </span>
-                                                {hasSelectablePractices && !isSelected && (
-                                                    <p className="mt-2 text-sm font-medium text-indigo-600">
-                                                        לחצו לבחירת פרקטיקות ודגשים ליישום:
-                                                    </p>
-                                                )}
-                                              </div>
-                                            </div>
-                                          </div>
-                                           {isSelected && hasSelectablePractices && (
-                                            <div className="mr-8 mt-4 space-y-4 bg-gray-50 p-4 rounded-lg">
-                                              <div>
-                                                <h4 className="text-md font-semibold text-gray-800 mb-3">{outcome.practiceListTitle || 'בחירת פרקטיקות ודגשים ליישום:'}</h4>
-                                                <div className="grid grid-cols-1 md:grid-cols-2 gap-x-4 gap-y-2">
-                                                  {outcome.selectablePractices.map((practice) => (
-                                                    <div key={practice}>
-                                                      <label className="flex items-center gap-2 text-sm cursor-pointer">
-                                                          <input type="checkbox" checked={selectedPractices[key]?.[practice] || false} onChange={() => togglePractice(key, practice)} className="rounded border-gray-300 text-green-600 focus:ring-green-500"/>
-                                                          <span className="text-gray-700">{practice}</span>
-                                                      </label>
-                                                      {practice === 'אחר' && selectedPractices[key]?.['אחר'] && (
-                                                        <input type="text" placeholder="פירוט" value={customPractices[key] || ''} onChange={(e) => handleCustomPracticeChange(key, e.target.value)} className="w-full mt-1 p-2 text-sm border-gray-300 rounded"/>
-                                                      )}
-                                                    </div>
-                                                  ))}
-                                                </div>
-                                              </div>
-                                            </div>
-                                          )}
-                                        </div>
-                                      );
-                                    })}
-                                  </div>
-                                </div>
-                              ))}
-                            </div>
-
-                            <div className="flex justify-between items-center mt-8">
-                              <button onClick={handlePrevDomain} disabled={currentDomain === 0} className="px-6 py-3 bg-gray-500 text-white rounded-lg hover:bg-gray-600 disabled:opacity-50">הזירה הקודמת</button>
-                               <button onClick={() => handleNavigate('initial')} className="px-6 py-3 bg-gray-500 text-white rounded-lg hover:bg-gray-600">חזרה למידע הכללי</button>
-                              <button onClick={handleNextDomain} className="px-6 py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700">
-                                {currentDomain === domains.length - 1 ? 'המשך לנתונים נוספים' : 'הזירה הבאה'}
-                              </button>
-                            </div>
-                        </div>
-                       </>
-                    );
-                case 'initial':
-                default:
-                    return (
-                        <div className="bg-white rounded-xl shadow-lg p-8 mb-6">
-                            <div className="text-center mb-8">
-                                 <h1 className="text-3xl font-bold text-indigo-800 mb-2">כלי לניהול שיח בין מדריכת הכלה</h1>
-                                 <h2 className="text-3xl font-bold text-indigo-800">למנהל/מנהלת בית ספר לתכנון תוכנית הדרכה מותאמת בתחום ההכלה</h2>
-                            </div>
-                            
-                            <div className="space-y-6">
-                                <div>
-                                    <h3 className="text-xl font-bold text-gray-800 mb-3 border-b pb-2">שלב 1: מידע כללי, נתונים ותובנות</h3>
-                                    <div className="grid md:grid-cols-2 gap-4 mt-4">
-                                      <div><label className="block text-sm font-medium text-gray-700 mb-1">שם בית הספר:</label><input type="text" value={schoolName} onChange={(e) => setSchoolName(e.target.value)} className="w-full p-2 border border-gray-300 rounded-lg"/></div>
-                                      <div><label className="block text-sm font-medium text-gray-700 mb-1">שם המנהל/המנהלת:</label><input type="text" value={principalName} onChange={(e) => setPrincipalName(e.target.value)} className="w-full p-2 border border-gray-300 rounded-lg"/></div>
-                                      <div><label className="block text-sm font-medium text-gray-700 mb-1">שם מדריכת ההכלה:</label><input type="text" value={mentorName} onChange={(e) => setMentorName(e.target.value)} className="w-full p-2 border border-gray-300 rounded-lg"/></div>
-                                      <div><label className="block text-sm font-medium text-gray-700 mb-1">שם רכזת ההכלה:</label><input type="text" value={coordinatorName} onChange={(e) => setCoordinatorName(e.target.value)} className="w-full p-2 border border-gray-300 rounded-lg"/></div>
-                                      <div><label className="block text-sm font-medium text-gray-700 mb-1">מספר שעות הדרכה בהכלה:</label><input type="text" value={guidanceHours} onChange={(e) => setGuidanceHours(e.target.value)} className="w-full p-2 border border-gray-300 rounded-lg"/></div>
-                                      <div><label className="block text-sm font-medium text-gray-700 mb-1">מספר השנים שבית הספר מקבל הדרכה בהכלה:</label><input type="text" value={guidanceYears} onChange={(e) => setGuidanceYears(e.target.value)} className="w-full p-2 border border-gray-300 rounded-lg"/></div>
-                                    </div>
-                                </div>
-
-                                <div>
-                                    <h3 className="text-lg font-semibold text-gray-800 mb-2">נתונים בית-ספריים:</h3>
-                                    <p className="text-sm text-gray-600 mb-2">(בחלק זה יש להציג תמונת מצב נוכחית של בית הספר, מומלץ להתבסס גם על דשבורד המנהל של כלי העוגן).</p>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">תיאור העשייה הנוכחית בתחום ההכלה וההוגנות בבית הספר (מה נעשה עד כה, אילו פרקטיקות מיושמות ומוטמעות, אילו מתודות נמצאות בשימוש, באילו תחומים הצוות לומד ומתפתח מקצועית):</label>
-                                    <textarea value={schoolData} onChange={(e) => setSchoolData(e.target.value)} className="w-full p-2 border border-gray-300 rounded-lg" rows="4"></textarea>
-                                </div>
-
-                                <div>
-                                    <h3 className="text-lg font-semibold text-gray-800 mb-2">תובנות מרכזיות וזיהוי אתגרים:</h3>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">מהם האתגרים המרכזיים ולאן שואפים להגיע?</label>
-                                    <textarea value={challenges} onChange={(e) => setChallenges(e.target.value)} className="w-full p-2 border border-gray-300 rounded-lg" rows="4"></textarea>
-                                </div>
-                                <div className="text-center mt-6">
-                                    <button onClick={() => handleNavigate('domains')} className="px-8 py-3 bg-indigo-600 text-white font-semibold rounded-lg hover:bg-indigo-700 text-lg">התחלת התכנון ובחירת זירות פעולה ותוצרים</button>
-                                </div>
-                            </div>
-                        </div>
-                    );
-            }
-        };
-
-        // --- START OF THE FIX ---
-        // This is the corrected logic.
-        // It checks the current view. If it's the 'summary' view, it renders it directly.
-        // The summary view already has its own full-page layout and print-specific styles.
-        if (view === 'summary') {
-          return renderView();
+            state.summaryData = { 
+                summary, 
+                partners: selectedGlobalPartnersList, 
+                trainingPractices: selectedTrainingList,
+                days: selectedDays,
+                trainingAreas: selectedTrainingAreas.join('; ')
+            };
+            navigateTo('summary');
         }
 
-        // For all other views (the editing steps), it wraps them in the original layout
-        // which includes the 'no-print' class. This ensures the editing interface
-        // does not appear on the final printed document.
-        return (
-          <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 p-6 no-print">
-            <div ref={contentRef} className="max-w-6xl mx-auto">
-                {renderView()}
-            </div>
-          </div>
-        );
-        // --- END OF THE FIX ---
-      };
+        // Render functions
+        function renderInitialView() {
+            return `
+                <div class="bg-white rounded-xl shadow-lg p-8 mb-6">
+                    <div class="text-center mb-8">
+                        <h1 class="text-3xl font-bold text-indigo-800 mb-2">כלי לניהול שיח בין מדריכת הכלה</h1>
+                        <h2 class="text-3xl font-bold text-indigo-800">למנהל/מנהלת בית ספר לתכנון תוכנית הדרכה מותאמת בתחום ההכלה וההוגנות</h2>
+                    </div>
+                    
+                    <div class="space-y-6">
+                        <div>
+                            <h3 class="text-xl font-bold text-gray-800 mb-3 border-b pb-2">שלב 1: מידע כללי, נתונים ותובנות</h3>
+                            <div class="grid md:grid-cols-2 gap-4 mt-4">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">שם בית הספר:</label>
+                                    <input type="text" value="${state.schoolName}" onchange="state.schoolName = this.value" class="w-full p-2 border border-gray-300 rounded-lg"/>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">שם המנהל/המנהלת:</label>
+                                    <input type="text" value="${state.principalName}" onchange="state.principalName = this.value" class="w-full p-2 border border-gray-300 rounded-lg"/>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">שם מדריכת ההכלה:</label>
+                                    <input type="text" value="${state.mentorName}" onchange="state.mentorName = this.value" class="w-full p-2 border border-gray-300 rounded-lg"/>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">שם רכזת ההכלה:</label>
+                                    <input type="text" value="${state.coordinatorName}" onchange="state.coordinatorName = this.value" class="w-full p-2 border border-gray-300 rounded-lg"/>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">מספר שעות הדרכה חודשיות:</label>
+                                    <input type="text" value="${state.guidanceHours}" onchange="state.guidanceHours = this.value" class="w-full p-2 border border-gray-300 rounded-lg"/>
+                                </div>
+                            </div>
 
-      const container = document.getElementById('root');
-      const root = ReactDOM.createRoot(container);
-      root.render(<InclusionPlanningTool />);
+                            <div class="mt-4">
+                                <label class="block text-sm font-medium text-gray-700 mb-2">יום/ימי ההדרכה בשבוע:</label>
+                                <div class="flex flex-wrap gap-x-4 gap-y-2">
+                                    ${daysOfWeek.map(day => `
+                                        <label class="flex items-center gap-2 cursor-pointer">
+                                            <input type="checkbox" ${state.guidanceDays[day] ? 'checked' : ''} onchange="state.guidanceDays['${day}'] = this.checked; render()" class="rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"/>
+                                            <span class="text-gray-700">${day}</span>
+                                        </label>
+                                    `).join('')}
+                                </div>
+                            </div>
+
+                            <div class="mt-4">
+                                <label class="block text-sm font-medium text-gray-700 mb-2">תחומי הדרכה נוספים בבית הספר:</label>
+                                <div class="grid grid-cols-2 md:grid-cols-4 gap-x-4 gap-y-2">
+                                    ${trainingAreas.map(area => `
+                                        <div>
+                                            <label class="flex items-center gap-2 cursor-pointer">
+                                                <input type="checkbox" ${state.additionalTraining[area] ? 'checked' : ''} onchange="state.additionalTraining['${area}'] = this.checked; render()" class="rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"/>
+                                                <span class="text-gray-700">${area}</span>
+                                            </label>
+                                        </div>
+                                    `).join('')}
+                                </div>
+                                ${state.additionalTraining['אחר'] ? `
+                                    <div class="mt-2">
+                                        <input type="text" placeholder="פירוט תחום אחר" value="${state.customTraining}" onchange="state.customTraining = this.value" class="w-full p-2 text-sm border-gray-300 rounded-lg"/>
+                                    </div>
+                                ` : ''}
+                            </div>
+                        </div>
+
+                        <div>
+                            <h3 class="text-lg font-semibold text-gray-800 mb-2">נתונים בית-ספריים:</h3>
+                            <p class="text-sm text-gray-600 mb-2">(בחלק זה יש להציג תמונת מצב נוכחית של בית הספר, מומלץ להתבסס גם על דשבורד המנהל של כלי העוגן).</p>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">תיאור העשייה הנוכחית בתחום ההכלה וההוגנות בבית הספר:</label>
+                            <textarea onchange="state.schoolData = this.value" class="w-full p-2 border border-gray-300 rounded-lg" rows="4">${state.schoolData}</textarea>
+                        </div>
+
+                        <div>
+                            <h3 class="text-lg font-semibold text-gray-800 mb-2">תובנות מרכזיות וזיהוי אתגרים:</h3>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">מהם האתגרים המרכזיים ולאן שואפים להגיע?</label>
+                            <textarea onchange="state.challenges = this.value" class="w-full p-2 border border-gray-300 rounded-lg" rows="4">${state.challenges}</textarea>
+                        </div>
+                        
+                        <div class="text-center mt-6">
+                            <button onclick="navigateTo('domains')" class="px-8 py-3 bg-indigo-600 text-white font-semibold rounded-lg hover:bg-indigo-700 text-lg">התחלת התכנון ובחירת זירות פעולה ותוצרים</button>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderDomainsView() {
+            const currentDomain = domains[state.currentDomain];
+            return `
+                <div class="bg-white rounded-xl shadow-lg p-8 mb-6">
+                    <h2 class="text-2xl font-bold text-indigo-800 mb-2">שלב 2: בחירת זירות פעולה ותוצרים</h2>
+                    <p class="text-sm text-red-600 font-semibold mb-4">הערה חשובה! הבחירה צריכה להיות מותאמת לאינטנסיביות ההדרכה ולאתגרי בית-הספר.</p>
+                    <div class="flex flex-wrap gap-2">
+                        ${domains.map((domain, index) => `
+                            <button onclick="state.currentDomain = ${index}; render()" class="px-4 py-2 rounded-lg text-sm font-medium transition-colors ${state.currentDomain === index ? 'bg-indigo-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}">${domain.title}</button>
+                        `).join('')}
+                    </div>
+                    <div class="flex justify-between items-center mt-4">
+                        <div class="text-sm text-gray-600">זירה ${state.currentDomain + 1} מתוך ${domains.length}</div>
+                        <div class="text-sm text-indigo-600 font-medium">נבחרו ${getSelectedCount()} תוצרים</div>
+                    </div>
+                    <div class="w-full bg-gray-200 rounded-full h-2 mt-2">
+                        <div class="bg-indigo-600 h-2 rounded-full transition-all duration-300" style="width: ${((state.currentDomain + 1) / domains.length) * 100}%"></div>
+                    </div>
+                </div>
+                
+                <div class="bg-white rounded-xl shadow-lg p-8">
+                    <div class="mb-6">
+                        <h2 class="text-2xl font-bold text-indigo-800 mb-2">${currentDomain.title}</h2>
+                    </div>
+                    <div class="space-y-6">
+                        ${currentDomain.subtopics.map(subtopic => `
+                            <div class="border border-gray-200 rounded-lg p-6">
+                                <h3 class="text-xl font-semibold text-indigo-700 mb-4">${subtopic.title}</h3>
+                                <div class="space-y-4">
+                                    ${subtopic.expectedOutcomes.map((outcome, index) => {
+                                        const key = `${currentDomain.id}_${subtopic.id}_${index}`;
+                                        const isSelected = state.selectedItems[key];
+                                        const hasSelectablePractices = outcome.selectablePractices && outcome.selectablePractices.length > 0;
+                                        
+                                        return `
+                                            <div>
+                                                <div onclick="toggleSelection('${currentDomain.id}', '${subtopic.id}', ${index})" class="p-4 rounded-lg border-2 cursor-pointer transition-all ${isSelected ? 'border-indigo-500 bg-indigo-50' : 'border-gray-200 hover:border-indigo-300 hover:bg-gray-50'}">
+                                                    <div class="flex items-start gap-3">
+                                                        <div class="w-5 h-5 rounded-full border-2 mt-1 flex-shrink-0 flex items-center justify-center ${isSelected ? 'bg-indigo-600 border-indigo-600' : 'border-gray-400'}">
+                                                            ${isSelected ? '<div class="w-2 h-2 bg-white rounded-full"></div>' : ''}
+                                                        </div>
+                                                        <div class="flex-grow">
+                                                            <span class="${isSelected ? 'text-indigo-800 font-medium' : 'text-gray-700'}">${outcome.text}</span>
+                                                            ${hasSelectablePractices && !isSelected ? '<p class="mt-2 text-sm font-medium text-indigo-600">לחצו לבחירת פרקטיקות ודגשים ליישום:</p>' : ''}
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                ${isSelected && hasSelectablePractices ? `
+                                                    <div class="mr-8 mt-4 space-y-4 bg-gray-50 p-4 rounded-lg">
+                                                        <div>
+                                                            <h4 class="text-md font-semibold text-gray-800 mb-3">${outcome.practiceListTitle || 'בחירת פרקטיקות ודגשים ליישום:'}</h4>
+                                                            <div class="grid grid-cols-1 md:grid-cols-2 gap-x-4 gap-y-2">
+                                                                ${outcome.selectablePractices.map(practice => `
+                                                                    <div>
+                                                                        <label class="flex items-center gap-2 text-sm cursor-pointer">
+                                                                            <input type="checkbox" ${state.selectedPractices[key]?.[practice] ? 'checked' : ''} onchange="togglePractice('${key}', '${practice}')" class="rounded border-gray-300 text-green-600 focus:ring-green-500"/>
+                                                                            <span class="text-gray-700">${practice}</span>
+                                                                        </label>
+                                                                        ${practice === 'אחר' && state.selectedPractices[key]?.['אחר'] ? `
+                                                                            <input type="text" placeholder="פירוט" value="${state.customPractices[key] || ''}" onchange="state.customPractices['${key}'] = this.value" class="w-full mt-1 p-2 text-sm border-gray-300 rounded"/>
+                                                                        ` : ''}
+                                                                    </div>
+                                                                `).join('')}
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                ` : ''}
+                                            </div>
+                                        `;
+                                    }).join('')}
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+
+                    <div class="flex justify-between items-center mt-8">
+                        <button onclick="state.currentDomain = Math.max(0, state.currentDomain - 1); render()" ${state.currentDomain === 0 ? 'disabled' : ''} class="px-6 py-3 bg-gray-500 text-white rounded-lg hover:bg-gray-600 disabled:opacity-50">הזירה הקודמת</button>
+                        <button onclick="navigateTo('initial')" class="px-6 py-3 bg-gray-500 text-white rounded-lg hover:bg-gray-600">חזרה למידע הכללי</button>
+                        <button onclick="${state.currentDomain === domains.length - 1 ? 'navigateTo(\'additionalData\')' : 'state.currentDomain++; render()'}" class="px-6 py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700">
+                            ${state.currentDomain === domains.length - 1 ? 'המשך לנתונים נוספים' : 'הזירה הבאה'}
+                        </button>
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderAdditionalDataView() {
+            return `
+                <div class="bg-white rounded-xl shadow-lg p-8 mt-6">
+                    <h2 class="text-2xl font-bold text-gray-800 mb-4 border-b pb-2">שלב 3: נתונים נוספים לבניית תכנית העבודה</h2>
+                    <div class="space-y-6">
+                        <div>
+                            <label class="block text-lg font-bold text-gray-800 mb-3">מעני/ משאבי הכלה והוגנות נוספים <span class="text-sm font-normal">(הוראה מתקנת, גפ"ן, וכו'):</span></label>
+                            <textarea onchange="state.additionalResources = this.value" class="w-full p-2 border border-gray-300 rounded-lg" rows="3">${state.additionalResources}</textarea>
+                        </div>
+                        <div class="grid md:grid-cols-2 gap-8">
+                            <div class="p-4 bg-green-50 rounded-lg border border-green-200">
+                                <h3 class="text-lg font-bold text-green-800 mb-3">פרקטיקות הדרכה וליווי של מדריכת ההכלה:</h3>
+                                <div class="space-y-2">
+                                    ${teacherTrainingPractices.map(practice => `
+                                        <div>
+                                            <label class="flex items-center gap-2 text-sm cursor-pointer">
+                                                <input type="checkbox" ${state.selectedTrainingPractices[practice] ? 'checked' : ''} onchange="state.selectedTrainingPractices['${practice}'] = this.checked; render()" class="rounded border-gray-300 text-green-600 focus:ring-green-500"/>
+                                                <span class="text-gray-700">${practice}</span>
+                                            </label>
+                                            ${practice === 'אחר' && state.selectedTrainingPractices['אחר'] ? `
+                                                <input type="text" placeholder="פירוט" value="${state.customPractices['training_other'] || ''}" onchange="state.customPractices['training_other'] = this.value" class="w-full mt-1 p-2 text-sm border-gray-300 rounded"/>
+                                            ` : ''}
+                                        </div>
+                                    `).join('')}
+                                </div>
+                            </div>
+                            <div class="p-4 bg-blue-50 rounded-lg border border-blue-200">
+                                <h3 class="text-lg font-bold text-blue-800 mb-3">שותפים לקידום תחום ההכלה וההוגנות:</h3>
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-2 mb-3">
+                                    ${partnersList.map(partner => `
+                                        <label class="flex items-center gap-2 text-sm cursor-pointer">
+                                            <input type="checkbox" ${state.globalPartners[partner] ? 'checked' : ''} onchange="state.globalPartners['${partner}'] = this.checked; render()" class="rounded border-gray-300 text-blue-600 focus:ring-blue-500"/>
+                                            <span class="text-gray-700">${partner}</span>
+                                        </label>
+                                    `).join('')}
+                                </div>
+                                <div class="flex gap-2">
+                                    <input type="text" id="customPartnerInput" placeholder="הוסף שותף/פה (אחר)" class="flex-1 p-2 text-sm border border-gray-300 rounded focus:ring-1 focus:ring-blue-500"/>
+                                    <button onclick="const input = document.getElementById('customPartnerInput'); if(input.value.trim()) { state.globalPartners[input.value] = true; input.value = ''; render(); }" class="px-3 py-2 bg-blue-600 text-white rounded text-sm hover:bg-blue-700 transition-colors">➕</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="flex justify-between items-center mt-8">
+                        <button onclick="navigateTo('domains')" class="px-6 py-3 bg-gray-500 text-white rounded-lg hover:bg-gray-600">חזרה לבחירת זירות פעולה</button>
+                        <button onclick="createSummary()" class="px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700">🎯 סיום ויצירת סיכום שיח</button>
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderSummaryView() {
+            if (!state.summaryData) return '<div>טוען סיכום...</div>';
+            const { summary, partners, trainingPractices, days, trainingAreas } = state.summaryData;
+            
+            return `
+                <div class="min-h-screen bg-gray-50 p-6 print-container">
+                    <div class="max-w-5xl mx-auto">
+                        <div class="bg-white rounded-xl shadow-lg p-8 print-content">
+                            <div class="text-center mb-8">
+                                <h1 class="text-3xl font-bold text-indigo-800 mb-2">כלי לניהול שיח בין מדריכת הכלה</h1>
+                                <h2 class="text-3xl font-bold text-indigo-800">למנהל/מנהלת בית ספר לתכנון תוכנית הדרכה מותאמת בתחום ההכלה וההוגנות</h2>
+                            </div>
+
+                            <div class="mb-8 p-4 bg-gray-50 rounded-lg border border-gray-200 text-right space-y-3 page-break-inside-avoid">
+                                <h3 class="text-xl font-bold text-gray-800">מידע כללי:</h3>
+                                <p><span class="font-semibold">שם בית הספר:</span> ${state.schoolName || "____________________"}</p>
+                                <p><span class="font-semibold">שם המנהל/המנהלת:</span> ${state.principalName || "____________________"}</p>
+                                <p><span class="font-semibold">שם מדריכת ההכלה:</span> ${state.mentorName || "____________________"}</p>
+                                <p><span class="font-semibold">שם רכזת ההכלה:</span> ${state.coordinatorName || "____________________"}</p>
+                                <p><span class="font-semibold">מספר שעות הדרכה חודשיות:</span> ${state.guidanceHours || "____________________"}</p>
+                                <p><span class="font-semibold">יום/ימי ההדרכה בשבוע:</span> ${days || "לא נבחרו ימים"}</p>
+                                <p><span class="font-semibold">תחומי הדרכה נוספים בבית הספר:</span> ${trainingAreas || "לא נבחרו תחומים"}</p>
+                            </div>
+
+                            <div class="mb-8 p-4 bg-gray-50 rounded-lg border border-gray-200 text-right space-y-3 page-break-inside-avoid">
+                                <h3 class="text-xl font-bold text-gray-800">נתונים בית-ספריים:</h3>
+                                <p class="text-sm text-gray-600">(בחלק זה יש להציג תמונת מצב נוכחית של בית הספר, מומלץ להתבסס גם על דשבורד המנהל של כלי העוגן).</p>
+                                <p class="font-semibold">תיאור העשייה הנוכחית בתחום ההכלה וההוגנות בבית הספר:</p>
+                                <p class="whitespace-pre-wrap mt-1 text-gray-700 min-h-[50px]">${state.schoolData || ""}</p>
+                            </div>
+
+                            <div class="mb-8 p-4 bg-gray-50 rounded-lg border border-gray-200 text-right space-y-3 page-break-inside-avoid">
+                                <h3 class="text-xl font-bold text-gray-800">תובנות מרכזיות וזיהוי אתגרים:</h3>
+                                <p class="font-semibold">מהם האתגרים המרכזיים ולאן שואפים להגיע?</p>
+                                <p class="whitespace-pre-wrap mt-1 text-gray-700 min-h-[50px]">${state.challenges || ""}</p>
+                            </div>
+
+                            ${Object.keys(summary).length === 0 ? `
+                                <div class="text-center py-8">
+                                    <p class="text-gray-600">לא נבחרו זירות פעולה, תוצרים או פרקטיקות.</p>
+                                </div>
+                            ` : Object.entries(summary).map(([domainTitle, subtopics]) => `
+                                <div class="mb-8 page-break-inside-avoid">
+                                    <h2 class="text-2xl font-bold text-indigo-700 mb-4 border-b-2 border-indigo-200 pb-2">${domainTitle}</h2>
+                                    ${Object.entries(subtopics).map(([subtopicTitle, outcomes]) => `
+                                        <div class="mb-6 mr-4 page-break-inside-avoid">
+                                            <h3 class="text-xl font-semibold text-indigo-600 mb-3">${subtopicTitle}</h3>
+                                            <ul class="list-disc pr-5 space-y-4">
+                                                ${outcomes.map(item => `
+                                                    <li class="mb-4 p-3 bg-gray-50 rounded-lg">
+                                                        <p class="font-medium text-gray-800">${item.outcome.replace(":", "")}</p>
+                                                        ${item.practices.length > 0 ? `
+                                                            <div class="mt-2">
+                                                                <p class="text-sm font-medium text-green-700">פרקטיקות ודגשים שנבחרו: </p>
+                                                                <p class="text-sm text-gray-700">${item.practices.join('; ')}</p>
+                                                            </div>
+                                                        ` : ''}
+                                                    </li>
+                                                `).join('')}
+                                            </ul>
+                                        </div>
+                                    `).join('')}
+                                </div>
+                            `).join('')}
+                            
+                            <div class="mt-8 p-4 bg-green-50 rounded-lg page-break-inside-avoid">
+                                <h2 class="text-lg font-bold text-green-800 mb-3">פרקטיקות הדרכה וליווי של מדריכת ההכלה:</h2>
+                                <p class="text-green-700">${trainingPractices.join('; ')}</p>
+                            </div>
+
+                            <div class="mt-4 p-4 bg-blue-50 rounded-lg page-break-inside-avoid">
+                                <h2 class="text-lg font-bold text-blue-800 mb-3">שותפים לקידום תחום ההכלה וההוגנות בבית הספר:</h2>
+                                <p class="text-blue-700">${partners.join(', ')}</p>
+                            </div>
+
+                            <div class="mt-4 p-4 bg-gray-50 rounded-lg page-break-inside-avoid">
+                                <h3 class="text-lg font-bold text-gray-800 mb-3">מעני/ משאבי הכלה והוגנות נוספים:</h3>
+                                <p class="whitespace-pre-wrap mt-1 text-gray-700 min-h-[30px]">${state.additionalResources || ""}</p>
+                            </div>
+
+                            <div class="flex gap-4 mt-8 no-print">
+                                <button onclick="navigateTo('additionalData')" class="px-6 py-3 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition-colors">חזרה לעריכה</button>
+                                <button onclick="window.print()" class="px-6 py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors">🖨️ הדפסה/שמירה</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function render() {
+            const app = document.getElementById('app');
+            let content = '';
+            
+            if (state.view === 'summary') {
+                content = renderSummaryView();
+            } else {
+                content = `
+                    <div class="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 p-6 no-print">
+                        <div class="max-w-6xl mx-auto">
+                            ${state.view === 'initial' ? renderInitialView() : ''}
+                            ${state.view === 'domains' ? renderDomainsView() : ''}
+                            ${state.view === 'additionalData' ? renderAdditionalDataView() : ''}
+                        </div>
+                    </div>
+                `;
+            }
+            
+            app.innerHTML = content;
+        }
+
+        // Initialize
+        render();
     </script>
 
 </body>
