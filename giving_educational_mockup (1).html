@@ -1,0 +1,772 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>מהי נתינה אמיתית? - קיו היועץ</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(90deg, #4f46e5, #7c3aed);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 2rem;
+            margin-bottom: 10px;
+        }
+        
+        .ai-avatar {
+            width: 80px;
+            height: 80px;
+            background: #fbbf24;
+            border-radius: 50%;
+            margin: 0 auto 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            border: 4px solid white;
+        }
+        
+        .progress-bar {
+            display: flex;
+            justify-content: space-between;
+            padding: 20px 30px;
+            background: #f8fafc;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        
+        .step {
+            display: flex;
+            align-items: center;
+            flex: 1;
+            position: relative;
+        }
+        
+        .step-number {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: #cbd5e1;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            margin-left: 10px;
+        }
+        
+        .step.active .step-number {
+            background: #4f46e5;
+        }
+        
+        .step.completed .step-number {
+            background: #10b981;
+        }
+        
+        .step-line {
+            flex: 1;
+            height: 2px;
+            background: #cbd5e1;
+            margin: 0 10px;
+        }
+        
+        .step.completed .step-line {
+            background: #10b981;
+        }
+        
+        .content {
+            padding: 30px;
+        }
+        
+        .stage {
+            display: none;
+        }
+        
+        .stage.active {
+            display: block;
+        }
+        
+        .ai-message {
+            background: #f1f5f9;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-right: 4px solid #4f46e5;
+        }
+        
+        .user-input {
+            margin-bottom: 20px;
+        }
+        
+        .user-input label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #334155;
+        }
+        
+        .user-input textarea, .user-input input {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            font-size: 16px;
+            resize: vertical;
+            min-height: 80px;
+        }
+        
+        .user-input textarea:focus, .user-input input:focus {
+            outline: none;
+            border-color: #4f46e5;
+        }
+        
+        .multiple-choice {
+            margin-bottom: 20px;
+        }
+        
+        .choice-option {
+            display: flex;
+            align-items: center;
+            padding: 15px;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .choice-option:hover {
+            border-color: #4f46e5;
+            background: #f8fafc;
+        }
+        
+        .choice-option.selected {
+            border-color: #4f46e5;
+            background: #ede9fe;
+        }
+        
+        .choice-option.correct {
+            border-color: #10b981;
+            background: #dcfce7;
+        }
+        
+        .choice-option.incorrect {
+            border-color: #ef4444;
+            background: #fef2f2;
+        }
+        
+        .choice-option input {
+            margin-left: 10px;
+        }
+        
+        .buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 30px;
+        }
+        
+        .btn {
+            padding: 15px 30px;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary {
+            background: #4f46e5;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: #3730a3;
+            transform: translateY(-2px);
+        }
+        
+        .btn-secondary {
+            background: #64748b;
+            color: white;
+        }
+        
+        .btn-option {
+            background: #e2e8f0;
+            color: #334155;
+            margin: 5px;
+            padding: 10px 20px;
+            border-radius: 20px;
+        }
+        
+        .btn-option:hover {
+            background: #cbd5e1;
+        }
+        
+        .image-placeholder {
+            width: 100%;
+            height: 200px;
+            background: #f1f5f9;
+            border: 2px dashed #cbd5e1;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 20px 0;
+            color: #64748b;
+            text-align: center;
+            font-size: 1.1rem;
+        }
+        
+        .success-badge {
+            background: linear-gradient(45deg, #10b981, #34d399);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 20px;
+            display: inline-block;
+            margin: 20px 0;
+            font-weight: bold;
+            box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
+        }
+        
+        .feedback {
+            background: #dcfce7;
+            border: 1px solid #bbf7d0;
+            border-radius: 10px;
+            padding: 15px;
+            margin: 20px 0;
+            color: #065f46;
+        }
+        
+        .highlight {
+            background: #fef3c7;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-weight: bold;
+        }
+        
+        .warning {
+            background: #fef2f2;
+            border: 1px solid #fecaca;
+            border-radius: 10px;
+            padding: 15px;
+            margin: 20px 0;
+            color: #991b1b;
+        }
+        
+        .video-placeholder {
+            background: #1f2937;
+            height: 200px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            margin: 20px 0;
+            font-size: 1.2rem;
+        }
+        
+        .summary-box {
+            background: #ede9fe;
+            border: 1px solid #c4b5fd;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        
+        .sub-step {
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        
+        .sub-step:last-child {
+            border-bottom: none;
+        }
+        
+        .expected-answer {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 10px;
+            margin: 10px 0;
+            font-style: italic;
+            color: #64748b;
+            font-size: 0.9rem;
+        }
+        
+        .choice-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <div class="ai-avatar">🤖</div>
+            <h1>מהי נתינה אמיתית?</h1>
+            <p>קיו היועץ - בינה מלאכותית חינוכית</p>
+        </div>
+        
+        <!-- Progress Bar -->
+        <div class="progress-bar">
+            <div class="step active" id="step1">
+                <div class="step-number">1</div>
+                <span>פתיחה</span>
+                <div class="step-line"></div>
+            </div>
+            <div class="step" id="step2">
+                <div class="step-number">2</div>
+                <span>הכוונה</span>
+                <div class="step-line"></div>
+            </div>
+            <div class="step" id="step3">
+                <div class="step-number">3</div>
+                <span>פרומפט</span>
+                <div class="step-line"></div>
+            </div>
+            <div class="step" id="step4">
+                <div class="step-number">4</div>
+                <span>רפלקציה</span>
+            </div>
+        </div>
+        
+        <!-- Content -->
+        <div class="content">
+            <!-- שלב 1 - פתיחה -->
+            <div class="stage active" id="stage1">
+                <div class="ai-message">
+                    <h3>🎉 הכל התחיל כשגילינו שליעקב השומר יש יום הולדת היום</h3>
+                    <p>והוא נאלץ לעבוד במקום לחגוג עם המשפחה שלו. תמר הרגישה שחייבים לעשות משהו כדי לשמח אותו.</p>
+                </div>
+                
+                <div class="image-placeholder">
+                    📱 פוסט עם הכיתוב: "איך אנחנו יכולים לשמח את יעקב?"
+                </div>
+                
+                <div class="ai-message">
+                    <p>אתם החלטתם להיעזר בי, קיו היועץ, כדי לחשוב על רעיונות.</p>
+                    <div class="highlight">
+                        אשמח לעזור. אני מזכיר לכם שאני לא באמת מרגיש כמו בני אדם. אני לומד דברים מדוגמאות, טקסטים ורעיונות שאני מוצא באינטרנט. לפעמים זה מצליח מיד, ולפעמים תצטרכו לעזור לי להבין טוב יותר מה אתם מבקשים.
+                    </div>
+                </div>
+                
+                <div class="buttons">
+                    <button class="btn btn-primary" onclick="nextStage()">אוקיי</button>
+                </div>
+            </div>
+            
+            <!-- שלב 2 - הכוונה ראשונית -->
+            <div class="stage" id="stage2">
+                <div class="sub-step">
+                    <div class="ai-message">
+                        <h3>🤔 לפני שאעזור לכם לחשוב איך ניתן לשמח את השומר יעקב</h3>
+                        <p>רציתי לשאול: מה זו בעצם נתינה אמיתית? האם חייבים לקנות משהו, או שיש דרכים אחרות לתת?</p>
+                    </div>
+                    
+                    <div class="user-input">
+                        <label>מה אתם חושבים?</label>
+                        <textarea placeholder="מה זו נתינה אמיתית לדעתכם?"></textarea>
+                        <div class="expected-answer">תשובה צפויה: "נתינה אמיתית זה לתת משהו למישהו כדי לשמח אותו, לא כי חייבים"</div>
+                    </div>
+                    
+                    <div class="feedback">
+                        <strong>משוב קיו:</strong> תשובה יפה. נתינה יכולה להיות מתנה, אבל גם מילה טובה, מחווה או עזרה.
+                    </div>
+                </div>
+
+                <div class="sub-step">
+                    <div class="ai-message">
+                        <p>מה לדעתכם חשוב יותר – מה נותנים, או איך מרגיש מי שמקבל?</p>
+                    </div>
+                    
+                    <div class="user-input">
+                        <textarea placeholder="מה חשוב יותר לדעתכם?"></textarea>
+                        <div class="expected-answer">תשובה צפויה: "איך הוא מרגיש. כי אפשר לתת מתנה יקרה אבל בלי מחשבה, וזה פחות שווה"</div>
+                    </div>
+                    
+                    <div class="feedback">
+                        <strong>משוב קיו:</strong> נקודה מצוינת. אז שנינו מסכימים שנתינה אמיתית קשורה להבנה של האדם האחר ולרצון לשמח אותו באמת. היא דורשת מחשבה אישית ורגש.
+                    </div>
+                </div>
+
+                <div class="sub-step">
+                    <div class="ai-message">
+                        <p>וזו בדיוק הסיבה שהעזרה שלכם כל כך חשובה כאן. כדי שהמתנה ליעקב תהיה 'נתינה אמיתית', היא צריכה לבוא מתוך היכרות אישית איתו – משהו שלי, בתור בינה מלאכותית, אין.</p>
+                    </div>
+                </div>
+
+                <div class="sub-step">
+                    <div class="ai-message">
+                        <h3>⚡ בואו נדייק את זה</h3>
+                        <p>מהם ההבדלים המהותיים ביני, בינה מלאכותית, לבין בן אדם שמכיר את יעקב השומר? בחרו את כל התשובות הנכונות:</p>
+                    </div>
+                    
+                    <div class="multiple-choice">
+                        <div class="choice-option" onclick="toggleChoice(this, true)">
+                            <input type="checkbox">
+                            <span>אני לא באמת מכיר את יעקב, אני רק מנסה לנחש</span>
+                        </div>
+                        <div class="choice-option" onclick="toggleChoice(this, true)">
+                            <input type="checkbox">
+                            <span>בן אדם יכול לברר מה יעקב אוהב</span>
+                        </div>
+                        <div class="choice-option" onclick="toggleChoice(this, true)">
+                            <input type="checkbox">
+                            <span>בן אדם יכול להכיר את יעקב אישית בעולם האמיתי</span>
+                        </div>
+                        <div class="choice-option" onclick="toggleChoice(this, true)">
+                            <input type="checkbox">
+                            <span>אני קורא רק טקסטים ותמונות, אבל לא חווה רגשות בעצמו</span>
+                        </div>
+                        <div class="choice-option" onclick="toggleChoice(this, false)">
+                            <input type="checkbox">
+                            <span>אני מבין כמו בן אדם כל דבר ששואלים אותי</span>
+                        </div>
+                    </div>
+                    
+                    <div class="feedback">
+                        <strong>משוב קיו:</strong> בדיוק! אלה ההבדלים החשובים. מכיוון שאין לי יכולת להכיר אנשים אישית או להרגיש רגשות, אני לא יכול להבין לבד מה ישמח את יעקב באופן אישי. לכן, המחשבה והרגש שלכם הם המרכיב הסודי שיהפוך את העזרה שלנו לנתינה אמיתית.
+                    </div>
+                    
+                    <div class="success-badge">🏆 מבינים את ההבדלים!</div>
+                </div>
+
+                <div class="sub-step">
+                    <div class="ai-message">
+                        <p>לפני שאני מציע רעיונות מהמאגר שלי, מה הרעיון הראשוני שלכם?</p>
+                    </div>
+                    
+                    <div class="user-input">
+                        <textarea placeholder="מה הרעיון הראשון שעולה לכם?"></textarea>
+                        <div class="expected-answer">תשובה צפויה: "אולי נקנה לו עוגה ונביא לו לביתן השומר"</div>
+                    </div>
+                    
+                    <div class="feedback">
+                        <strong>משוב קיו:</strong> רעיון יפה! בנוסף לזה, הנה עוד כמה כיוונים שאפשר לחשוב עליהם:
+                    </div>
+                    
+                    <div class="choice-buttons">
+                        <button class="btn btn-option">ברכה על בריסטול</button>
+                        <button class="btn btn-option">משהו מתוק</button>
+                        <button class="btn btn-option">לשיר לו שיר יום הולדת</button>
+                    </div>
+                </div>
+
+                <div class="sub-step">
+                    <div class="ai-message">
+                        <p>אלו רעיונות נהדרים ובהחלט משמחים! אבל זוכרים שדיברנו על 'נתינה אמיתית'? היא קשורה להבנה של האדם האחר. כרגע, הרעיונות שלנו כלליים ויכולים להתאים לכל אחד. כדי להפוך את המתנה לאישית ומדויקת עבור יעקב, אנחנו צריכים עוד פרטים עליו. זה ההבדל בין מתנה נחמדה למתנה מרגשת.</p>
+                    </div>
+                </div>
+
+                <div class="sub-step">
+                    <div class="ai-message">
+                        <p>בואו ננסה לאסוף עוד פרטים. צפו בתמונה ונסו לזהות משהו שיעזור לנו.</p>
+                    </div>
+                    
+                    <div class="image-placeholder">
+                        📸 יעקב השומר ליד הביתן, נראה עייף ומיוזע
+                    </div>
+                    
+                    <div class="user-input">
+                        <textarea placeholder="מה אתם רואים בתמונה שיכול לעזור לנו?"></textarea>
+                        <div class="expected-answer">תשובה צפויה: "אני רואה שנורא חם לו בתוך הביתן הקטן"</div>
+                    </div>
+                    
+                    <div class="feedback">
+                        <strong>משוב קיו:</strong> הבחנות מעולות! עכשיו יש לנו יותר פרטי מידע חשובים.
+                    </div>
+                </div>
+
+                <div class="sub-step">
+                    <div class="ai-message">
+                        <p>חשבו על השומר או השומרת בבית הספר שלכם. האם יש משהו שאתם יודעים עליהם שיכול לעזור לנו לחשוב על רעיון?</p>
+                    </div>
+                    
+                    <div class="user-input">
+                        <textarea placeholder="מה אתם יודעים על השומר/ת בבית הספר שלכם?"></textarea>
+                        <div class="expected-answer">תשובה צפויה: "השומר שלנו תמיד קורא עיתון בהפסקות ואוהב שמביאים לו קפה מהחדר מורים"</div>
+                    </div>
+                </div>
+                
+                <div class="buttons">
+                    <button class="btn btn-secondary" onclick="prevStage()">חזרה</button>
+                    <button class="btn btn-primary" onclick="nextStage()">המשך</button>
+                </div>
+            </div>
+            
+            <!-- שלב 3 - חקירה ופרומפט -->
+            <div class="stage" id="stage3">
+                <div class="sub-step">
+                    <div class="warning">
+                        <p>תודה על המידע שאספנו. ניסיתי לחבר את כל הנקודות: יעקב עצוב שהוא לא עם הנכד שלו ביום הולדתו. לכן, אני מציע שתארגנו לו מתנה מושלמת: <strong>שובר טיסה ליורודיסני - פארק שעשועים מדהים בצרפת</strong> - עבורו ועבור הנכד שלו! זו תהיה חוויה משמחת ובלתי נשכחת לשניהם!</p>
+                    </div>
+                </div>
+
+                <div class="sub-step">
+                    <div class="ai-message">
+                        <h3>🤨 האם יש בעיה עם הרעיון שלי?</h3>
+                        <p>סמנו את כל התשובות הנכונות:</p>
+                    </div>
+                    
+                    <div class="multiple-choice">
+                        <div class="choice-option" onclick="toggleChoice(this, true)">
+                            <input type="checkbox">
+                            <span>הרעיון לא מציאותי - המתנה יקרה מדי</span>
+                        </div>
+                        <div class="choice-option" onclick="toggleChoice(this, true)">
+                            <input type="checkbox">
+                            <span>זו לא מתנה אישית שתרגש את יעקב</span>
+                        </div>
+                        <div class="choice-option" onclick="toggleChoice(this, false)">
+                            <input type="checkbox">
+                            <span>לא, זה רעיון מעולה!</span>
+                        </div>
+                    </div>
+                    
+                    <div class="feedback">
+                        <strong>משוב קיו:</strong> צודקים לגמרי! אתם הפעלתם פה שיקול דעת חשוב מאוד, שנקרא 'נתינה מושכלת'.
+                    </div>
+                    
+                    <div class="summary-box">
+                        <h3>💡 מהי נתינה מושכלת?</h3>
+                        <p>נתינה מושכלת אומרת שאנחנו חושבים על שני דברים חשובים לפני שנותנים:</p>
+                        <p><strong>1. על הנותן (עלינו):</strong> מה אנחנו באמת יכולים לתת? מה המגבלות שלנו? (למשל, ילדים בכיתה לא יכולים לקנות כרטיסי טיסה)</p>
+                        <p><strong>2. על המקבל (יעקב):</strong> מה באמת ישמח אותו? מה הצרכים שלו כרגע? (למשל, הוא צריך משהו שיפיג את החום והבדידות, לאו דווקא חופשה יקרה)</p>
+                    </div>
+                    
+                    <div class="success-badge">🧠 חושבים ביקורתית!</div>
+                </div>
+
+                <div class="sub-step">
+                    <div class="ai-message">
+                        <h3>📝 מהו פרומפט?</h3>
+                        <p>בדיוק בגלל זה, כדי שאוכל לעזור לכם לתת 'נתינה מושכלת', אתם צריכים לתת לי הנחיה מדויקת. קוראים לזה <span class="highlight">'פרומפט'</span>.</p>
+                        <p><strong>הנחיה טובה כוללת:</strong><br>
+                        1. הקשר ברור<br>
+                        2. משימה<br>
+                        3. מגבלות (כמו 'בלי כסף')</p>
+                    </div>
+                </div>
+
+                <div class="sub-step">
+                    <div class="ai-message">
+                        <h3>✍️ עכשיו תורכם!</h3>
+                        <p>כתבו לי פרומפט ברור שמסביר את המצב ומבקש ממני רעיונות שמתאימים ל'נתינה מושכלת' מילדים.</p>
+                    </div>
+                    
+                    <div class="user-input">
+                        <textarea placeholder="כתבו פרומפט מדויק..."></textarea>
+                        <div class="expected-answer">תשובה צפויה: "יעקב השומר עובד ביום ההולדת שלו. אנחנו ילדים בכיתה ד' ורוצים רעיונות למתנה מרגשת שלא עולה כסף, ושמתחשבת בזה שהוא בודד וחם לו"</div>
+                    </div>
+                    
+                    <div class="feedback">
+                        <strong>משוב קיו:</strong> פרומפט מצוין! הוא מכיל את כל המרכיבים של נתינה מושכלת.
+                    </div>
+                    
+                    <div class="success-badge">🎯 אלופי פרומפטים!</div>
+                </div>
+
+                <div class="sub-step">
+                    <div class="ai-message">
+                        <p>בהתבסס על הפרומפט שלכם, הנה רעיון: להכין לו סרטון מכל ילדי הכיתה שמאחלים לו יום הולדת שמח, ואולי אפילו תבקשו מהנכד שלו לשלוח קטע וידאו קצר.</p>
+                        <p>אולי נחשוב איך לגרום ליעקב להרגיש שמעריכים אותו וגם דואגים לו? הציעו רעיון אפשרי</p>
+                    </div>
+                    
+                    <div class="user-input">
+                        <textarea placeholder="הציעו רעיון..."></textarea>
+                        <div class="expected-answer">תשובה צפויה: "אפשר להכין לו 'צנצנת הפתעות' שכל ילד יכתוב על פתק זיכרון טוב מיעקב, וגם לקנות לו ביחד מאוורר קטן ואישי לביתן"</div>
+                    </div>
+                    
+                    <div class="feedback">
+                        <strong>משוב קיו:</strong> רעיון נהדר! ההצעה שלכם מצוינת כי היא משלבת משהו אישי ומרגש עם משהו מעשי שמראה שאכפת לכם. אפשר להוסיף מכתב תודה אישי מכל הכיתה.
+                    </div>
+                </div>
+
+                <div class="sub-step">
+                    <div class="ai-message">
+                        <h3>🎉 סיכום ביניים</h3>
+                        <p>יופי, בואו נסכם מה עשינו כאן: שמנו לב שההצעה הראשונית שלי לא הייתה טובה, הבנו שצריך לתת לי הנחיה מדויקת (פרומפט), ובעזרת ההנחיות שלכם הצלחנו להגיע מרעיון כללי לרעיון אישי ומרגש. זו בדיוק הדרך הנכונה לעבוד יחד!</p>
+                    </div>
+                </div>
+                
+                <div class="buttons">
+                    <button class="btn btn-secondary" onclick="prevStage()">חזרה</button>
+                    <button class="btn btn-primary" onclick="nextStage()">המשך</button>
+                </div>
+            </div>
+            
+            <!-- שלב 4 - אתגר מוסרי -->
+            <div class="stage" id="stage4">
+                <div class="sub-step">
+                    <div class="ai-message">
+                        <h3>⚖️ אתגר מוסרי</h3>
+                        <p>בסרטון, אחת החברות הציעה להכין ברכה רק בתנאי שיעקב 'יפתח להן את השער כשהן מאחרות'. היא שאלה: <em>'מה יוצא לי מזה?'</em></p>
+                        <p><strong>מה הייתם עונים לה?</strong></p>
+                    </div>
+                    
+                    <div class="user-input">
+                        <textarea placeholder="איך הייתם מסבירים לה מה זו נתינה אמיתית?"></textarea>
+                        <div class="expected-answer">תשובה צפויה: "שהיא מפספסת את כל המטרה. נתינה לא צריכה להיות בשביל לקבל משהו בחזרה, אלא פשוט כדי לעשות טוב למישהו אחר"</div>
+                    </div>
+                    
+                    <div class="feedback">
+                        <strong>זו נקודה חשובה למחשבה.</strong> תמר ענתה לה בסרטון: "כשנותנים משהו לאחרים לא צריך לעשות חשבון, כי זה אומר שאתה חושב על עצמך ולא על האחר. זה לא באמת נקרא לתת."
+                    </div>
+                </div>
+
+                <div class="sub-step">
+                    <div class="ai-message">
+                        <h3>🎯 יישום הנלמד - רפלקציה</h3>
+                        <p>עכשיו, אחרי שעברנו את כל הדרך הזו יחד, בואו נחשוב איך אפשר ליישם את מה שלמדנו. נניח שחבר שלכם, יואב, רוצה להתייעץ איתי כדי למצוא מתנת יום הולדת לסבתא שלו. מה הייתם מציעים לו לכתוב לי כדי לקבל את התשובות הטובות ביותר?</p>
+                    </div>
+                    
+                    <div class="user-input">
+                        <textarea placeholder="איזו עצה הייתם נותנים ליואב?"></textarea>
+                        <div class="expected-answer">תשובה צפויה: "שלא יכתוב רק 'רעיון למתנה לסבתא'. שיוסיף פרטים, למשל שסבתא שלו אוהבת מאוד לפתור תשבצים, שהיא אוהבת את הצבע סגול, ושהיא צריכה להישאר הרבה בבית"</div>
+                    </div>
+                    
+                    <div class="feedback">
+                        <strong>משוב קיו:</strong> עצה מצוינת! במילים אחרות, הייתם אומרים לו להשתמש בדיוק בכלים שלמדנו:
+                    </div>
+                </div>
+
+                <div class="sub-step">
+                    <div class="summary-box">
+                        <h3>🔧 סיכום הכלים שלמדנו:</h3>
+                        <p><strong>1. לספק הקשר אישי:</strong> לספר לי על התחביבים והדברים שסבתא שלו אוהבת. המידע הזה מגיע מההיכרות האישית שלו, שאין לי.</p>
+                        <p><strong>2. להגדיר את האילוצים (נתינה מושכלת):</strong> לציין את המצב שלה (נשארת בבית) ואת התקציב שלו.</p>
+                        <p><strong>3. לכתוב פרומפט מדויק:</strong> לבקש ממני 'רעיונות למתנה שאפשר להכין בבית לסבתא בת 80 שאוהבת תשבצים'.</p>
+                        <p><strong>בדיוק כך הופכים אותי מכלי כללי לכלי שעוזר לכם לתת מתנה אישית ומושכלת. כל הכבוד!</strong></p>
+                    </div>
+                </div>
+
+                <div class="sub-step">
+                    <div class="ai-message">
+                        <h3>🌍 שאלה אחרונה למחשבה</h3>
+                        <p>מה אתם חושבים שיכול לקרות אם כל אחד יעשה מעשה טוב קטן בלי לצפות לתמורה?</p>
+                    </div>
+                    
+                    <div class="user-input">
+                        <textarea placeholder="החזון שלכם לעולם טוב יותר..."></textarea>
+                        <div class="expected-answer">תשובה צפויה: "אז העולם יהיה מקום הרבה יותר שמח וטוב, ואנשים ירגישו יותר מחוברים אחד לשני"</div>
+                    </div>
+                </div>
+
+                <div class="sub-step">
+                    <div class="ai-message">
+                        <h3>🎉 סיכום סופי</h3>
+                        <p>תודה על המחשבה. זכרו, אני יכול לעזור ברעיונות, אבל אתם אלה שמפעילים את שיקול הדעת, הלב והמחשבה כדי להפוך רעיון לנתינה אמיתית ומושכלת. אלו הכלים הכי חשובים.</p>
+                        <p><strong>עכשיו חזרו לדיון בכיתה! 📚</strong></p>
+                    </div>
+                </div>
+                
+                <div class="buttons">
+                    <button class="btn btn-secondary" onclick="prevStage()">חזרה</button>
+                    <button class="btn btn-primary" onclick="alert('כל הכבוד! סיימתם את המשימה!')">סיום</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentStage = 1;
+        const totalStages = 4;
+
+        function nextStage() {
+            if (currentStage < totalStages) {
+                document.getElementById(`stage${currentStage}`).classList.remove('active');
+                document.getElementById(`step${currentStage}`).classList.add('completed');
+                document.getElementById(`step${currentStage}`).classList.remove('active');
+                
+                currentStage++;
+                document.getElementById(`stage${currentStage}`).classList.add('active');
+                document.getElementById(`step${currentStage}`).classList.add('active');
+                
+                window.scrollTo(0, 0);
+            }
+        }
+
+        function prevStage() {
+            if (currentStage > 1) {
+                document.getElementById(`stage${currentStage}`).classList.remove('active');
+                document.getElementById(`step${currentStage}`).classList.remove('active');
+                
+                currentStage--;
+                document.getElementById(`stage${currentStage}`).classList.add('active');
+                document.getElementById(`step${currentStage}`).classList.remove('completed');
+                document.getElementById(`step${currentStage}`).classList.add('active');
+                
+                window.scrollTo(0, 0);
+            }
+        }
+
+        function toggleChoice(element, isCorrect) {
+            const checkbox = element.querySelector('input[type="checkbox"]');
+            checkbox.checked = !checkbox.checked;
+            element.classList.toggle('selected');
+            
+            // Visual feedback for correct/incorrect answers
+            if (checkbox.checked) {
+                if (isCorrect) {
+                    element.classList.add('correct');
+                } else {
+                    element.classList.add('incorrect');
+                }
+            } else {
+                element.classList.remove('correct', 'incorrect');
+            }
+        }
+
+        // Enhanced interactions
+        document.addEventListener('DOMContentLoaded', function() {
+            const textareas = document.querySelectorAll('textarea');
+            textareas.forEach(textarea => {
+                textarea.addEventListener('focus', function() {
+                    this.style.transform = 'scale(1.02)';
+                    this.style.transition = 'transform 0.3s ease';
+                });
+                
+                textarea.addEventListener('blur', function() {
+                    this.style.transform = 'scale(1)';
+                });
+            });
+
+            // Add typing indicator simulation
+            const expectedAnswers = document.querySelectorAll('.expected-answer');
+            expectedAnswers.forEach(answer => {
+                answer.style.opacity = '0.7';
+                answer.style.fontSize = '0.85rem';
+            });
+        });
+    </script>
+</body>
+</html>
