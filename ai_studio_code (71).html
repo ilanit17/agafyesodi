@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>תוכנית עבודה אינטראקטיבית למדריכה</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Assistant:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Calm Harmony (Stone, Teal, Terracotta) -->
+    <!-- Application Structure Plan: The SPA uses a dashboard-style layout with a main navigation to switch between the five core 'arenas' from the report. This non-linear structure allows users to freely explore the interconnected themes. Each arena's content is organized into an interactive accordion, where each item represents a strategic goal. This prevents information overload and encourages focused exploration of the detailed work plan. A central radar chart provides an instant visual summary of the plan's focus areas, enhancing initial comprehension. This design was chosen to transform a dense, linear document into an intuitive, task-oriented tool for educational leaders. -->
+    <!-- Visualization & Content Choices: 1. Report Info: 5 Arenas & 21 Goals -> Goal: Show overall structure & focus -> Viz: Radar Chart -> Interaction: Hover tooltips -> Justification: Visually compares the 'weight' of each interconnected arena effectively -> Library: Chart.js. 2. Report Info: Strategic Goals within each arena -> Goal: Organize detailed text -> Presentation: Interactive Accordion -> Interaction: Click to expand/collapse -> Justification: Manages content density on a single page, allowing users to drill down into details without losing context -> Method: HTML/CSS/JS. 3. Report Info: Detailed tasks/metrics -> Goal: Inform clearly -> Presentation: Structured lists and text -> Interaction: None -> Justification: Clear, readable presentation for detailed information -> Method: HTML/Tailwind CSS. -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Assistant', sans-serif;
+        }
+        .accordion-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.5s ease-out;
+        }
+        /* הסרנו את chart-container מכיוון שתרשים הרדאר הוסר */
+    </style>
+</head>
+<body class="bg-stone-50 text-stone-800">
+
+    <div class="flex flex-col md:flex-row min-h-screen">
+        
+        <nav id="nav-menu" class="bg-teal-700 text-white w-full md:w-64 p-4 md:p-6 space-y-2 md:space-y-4 flex-shrink-0">
+            <h2 class="text-2xl font-bold mb-6 border-b border-teal-500 pb-2">ניווט מהיר</h2>
+            <a href="#dashboard" class="nav-link bg-teal-600 flex items-center p-3 rounded-lg hover:bg-teal-500 transition-colors">
+                <span class="text-2xl ml-3">🏠</span>
+                <span>הקדמה</span>
+            </a>
+            <a href="#arena1" class="nav-link flex items-center p-3 rounded-lg hover:bg-teal-500 transition-colors">
+                <span class="text-2xl ml-3">👩‍🏫</span>
+                <span>זירה 1: הוראה ולמידה</span>
+            </a>
+            <a href="#arena2" class="nav-link flex items-center p-3 rounded-lg hover:bg-teal-500 transition-colors">
+                <span class="text-2xl ml-3">🏛️</span>
+                <span>זירה 2: תרבות ומדיניות</span>
+            </a>
+            <a href="#arena3" class="nav-link flex items-center p-3 rounded-lg hover:bg-teal-500 transition-colors">
+                <span class="text-2xl ml-3">👥</span>
+                <span>זירה 3: מסוגלות הצוות</span>
+            </a>
+            <a href="#arena4" class="nav-link flex items-center p-3 rounded-lg hover:bg-teal-500 transition-colors">
+                <span class="text-2xl ml-3">❤️</span>
+                <span>זירה 4: יחסי קרבה</span>
+            </a>
+            <a href="#arena5" class="nav-link flex items-center p-3 rounded-lg hover:bg-teal-500 transition-colors">
+                <span class="text-2xl ml-3">🌳</span>
+                <span>זירה 5: סביבת למידה</span>
+            </a>
+        </nav>
+
+        <main class="flex-1 p-4 sm:p-6 md:p-10">
+            
+            <section id="dashboard" class="content-section">
+                <header class="mb-8">
+                    <h1 class="text-4xl md:text-5xl font-bold text-teal-800">תוכנית עבודה למדריכה</h1>
+                    <p class="text-lg text-stone-600 mt-2">יישום עקרונות הכלה והוגנות בראייה מערכתית</p>
+                </header>
+                <div class="bg-white p-6 rounded-xl shadow-md space-y-4">
+                    <h2 class="text-2xl font-semibold text-stone-700 mb-2 text-center">ברוכים הבאים לכלי תכנון העבודה האינטראקטיבי</h2>
+                    <p class="text-stone-600 leading-relaxed">כלי זה הופך את מסמך תוכנית העבודה לממשק דינמי וידידותי למשתמש. מטרתו היא לסייע לך לתכנן, לעקוב ולהבין לעומק את מפת הדרכים ליישום עקרונות הכלה והוגנות בבית הספר. במקום מסמך סטטי, עומד לרשותך כלי עבודה חי המאפשר ניווט קל וחקירה של כל יעד ומשימה.</p>
+                    <p class="text-stone-600 leading-relaxed"><span class="font-bold">מבנה הכלי:</span> התוכנית מחולקת לחמש "זירות" פעולה מרכזיות, המשקפות גישה מערכתית והוליסטית. כל זירה מהווה נדבך חיוני בבניית אקוסיסטם בית-ספרי מכיל, והן פועלות יחד כמערכת שלובה. ניתן לנווט בין הזירות השונות באמצעות התפריט בצד ימין.</p>
+                    <p class="text-stone-600 leading-relaxed"><span class="font-bold">אופן השימוש:</span> בכל זירה תמצאו את היעדים האסטרטגיים שלה, מאורגנים במבנה של אקורדיון. לחיצה על שם היעד תפתח אותו ותציג בפניכם פירוט של הפעילויות המרכזיות, המשימות הנדרשות מהמדריכה, ומדדי ההצלחה. מבנה זה מאפשר להתמקד בכל פעם ביעד אחר, מבלי לאבד את התמונה הכוללת. </p>
+                    <p class="text-teal-700 font-semibold text-center mt-4">אנו מזמינים אותך להתחיל את המסע על ידי בחירת אחת מהזירות בתפריט הניווט.</p>
+                </div>
+            </section>
+
+            <section id="arena1" class="content-section hidden">
+                <header class="mb-8">
+                    <h1 class="text-4xl font-bold text-teal-800">זירה 1: הוראה, למידה והערכה בכיתה ההטרוגנית</h1>
+                    <p class="text-lg text-stone-600 mt-2">זירה זו מהווה את ליבת העשייה הפדגוגית ומתמקדת בפרקטיקות המתרחשות בתוך הכיתה. המטרה היא להפוך כל שיעור לחוויה מכילה, מותאמת ומשמעותית עבור כלל הלומדים, תוך התבססות על עקרונות של עיצוב אוניברסלי, גמישות פדגוגית וטיפוח לומד עצמאי בעל תחושת מסוגלות ("אג'נסי").</p>
+                </header>
+                <div class="space-y-4 accordion-container">
+                </div>
+            </section>
+
+            <section id="arena2" class="content-section hidden">
+                <header class="mb-8">
+                    <h1 class="text-4xl font-bold text-teal-800">זירה 2: תרבות ומדיניות הכלה בית ספרית</h1>
+                    <p class="text-lg text-stone-600 mt-2">זירה זו עוסקת בתשתית הארגונית והערכית של בית הספר. היא קובעת את "מערכת ההפעלה" המאפשרת את יישום הפדגוגיה המכילה בכיתות. המטרה היא לבסס שפה, נהלים ותהליכי קבלת החלטות המקדמים הוגנות, שייכות וצמיחה עבור כלל קהילת בית הספר, תוך שימוש בנתונים לבניית מערכת תמיכה מרובדת ויעילה.</p>
+                </header>
+                <div class="space-y-4 accordion-container">
+                </div>
+            </section>
+
+            <section id="arena3" class="content-section hidden">
+                <header class="mb-8">
+                    <h1 class="text-4xl font-bold text-teal-800">זירה 3: מסוגלות הצוות החינוכי</h1>
+                    <p class="text-lg text-stone-600 mt-2">זירה זו מתמקדת בהון האנושי של בית הספר. ההנחה המרכזית היא שבית ספר מכיל נבנה על ידי צוות מקצועי, בעל תחושת מסוגלות גבוהה, הפועל בשיתוף פעולה ולומד באופן מתמיד. המטרה היא לטפח תרבות של למידת עמיתים, אחריות משותפת והתפתחות מקצועית מתמדת, המהווה תנאי הכרחי ליישום מוצלח של כל שאר הזירות.</p>
+                </header>
+                <div class="space-y-4 accordion-container">
+                </div>
+            </section>
+
+            <section id="arena4" class="content-section hidden">
+                <header class="mb-8">
+                    <h1 class="text-4xl font-bold text-teal-800">זירה 4: יחסי קרבה ואכפתיות</h1>
+                    <p class="text-lg text-stone-600 mt-2">זירה זו מדגישה כי למידה היא בראש ובראשונה תהליך אנושי ורגשי. המטרה היא ליצור אקלים של אמון, ביטחון, אכפתיות ושייכות, המהווה תנאי בסיסי המאפשר לתלמידים ולמורים כאחד לקחת סיכונים, להתנסות, לטעות ולצמוח. הדבר מושג דרך דיאלוג פדגוגי, היכרות מעמיקה עם הילד, שותפות עם הורים והפחתת פרקטיקות מדירות.</p>
+                </header>
+                <div class="space-y-4 accordion-container">
+                </div>
+            </section>
+            
+            <section id="arena5" class="content-section hidden">
+                <header class="mb-8">
+                    <h1 class="text-4xl font-bold text-teal-800">זירה 5: סביבת למידה מקדמת הכלה</h1>
+                    <p class="text-lg text-stone-600 mt-2">זירה זו עוסקת במרחב הפיזי, הקהילתי והדיגיטלי שבו מתרחשת הלמידה. התפיסה המרכזית היא שהסביבה אינה רקע ניטרלי, אלא "המורה השלישי" – גורם פעיל המשפיע על תהליכי למידה, ויסות רגשי ותחושת שייכות. המטרה היא לתכנן ולהשתמש במרחבי למידה מגוונים באופן המקדם גמישות, נגישות, ולמידה חווייתית ורלוונטית.</p>
+                </header>
+                <div class="space-y-4 accordion-container">
+                </div>
+            </section>
+
+        </main>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const data = {
+                arena1: [
+                    { title: "הבניית והטמעת מחוון לתכנון שיעור מבוסס UDL", activities: "1. התאמת תבנית תכנון שיעור לעקרונות UDL.<br>2. הכשרת מורים ליישום התבנית.<br>3. שיתוף צוותים רב-מקצועיים בתכנון.<br>4. ליווי תהליכי רפלקציה.", tasks: "- להוביל ישיבות צוות להתאמת התבנית.<br>- לעצב ולהעביר סדנאות על עקרונות UDL.<br>- להדגים תכנון שיעור וללוות מורים.<br>- לבנות מנגנון לתצפיות עמיתים ומשוב.", metrics: "- נוצר מחוון בית-ספרי בשימוש שוטף.<br>- מורים מפגינים מיומנות בתכנון שיעורים נגישים.<br>- מתקיימת עבודת צוות רב-מקצועית סביב תכנון." },
+                    { title: "ביסוס פדגוגיה מכוונת הסרת חסמים", activities: "1. שילוב כלים לזיהוי והסרת חסמים בתכנון.<br>2. ניתוח חסמים סביבתיים בצוותים.<br>3. הכשרת מורים לזיהוי חסמים בזמן אמת.<br>4. ליווי ומשוב על תהליכי הסרת חסמים.", tasks: "- להנחות בזיהוי סוגי חסמים (קוגניטיביים, רגשיים, סביבתיים).<br>- להציג ולהדגים מגוון מענים (הוראה מפורשת, פירוק משימות).<br>- לקיים תצפיות ממוקדות ולתת משוב.<br>- לרכז מאגר בית-ספרי של מענים אפקטיביים.", metrics: "- מורים מפגינים יכולת למפות חסמים ולבחור מענים.<br>- תכנון השיעור כולל התייחסות לחסמים.<br>- תלמידים מדווחים על תחושת מסוגלות גבוהה יותר." },
+                    { title: 'קידום למידה פעילה והפחתת "זמן מע"מ"', activities: "1. התאמת תכנון השיעור לשילוב למידה פעילה.<br>2. הקניית פרקטיקות הוראה מגוונות (חקר, שיתוף).<br>3. הובלת שיח על בניית שגרות המקדמות בחירה.<br>4. ליווי באמצעות תצפיות ומשוב.", tasks: "- להדגים אסטרטגיות למידה פעילה (למידה מבוססת פרויקטים).<br>- ללוות מורים בתכנון מחדש של שיעורים.<br>- לערוך תצפיות ולספק נתונים על יחס דיבור מורה-תלמיד.<br>- להנחות סדנאות על תפקיד המורה כמנחה.", metrics: "- ירידה משמעותית בזמן ההוראה הפרונטלית.<br>- תלמידים שותפים, חוקרים ומובילים את הלמידה.<br>- מתבססת שפה פדגוגית המקדמת למידה פעילה." },
+                    { title: "קידום גמישות פדגוגית (זמן, סביבה, תכנים, לומדים)", activities: "1. התאמת תכנון השיעור לגמישות בארבעת המארגנים.<br>2. הכשרת מורים בניהול דינמי.<br>3. שיתוף צוותים ברעיונות לניהול קבוצות.<br>4. ליווי ורפלקציה על יישום הגמישות.", tasks: "- להנחות סדנאות ייעודיות לכל אחד מארבעת המארגנים.<br>- לסייע בתכנון יחידות לימוד עם הרכבים משתנים.<br>- להוביל סיעור מוחות על ארגון המרחב הפיזי.<br>- לרכז ולהנגיש תכנים ברמות שונות.", metrics: "- מורים מובילים שיעורים גמישים המותאמים לשונות.<br>- שימוש יעיל בארבעת המארגנים ליצירת סביבה מכילה.<br>- תלמידים מדווחים על חווית למידה רלוונטית." },
+                    { title: "קידום הוראה מפורשת", activities: "1. התאמת תכנון השיעור לשלבי הוראה מפורשת.<br>2. הכשרת מורים בהובלת שיעור מובנה ומתן משוב.<br>3. יצירת תיאום פדגוגי בין תחומי הדעת.<br>4. ליווי ורפלקציה.", tasks: "- להציג את שלבי ההוראה המפורשת (הדגמה, תרגול מודרך, תרגול עצמאי).<br>- להדגים 'חשיבה בקול רם' ככלי מודלינג.<br>- לסייע בפירוק מיומנויות מורכבות.<br>- לפתח 'גליונות כלים שלובים' לשימוש עקבי.", metrics: "- מתבססת שפה הוראתית אחידה.<br>- מורים מובילים שיעורים באופן שיטתי ומובנה.<br>- תלמידים מתקשים מראים שיפור ברכישת מיומנויות." },
+                    { title: "קידום תפקודים ניהוליים וויסות עצמי (SRL)", activities: "1. שילוב רכיבים לפיתוח תפקודים ניהוליים בתכנון.<br>2. הקניית פרקטיקות לפירוק משימות וויסות רגשי.<br>3. בניית שגרות המקדמות תכנון ורפלקציה.<br>4. הכשרת מורים בשפה מטה-קוגניטיבית.", tasks: "- להכיר לצוות את התפקודים הניהוליים המרכזיים.<br>- לספק כלים מעשיים (צ'ק-ליסטים, לוחות תכנון).<br>- להדריך בשילוב שאלות מטה-קוגניטיביות.<br>- לסייע ביצירת 'פינות ויסות' בכיתות.", metrics: "- מתבססת שפה פדגוגית המקדמת תפקודים ניהוליים.<br>- מורים מתכננים פעילויות המקדמות עצמאות.<br>- תלמידים מפגינים שיפור ביכולתם לווסת את למידתם." },
+                    { title: "הבניית פרקטיקות של הערכה ומשוב מכווני שונות", activities: "1. גיבוש חזון בית-ספרי להערכה מותאמת.<br>2. פיתוח מיומנויות הצוות בהערכה חלופית.<br>3. בניית מאגר כלי הערכה ומשוב.<br>4. הפעלת מנגנון לבחינת יעילות.", tasks: "- להוביל סדנאות על הערכה לשם למידה (מעצבת) והערכה חלופית.<br>- לסייע בפיתוח מחוונים ברורים.<br>- להדריך במתן משוב בונה ומקדם.<br>- להקים צוות לניתוח נתוני הערכה.", metrics: "- מורים משתמשים במגוון כלי הערכה.<br>- המשוב הוא תהליכי, אישי ומקדם למידה.<br>- תלמידים מפתחים יכולת רפלקציה והערכה עצמית." },
+                    { title: "הבניית כלי לכתיבת תוכניות עבודה לתלמידים במיקוד", activities: "1. פיתוח פורמט אחיד וגמיש.<br>2. ליווי מורים בתהליך הכתיבה.<br>3. הגדרת נקודות עצירה להערכה מחודשת.<br>4. שילוב התוכניות בשגרות העבודה.", tasks: "- להוביל צוות לפיתוח תבנית לתוכנית עבודה אישית.<br>- להעביר סדנאות כתיבה מונחות.<br>- לקיים שיחות ייעוץ אישיות עם מורים.<br>- לסייע בהטמעת התוכניות בתכנון השיעור.", metrics: "- קיים כלי בית-ספרי מובנה לכתיבת תוכניות אישיות.<br>- מורים מפגינים יכולת לכתוב וליישם תוכניות.<br>- תלמידים במיקוד חווים תהליך אישי ומקדם." },
+                    { title: "שילוב כלים יישומיים לעבודה עם תלמידים מאתגרים", activities: "1. ביסוס שפה ועקרונות עבודה משותפים.<br>2. יצירת הזדמנויות לתפקידים חיוביים.<br>3. שילוב כלים לוויסות רגשי והתנהגותי.<br>4. הכשרת מורים ליצירת קשר מיטיב.", tasks: "- להנחות שיח על הבנת התנהגות כביטוי לצורך.<br>- לספק כלים מעשיים לוויסות (כרטיסי רגשות).<br>- לסייע בתכנון שיעורים המאפשרים תפקידים משמעותיים.<br>- להדריך בשימוש בשפה מקרבת.", metrics: "- מורים מפגינים מיומנות גבוהה ביישום כלים.<br>- תחושת המסוגלות של המורים עולה.<br>- נוצר מרחב בטוח, תומך ומקדם לכלל התלמידים." },
+                    { title: "קידום הנעה ללמידה (מוטיבציה)", activities: "1. שילוב עקרונות הנעה (בחירה, רלוונטיות) בתכנון.<br>2. הכשרת מורים ביצירת שיעור משמעותי.<br>3. פיתוח שיעורים מבוססי פרויקטים וחקר.<br>4. הבניית מנגנון רפלקציה על רמת ההנעה.", tasks: "- להציג את עקרונות המוטיבציה הפנימית.<br>- לסייע בתכנון משימות המאפשרות בחירה.<br>- להנחות פיתוח יחידות לימוד המחוברות לעולם התלמידים.<br>- להוביל תהליכי משוב מתלמידים.", metrics: "- מורים מתכננים שיעורים המעודדים הנעה פנימית.<br>- מעורבות התלמידים בשיעורים עולה.<br>- תלמידים מפתחים 'אג'נסי' וסקרנות." },
+                    { title: "קידום שיח פסיכופדגוגי", activities: "1. הטמעת התבוננות רגשית-חברתית בשיח.<br>2. שימוש בכלים מגוונים לקידום שיח.<br>3. למידה מתוך תהליך ההוראה.<br>4. חיזוק תחושת השייכות והערך.", tasks: "- להכשיר מורים 'לקרוא' התנהגות כביטוי לעולם פנימי.<br>- להכיר כלים לניהול שיח בקבוצות קטנות.<br>- להנחות דיונים לניתוח אירועים מהכיתה.<br>- לסייע בתכנון תגובות פדגוגיות מבוססות צורך.", metrics: "- מורים מפגינים מסוגלות לשלב שיח פסיכופדגוגי.<br>- מורים מזהים צרכים ומתכננים מענים מותאמים.<br>- תלמידים מרגישים מובנים, מוכרים ושייכים." }
+                ],
+                arena2: [
+                    { title: 'הטמעת השימוש בכלי מיפוי "העוגן"', activities: "1. הצגת הכלי ומטרותיו.<br>2. הכשרה וליווי במילוי וניתוח.<br>3. ניתוח נתונים ברמה מערכתית וצוותית.<br>4. שילוב התובנות בתוכנית העבודה.", tasks: "- להנחות סדנה על אופן השימוש בכלי.<br>- ללוות צוותי שכבה בניתוח הנתונים.<br>- להוביל דיונים המקשרים בין הנתונים לצרכים פדגוגיים.<br>- לסייע בתרגום המגמות ליעדים בפיתוח המקצועי.", metrics: "- כלי 'העוגן' משמש באופן שוטף לתכנון והערכה.<br>- תוכניות העבודה מבוססות על נתונים מהכלי.<br>- מתבססת תרבות של קבלת החלטות מבוססת מידע." },
+                    { title: "תכנון ובניית מפת מענים בית-ספרית מרובדת (MTSS)", activities: "1. הובלה ניהולית להטמעת המודל.<br>2. מיפוי צרכים ומשאבים.<br>3. בניית סרגל מאמצים תלת-רובדי.<br>4. הטמעה והכשרה של הצוותים.", tasks: "- להעביר השתלמות על הרציונל של MTSS (דגש על רובד 1).<br>- להנחות צוות רב-מקצועי במיפוי וסיווג המענים.<br>- לסייע למורים לחזק את פרקטיקות ההוראה ברובד 1.<br>- להדריך בקביעת קריטריונים ברורים להפניה.", metrics: "- קיימת מפת מענים ויזואלית ונגישה.<br>- בית הספר פועל מתוך תפיסה מערכתית ומדורגת.<br>- המשאבים מנוצלים באופן יעיל ומדויק יותר." },
+                    { title: "הגדרה מחודשת של חזון ותקנון בית הספר", activities: "1. יצירת הסכמה על הצורך בשינוי בשיח שיתופי.<br>2. בחינה ביקורתית של המסמכים הקיימים.<br>3. ניסוח מחודש בשפה חיובית ומכילה.<br>4. הטמעה והפצה.", tasks: "- להנחות סדנאות לזיהוי שפה או נהלים מדירים.<br>- להציג דוגמאות לחזון ותקנון מבתי ספר אחרים.<br>- להוביל קבוצות עבודה לניסוח מחודש.<br>- לסייע בתכנון מהלך להטמעת החזון החדש.", metrics: "- לבית הספר חזון ותקנון מעודכנים שנוסחו בשיתוף.<br>- המסגרת הערכית ברורה, מחייבת ותומכת.<br>- קהילת בית הספר חווה תחושת שייכות והשפעה." },
+                    { title: "עיצוב תעודת הערכה המשקפת הוגנות", activities: "1. קיום שיח צוותי רפלקטיבי על התעודה הקיימת.<br>2. שיתוף תלמידים והורים בתהליך.<br>3. גיבוש עקרונות הערכה חדשים.<br>4. עיצוב תבנית מותאמת והטמעתה.", tasks: "- להנחות ישיבת צוות לניתוח ביקורתי של התעודה.<br>- להציג דוגמאות לרכיבים הוגנים (הערכה מילולית, שיקוף חוזקות).<br>- להוביל צוות לעיצוב תבנית חדשה.<br>- להכשיר מורים בכתיבת הערכות בשפה מעצימה.", metrics: "- התעודה משקפת את ייחודיותו של כל תלמיד.<br>- תהליך ההערכה נתפס ככלי לצמיחה אישית.<br>- תלמידים והורים מדווחים על חוויית הערכה חיובית." }
+                ],
+                arena3: [
+                    { title: "קידום למידת עמיתים: המורים כמומחים", activities: "1. בניית מסגרת קבועה ללמידת עמיתים (PLCs).<br>2. הובלת קבוצות למידה ממוקדות.<br>3. הקמת בנק ידע מקצועי בית-ספרי.<br>4. פיתוח מנגנוני התייעצות ואימון.", tasks: "- להכשיר מובילי צוותים בהנחיית מפגשי PLC.<br>- להדגים תהליכי תצפית עמיתים ומתן משוב.<br>- לסייע בהקמת פלטפורמה לשיתוף חומרים.<br>- ללוות ולהנחות את מפגשי ה-PLC הראשונים.", metrics: "- קהילות למידה מקצועיות פועלות באופן סדיר.<br>- מתפתחת תרבות של אמון, שיתוף ופתיחות.<br>- מורים רואים בעמיתיהם מקור ידע ומתייעצים." },
+                    { title: 'טיפוח "חדר מורים לומד"', activities: "1. בחירת נושא מרכזי ללמידה משותפת.<br>2. קיום סדרת מפגשי למידה.<br>3. שימוש במקורות ידע מגוונים ודיון בדוגמאות.", tasks: "- להוביל תהליך שיתופי לבחירת נושא רלוונטי.<br>- לרכז חומרי למידה מגוונים (מאמרים, סרטונים).<br>- לעצב ולהנחות את מפגשי הלמידה באופן פעיל.<br>- לעודד מורים לשתף ביישומים מהכיתה.", metrics: "- נוצרת שפה מקצועית משותפת.<br>- עקרונות הלמידה מיושמים בעבודת ההוראה.<br>- תחושת השותפות המקצועית מתחזקת." },
+                    { title: "ליווי רכזת ההכלה ביישום תוכנית העבודה", activities: "1. קיום פגישות ליווי מקצועי שוטפות.<br>2. תמיכה ברכזת בהובלת תהליכים.<br>3. סיוע בתיאום, הטמעה ומעקב.<br>4. פיתוח משותף של כלים ותהליכים.", tasks: "- לשמש כחונכת ומנטורית לרכזת ההכלה.<br>- לתכנן במשותף ישיבות, סדנאות והשתלמויות.<br>- לסייע בפירוק תוכנית העבודה ליעדים ומשימות.<br>- לספק לרכזת כלים ומשאבים לניהול התהליך.", metrics: "- רכזת ההכלה פועלת מתוך מסוגלות גבוהה.<br>- תוכנית ההכלה מיושמת באופן אפקטיבי ושיטתי.<br>- עבודת הרכזת נראית, מוערכת ובעלת השפעה." }
+                ],
+                arena4: [
+                    { title: "הפחתת השימוש בפרקטיקות מדירות", activities: "1. מיפוי פרקטיקות מדירות קיימות.<br>2. קידום ייצוג תרבותי מגוון.<br>3. חיזוק הקשר עם הורים מגישה מכבדת.<br>4. הובלת שינוי בשגרות ובשיח.", tasks: "- להנחות סדנת מודעות להטיות לא מודעות.<br>- לסייע למורים לגוון את חומרי הלימוד.<br>- להדריך בניהול שיח מקרב עם הורים.<br>- להוביל בחינה מחדש של נהלים.", metrics: "- ניכרת הפחתה בשימוש בפרקטיקות מדירות.<br>- המרחב ותוכני הלימוד מבטאים גיוון תרבותי.<br>- הקשר עם המשפחות מתחזק ומבוסס על אמון.<br>- השפה הבית-ספרית הופכת רגישה ומכילה." },
+                    { title: 'שימוש ב"פרח ההוגנות" כמצפן', activities: "1. היכרות עם מודל 'פרח ההוגנות' ושבעת עקרונותיו.<br>2. שימוש בעקרונות לתכנון מרחבים ותהליכים.<br>3. קיום רפלקציה צוותית דרך 'משקפי ההוגנות'.<br>4. הטמעת שפת ההוגנות בעבודת הצוותים.", tasks: "- להציג את מודל 'פרח ההוגנות' כשפה מקצועית.<br>- להנחות צוותים להשתמש בפרח ככלי אבחוני.<br>- לשלב את עקרונות הפרח בתכנון יוזמות חדשות.<br>- להפוך את שפת הפרח לחלק אינטגרלי מהשיח.", metrics: "- עקרונות ההוגנות נוכחים ומובילים בתכנון ובשיח.<br>- הצוות משתמש ב'פרח ההוגנות' באופן שוטף.<br>- האקוסיסטם הבית-ספרי מבטא הוגנות באופן עקבי." }
+                ],
+                arena5: [
+                    { title: "תכנון, ארגון ויישום שימוש במרחבי למידה מגוונים", activities: "1. מיפוי מרחבי למידה קיימים ופוטנציאליים.<br>2. תכנון פדגוגי מותאם למרחב.<br>3. ארגון פיזי של המרחבים מתוך תפיסת הוגנות.<br>4. הטמעת השימוש במרחבים מגוונים בשגרה.", tasks: "- להוביל סיור 'מיפוי משאבים' לזיהוי מרחבים.<br>- להנחות סדנאות לתכנון שיעורים מבוססי מקום.<br>- לשתף ברעיונות לעיצוב מחדש של הכיתה.<br>- לסייע ביצירת שותפויות עם גורמים בקהילה.", metrics: "- השימוש במרחבי למידה מגוונים הופך לאינטגרלי.<br>- המרחב הפיזי מאורגן באופן גמיש, מזמין ומותאם.<br>- תלמידים חווים למידה פעילה, חווייתית ורלוונטית." }
+                ]
+            };
+
+            const createAccordionItem = (item) => {
+                return `
+                    <div class="accordion-item bg-white rounded-lg shadow-sm border border-stone-200">
+                        <button class="accordion-header w-full text-right p-4 flex justify-between items-center transition-colors hover:bg-stone-50">
+                            <span class="font-semibold text-lg text-teal-800">${item.title}</span>
+                            <span class="accordion-icon text-teal-600 font-bold text-2xl transition-transform transform">+</span>
+                        </button>
+                        <div class="accordion-content">
+                            <div class="p-6 border-t border-stone-200 grid grid-cols-1 md:grid-cols-3 gap-6 text-stone-700">
+                                <div>
+                                    <h4 class="font-bold text-orange-700 mb-2">פעילויות מרכזיות</h4>
+                                    <p class="text-sm leading-relaxed">${item.activities}</p>
+                                </div>
+                                <div>
+                                    <h4 class="font-bold text-orange-700 mb-2">משימות מפורטות למדריכה</h4>
+                                    <p class="text-sm leading-relaxed">${item.tasks}</p>
+                                </div>
+                                <div>
+                                    <h4 class="font-bold text-orange-700 mb-2">מדדי הצלחה ותוצרים</h4>
+                                    <p class="text-sm leading-relaxed">${item.metrics}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            };
+
+            for (const arenaKey in data) {
+                const container = document.querySelector(`#${arenaKey} .accordion-container`);
+                if (container) {
+                    data[arenaKey].forEach(item => {
+                        container.innerHTML += createAccordionItem(item);
+                    });
+                }
+            }
+
+            const navLinks = document.querySelectorAll('.nav-link');
+            const contentSections = document.querySelectorAll('.content-section');
+
+            navLinks.forEach(link => {
+                link.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const targetId = link.getAttribute('href').substring(1);
+
+                    contentSections.forEach(section => {
+                        section.classList.add('hidden');
+                    });
+                    document.getElementById(targetId).classList.remove('hidden');
+
+                    navLinks.forEach(nav => nav.classList.remove('bg-teal-600'));
+                    link.classList.add('bg-teal-600');
+                });
+            });
+
+            document.querySelectorAll('.accordion-header').forEach(header => {
+                header.addEventListener('click', () => {
+                    const content = header.nextElementSibling;
+                    const icon = header.querySelector('.accordion-icon');
+                    const item = header.parentElement;
+
+                    item.classList.toggle('bg-stone-50');
+
+                    if (content.style.maxHeight) {
+                        content.style.maxHeight = null;
+                        icon.textContent = '+';
+                        icon.classList.remove('rotate-45');
+                    } else {
+                        content.style.maxHeight = content.scrollHeight + "px";
+                        icon.textContent = '+';
+                        icon.classList.add('rotate-45');
+                    }
+                });
+            });
+
+            // קוד Chart.js הוסר מכאן מכיוון שתרשים הרדאר הוסר מתוכן ה-Dashboard.
+        });
+    </script>
+</body>
+</html>
