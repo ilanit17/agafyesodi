@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>פעילות מיון: רואים, שומעים ומרגישים בכיתה פעלנית</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Assistant:wght@400;600;700&display=swap');
+        body {
+            font-family: 'Assistant', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        .card {
+            touch-action: none;
+            cursor: grab;
+            user-select: none;
+            transition: all 0.2s ease-in-out;
+            border-right: 4px solid transparent;
+            background: white;
+        }
+        .card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+        }
+        .card:active {
+            cursor: grabbing;
+            transform: scale(1.05);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.15);
+            z-index: 1000;
+        }
+        .drop-zone {
+            transition: all 0.3s ease-in-out;
+            min-height: 250px;
+            background: white;
+        }
+        .drag-over {
+            transform: scale(1.02);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+        }
+        #see.drag-over { 
+            background: linear-gradient(to bottom, #e6f2ff, white);
+            border-color: #007bff; 
+        }
+        #hear.drag-over { 
+            background: linear-gradient(to bottom, #e9f7eb, white);
+            border-color: #28a745; 
+        }
+        #feel.drag-over { 
+            background: linear-gradient(to bottom, #fff8e1, white);
+            border-color: #ffc107; 
+        }
+        
+        .correct { 
+            border-right-color: #28a745 !important; 
+            background: linear-gradient(to right, #e9f7eb, white) !important;
+            animation: correctPulse 0.5s ease-in-out;
+        }
+        .incorrect { 
+            border-right-color: #dc3545 !important; 
+            background: linear-gradient(to right, #f8d7da, white) !important;
+            animation: incorrectShake 0.5s ease-in-out;
+        }
+        
+        @keyframes correctPulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+        
+        @keyframes incorrectShake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+        
+        .stats {
+            display: none;
+            animation: fadeIn 0.3s ease-in;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .category-counter {
+            font-size: 0.8rem;
+            opacity: 0.7;
+            margin-top: 0.5rem;
+        }
+    </style>
+</head>
+<body class="p-4 md:p-8">
+
+    <div class="max-w-7xl mx-auto">
+        <header class="text-center mb-8 bg-white rounded-xl shadow-lg p-6">
+            <h1 class="text-3xl md:text-4xl font-bold text-gray-800 mb-2">מיון סימני פעלנות בכיתה</h1>
+            <p class="text-lg text-gray-600">גררו כל היגד לקטגוריה המתאימה - מה רואים, שומעים או מרגישים בכיתה פעלנית?</p>
+            <div id="stats" class="stats mt-4 p-4 bg-purple-50 rounded-lg inline-block">
+                <span class="text-lg font-semibold">תוצאה: </span>
+                <span id="score" class="text-2xl font-bold text-green-600"></span>
+                <div id="feedback" class="text-sm mt-2"></div>
+            </div>
+        </header>
+
+        <main>
+            <!-- Unsorted Cards Bank -->
+            <div class="bg-white p-6 rounded-xl shadow-lg mb-8">
+                <h2 class="text-2xl font-bold text-gray-700 mb-4 text-center">🎯 היגדים למיון</h2>
+                <div class="text-center text-sm text-gray-500 mb-4">
+                    <span id="remaining-cards">נותרו: 0 כרטיסים</span>
+                </div>
+                <div id="card-bank" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 max-h-96 overflow-y-auto p-2">
+                    <!-- Cards will be dynamically inserted here by JS -->
+                </div>
+            </div>
+
+            <!-- Drop Zones -->
+            <div class="grid lg:grid-cols-3 gap-6">
+                <div id="see" data-category="see" class="drop-zone p-6 rounded-xl shadow-lg border-t-4 border-blue-500">
+                    <h3 class="text-2xl font-bold text-center text-blue-600 mb-4">👁️ מה רואים</h3>
+                    <div class="category-counter text-center text-gray-500">0 פריטים</div>
+                    <div class="space-y-3 mt-4"></div>
+                </div>
+                <div id="hear" data-category="hear" class="drop-zone p-6 rounded-xl shadow-lg border-t-4 border-green-500">
+                    <h3 class="text-2xl font-bold text-center text-green-600 mb-4">👂 מה שומעים</h3>
+                    <div class="category-counter text-center text-gray-500">0 פריטים</div>
+                    <div class="space-y-3 mt-4"></div>
+                </div>
+                <div id="feel" data-category="feel" class="drop-zone p-6 rounded-xl shadow-lg border-t-4 border-yellow-500">
+                    <h3 class="text-2xl font-bold text-center text-yellow-600 mb-4">💚 מה מרגישים</h3>
+                    <div class="category-counter text-center text-gray-500">0 פריטים</div>
+                    <div class="space-y-3 mt-4"></div>
+                </div>
+            </div>
+            
+            <!-- Action Buttons -->
+            <div class="mt-8 flex justify-center gap-4">
+                <button id="check-btn" class="bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white font-bold py-3 px-8 rounded-lg shadow-lg transition-all transform hover:scale-105">
+                    ✔️ בדיקה
+                </button>
+                <button id="reset-btn" class="bg-gradient-to-r from-gray-500 to-gray-600 hover:from-gray-600 hover:to-gray-700 text-white font-bold py-3 px-8 rounded-lg shadow-lg transition-all transform hover:scale-105">
+                    🔄 איפוס
+                </button>
+                <button id="hint-btn" class="bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600 text-white font-bold py-3 px-8 rounded-lg shadow-lg transition-all transform hover:scale-105">
+                    💡 רמז
+                </button>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        const cardsData = [
+            // רואים - היגדים קונקרטיים מהגרסה המקורית
+            { id: 's1', category: 'see', text: 'נועה מכיתה ד׳ כותבת על הלוח "נושאים לחקר" ומזמינה חברים להוסיף' },
+            { id: 's2', category: 'see', text: 'שלושה תלמידים בונים משחק מתמטיקה משלהם עם קופסת נעליים' },
+            { id: 's3', category: 'see', text: 'על הקיר תלוי לוח "אנחנו בוחרים" עם הצבעות של התלמידים' },
+            { id: 's4', category: 'see', text: 'ילדה מסבירה לילד אחר איך לפתור תרגיל בדרך שלה' },
+            { id: 's5', category: 'see', text: 'תלמידים זזים בכיתה בין תחנות למידה שהם הכינו' },
+            { id: 's6', category: 'see', text: 'פינת "המומחים שלנו" - כל תלמיד רשם במה יכול לעזור' },
+            
+            // רואים - תוספות חדשות מהרשימה
+            { id: 's7', category: 'see', text: 'לוח בחירה עם אפשרויות שונות למשימות' },
+            { id: 's8', category: 'see', text: 'פינות עבודה שתלמידים יצרו ועיצבו' },
+            { id: 's9', category: 'see', text: 'תוצרים מגוונים של תלמידים על הקירות' },
+            { id: 's10', category: 'see', text: 'שלטים שתלמידים הכינו לכללי הכיתה' },
+            { id: 's11', category: 'see', text: 'תיבת הצעות פעילה על השולחן' },
+            { id: 's12', category: 'see', text: 'תלמידים עובדים בקבוצות שהם בחרו' },
+            { id: 's13', category: 'see', text: 'תלמידים מציגים רעיונות בביטחון מול הכיתה' },
+            { id: 's14', category: 'see', text: 'ילדים מתנדבים לתפקידים שונים' },
+            { id: 's15', category: 'see', text: 'המורה יושבת בגובה העיניים של התלמידים' },
+            { id: 's16', category: 'see', text: 'המורה רושמת רעיונות של תלמידים על הלוח' },
+            { id: 's17', category: 'see', text: 'המורה מצטרפת לקבוצה כמשתתפת' },
+            { id: 's18', category: 'see', text: 'ילדים מתכננים פרויקט על פוסטר גדול' },
+            { id: 's19', category: 'see', text: 'תלמידים בודקים עבודות של חברים' },
+            { id: 's20', category: 'see', text: 'תיעוד של תהליך למידה על הקיר' },
+
+            // שומעים - דיאלוגים מהגרסה המקורית
+            { id: 'h1', category: 'hear', text: '"המורה, יש לי רעיון! מה אם במקום דף עבודה נעשה חידון?"' },
+            { id: 'h2', category: 'hear', text: '"אני אחראי על הצבעים, את על הכתיבה, הוא יחפש מידע"' },
+            { id: 'h3', category: 'hear', text: 'המורה: "יש כאן בעיה מעניינת. מי רוצה להוביל?"' },
+            { id: 'h4', category: 'hear', text: '"רגע! יש לי דרך אחרת! תנו לי להראות על הלוח!"' },
+            { id: 'h5', category: 'hear', text: '"החלטנו שכל יום מישהו אחר אחראי על הספרייה"' },
+            { id: 'h6', category: 'hear', text: '"בואו נצביע - מי בעד לשנות את מקום השולחנות?"' },
+            
+            // שומעים - תוספות חדשות
+            { id: 'h7', category: 'hear', text: '"אני חושב ש..."' },
+            { id: 'h8', category: 'hear', text: '"אפשר לנסות אחרת?"' },
+            { id: 'h9', category: 'hear', text: '"בוא נעשה את זה ביחד"' },
+            { id: 'h10', category: 'hear', text: '"אני יכול להסביר את הדרך שלי"' },
+            { id: 'h11', category: 'hear', text: '"מה אם נשנה את הכללים?"' },
+            { id: 'h12', category: 'hear', text: '"אני לא מסכים כי..."' },
+            { id: 'h13', category: 'hear', text: '"למדתי משהו חדש היום!"' },
+            { id: 'h14', category: 'hear', text: 'המורה: "מה אתם חושבים על זה?"' },
+            { id: 'h15', category: 'hear', text: 'המורה: "איך תרצו לעשות את המשימה?"' },
+            { id: 'h16', category: 'hear', text: 'המורה: "ספרו לי עוד על הרעיון שלכם"' },
+            { id: 'h17', category: 'hear', text: 'המורה: "טעות מעניינת, בואו נבין אותה"' },
+            { id: 'h18', category: 'hear', text: 'דיונים ערים בקבוצות השונות' },
+            { id: 'h19', category: 'hear', text: 'צחוק משותף כשמישהו טועה' },
+            { id: 'h20', category: 'hear', text: 'מחיאות כפיים להצלחה של חבר' },
+
+            // מרגישים - תחושות מהגרסה המקורית
+            { id: 'f1', category: 'feel', text: 'התרגשות כשהרעיון שלי נבחר להיות הפרויקט הכיתתי' },
+            { id: 'f2', category: 'feel', text: 'הקלה שמותר לפתור את המשימה בדרך שמתאימה לי' },
+            { id: 'f3', category: 'feel', text: 'גאווה כשחבר מבקש שאלמד אותו את השיטה שלי' },
+            { id: 'f4', category: 'feel', text: 'ביטחון לומר "אני לא מבין" ולדעת שיעזרו לי' },
+            { id: 'f5', category: 'feel', text: 'שמחה שהמורה באמת הקשיבה וביצעה את ההצעה שלנו' },
+            { id: 'f6', category: 'feel', text: 'תחושת שייכות כשכולם תורמים רעיונות לפעילות' },
+            
+            // מרגישים - תוספות חדשות
+            { id: 'f7', category: 'feel', text: 'אני חשוב כאן ויש לי מקום' },
+            { id: 'f8', category: 'feel', text: 'הקול שלי נשמע ומקשיבים לי' },
+            { id: 'f9', category: 'feel', text: 'מותר לי לטעות וללמוד מזה' },
+            { id: 'f10', category: 'feel', text: 'אני יכול להשפיע על מה שקורה' },
+            { id: 'f11', category: 'feel', text: 'יש לי אחריות על הלמידה שלי' },
+            { id: 'f12', category: 'feel', text: 'סומכים עלי לקבל החלטות' },
+            { id: 'f13', category: 'feel', text: 'סקרנות לגלות דברים חדשים' },
+            { id: 'f14', category: 'feel', text: 'נוחות לשאול שאלות' },
+            { id: 'f15', category: 'feel', text: 'אנרגיה של יצירה והמצאה' },
+            { id: 'f16', category: 'feel', text: 'כיף לבחור איך ללמוד' },
+            { id: 'f17', category: 'feel', text: 'מתח חיובי כשיש אתגר חדש' },
+            { id: 'f18', category: 'feel', text: 'סיפוק מהצלחה משותפת של הקבוצה' },
+            { id: 'f19', category: 'feel', text: 'רצון לשתף את מה שלמדתי' },
+            { id: 'f20', category: 'feel', text: 'חופש לנסות דרכים שונות' }
+        ];
+
+        const cardBank = document.getElementById('card-bank');
+        const dropZones = document.querySelectorAll('.drop-zone');
+        const checkBtn = document.getElementById('check-btn');
+        const resetBtn = document.getElementById('reset-btn');
+        const hintBtn = document.getElementById('hint-btn');
+        const statsDiv = document.getElementById('stats');
+        const scoreSpan = document.getElementById('score');
+        const feedbackDiv = document.getElementById('feedback');
+        const remainingSpan = document.getElementById('remaining-cards');
+
+        function shuffle(array) {
+            const newArray = [...array];
+            for (let i = newArray.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [newArray[i], newArray[j]] = [newArray[j], newArray[i]];
+            }
+            return newArray;
+        }
+        
+        function updateCounters() {
+            // Update remaining cards counter
+            const remainingCards = cardBank.querySelectorAll('.card').length;
+            remainingSpan.textContent = `נותרו: ${remainingCards} כרטיסים`;
+            
+            // Update category counters
+            dropZones.forEach(zone => {
+                const count = zone.querySelectorAll('.card').length;
+                const counter = zone.querySelector('.category-counter');
+                counter.textContent = `${count} פריטים`;
+            });
+        }
+        
+        function initializeCards() {
+            // Clear everything
+            cardBank.innerHTML = '';
+            dropZones.forEach(zone => {
+                zone.querySelector('div:last-child').innerHTML = '';
+            });
+            
+            // Hide stats
+            statsDiv.style.display = 'none';
+            
+            // Add cards in random order
+            const shuffled = shuffle(cardsData);
+            shuffled.forEach(card => {
+                const cardElement = createCardElement(card);
+                cardBank.appendChild(cardElement);
+            });
+            
+            // Add drag listeners
+            addDragListeners();
+            
+            // Update counters
+            updateCounters();
+        }
+
+        function createCardElement(cardData) {
+            const cardElement = document.createElement('div');
+            cardElement.id = cardData.id;
+            cardElement.setAttribute('data-category', cardData.category);
+            cardElement.setAttribute('draggable', 'true');
+            cardElement.className = 'card p-3 rounded-lg shadow-md border border-gray-200 hover:shadow-lg';
+            cardElement.innerHTML = `<p class="text-gray-800 text-sm">${cardData.text}</p>`;
+            return cardElement;
+        }
+
+        function addDragListeners() {
+            const cards = document.querySelectorAll('.card');
+            cards.forEach(card => {
+                card.addEventListener('dragstart', handleDragStart);
+                card.addEventListener('dragend', handleDragEnd);
+                
+                // Touch support
+                card.addEventListener('touchstart', handleTouchStart, {passive: false});
+                card.addEventListener('touchmove', handleTouchMove, {passive: false});
+                card.addEventListener('touchend', handleTouchEnd);
+            });
+        }
+        
+        let draggedElement = null;
+        
+        function handleDragStart(e) {
+            draggedElement = e.target;
+            e.dataTransfer.effectAllowed = 'move';
+            e.dataTransfer.setData('text/html', e.target.innerHTML);
+            setTimeout(() => {
+                e.target.classList.add('opacity-50');
+            }, 0);
+        }
+
+        function handleDragEnd(e) {
+            e.target.classList.remove('opacity-50');
+            draggedElement = null;
+            updateCounters();
+        }
+
+        // Touch handlers for mobile
+        let touchItem = null;
+        let touchOffset = {x: 0, y: 0};
+        
+        function handleTouchStart(e) {
+            touchItem = e.target.closest('.card');
+            if (!touchItem) return;
+            
+            const touch = e.touches[0];
+            const rect = touchItem.getBoundingClientRect();
+            touchOffset = {
+                x: touch.clientX - rect.left,
+                y: touch.clientY - rect.top
+            };
+            
+            touchItem.style.position = 'fixed';
+            touchItem.style.zIndex = '1000';
+            touchItem.style.opacity = '0.8';
+            e.preventDefault();
+        }
+        
+        function handleTouchMove(e) {
+            if (!touchItem) return;
+            const touch = e.touches[0];
+            touchItem.style.left = (touch.clientX - touchOffset.x) + 'px';
+            touchItem.style.top = (touch.clientY - touchOffset.y) + 'px';
+            e.preventDefault();
+        }
+        
+        function handleTouchEnd(e) {
+            if (!touchItem) return;
+            
+            const changedTouch = e.changedTouches[0];
+            const elem = document.elementFromPoint(changedTouch.clientX, changedTouch.clientY);
+            const dropZone = elem?.closest('.drop-zone');
+            
+            if (dropZone) {
+                dropZone.querySelector('div:last-child').appendChild(touchItem);
+            }
+            
+            touchItem.style.position = '';
+            touchItem.style.zIndex = '';
+            touchItem.style.opacity = '';
+            touchItem.style.left = '';
+            touchItem.style.top = '';
+            touchItem = null;
+            
+            updateCounters();
+        }
+
+        // Drop zone handlers
+        dropZones.forEach(zone => {
+            zone.addEventListener('dragover', handleDragOver);
+            zone.addEventListener('drop', handleDrop);
+            zone.addEventListener('dragleave', handleDragLeave);
+        });
+
+        function handleDragOver(e) {
+            if (e.preventDefault) {
+                e.preventDefault();
+            }
+            e.dataTransfer.dropEffect = 'move';
+            this.classList.add('drag-over');
+            return false;
+        }
+
+        function handleDragLeave(e) {
+            this.classList.remove('drag-over');
+        }
+
+        function handleDrop(e) {
+            if (e.stopPropagation) {
+                e.stopPropagation();
+            }
+            e.preventDefault();
+            
+            this.classList.remove('drag-over');
+            
+            if (draggedElement && draggedElement !== this) {
+                this.querySelector('div:last-child').appendChild(draggedElement);
+                updateCounters();
+            }
+            
+            return false;
+        }
+        
+        // Check button functionality
+        checkBtn.addEventListener('click', () => {
+            let correct = 0;
+            let total = 0;
+            
+            // Remove old classes
+            const allCards = document.querySelectorAll('.card');
+            allCards.forEach(card => {
+                card.classList.remove('correct', 'incorrect');
+            });
+            
+            // Check each zone
+            dropZones.forEach(zone => {
+                const zoneCategory = zone.dataset.category;
+                const placedCards = zone.querySelectorAll('.card');
+                
+                placedCards.forEach(card => {
+                    total++;
+                    if (card.dataset.category === zoneCategory) {
+                        card.classList.add('correct');
+                        correct++;
+                    } else {
+                        card.classList.add('incorrect');
+                    }
+                });
+            });
+            
+            // Show score and feedback
+            if (total > 0) {
+                scoreSpan.textContent = `${correct} / ${total}`;
+                const percentage = Math.round((correct / total) * 100);
+                
+                let feedback = '';
+                if (percentage === 100) {
+                    feedback = '🌟 מצוין! זיהית נכון את כל הסימנים של כיתה פעלנית!';
+                } else if (percentage >= 80) {
+                    feedback = '👏 כל הכבוד! רוב התשובות נכונות';
+                } else if (percentage >= 60) {
+                    feedback = '💪 יופי! יש הבנה טובה, נסו שוב';
+                } else {
+                    feedback = '🎯 כדאי לחשוב שוב על החלוקה בין הקטגוריות';
+                }
+                
+                feedbackDiv.textContent = feedback;
+                statsDiv.style.display = 'inline-block';
+            }
+        });
+
+        // Reset button
+        resetBtn.addEventListener('click', () => {
+            const allCards = document.querySelectorAll('.card');
+            allCards.forEach(card => {
+                card.classList.remove('correct', 'incorrect');
+            });
+            initializeCards();
+        });
+        
+        // Hint button
+        hintBtn.addEventListener('click', () => {
+            const unplacedCards = cardBank.querySelectorAll('.card');
+            if (unplacedCards.length > 0) {
+                // Take random unplaced card
+                const randomCard = unplacedCards[Math.floor(Math.random() * unplacedCards.length)];
+                const correctCategory = randomCard.dataset.category;
+                
+                // Highlight the correct zone briefly
+                const correctZone = document.getElementById(correctCategory);
+                correctZone.style.background = correctCategory === 'see' ? '#e6f2ff' :
+                                               correctCategory === 'hear' ? '#e9f7eb' : '#fff8e1';
+                                               
+                randomCard.style.border = '2px solid orange';
+                
+                setTimeout(() => {
+                    correctZone.style.background = '';
+                    randomCard.style.border = '';
+                }, 2000);
+            } else {
+                alert('כל הכרטיסים כבר ממוינים! לחצו על "בדיקה" כדי לראות את התוצאות');
+            }
+        });
+
+        // Initial setup
+        initializeCards();
+    </script>
+</body>
+</html>
