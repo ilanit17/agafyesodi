@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>כרטיסיות ציטוטים לסדנה</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Assistant:wght@400;700&display=swap');
+
+body {
+    direction: rtl;
+    font-family: 'Assistant', sans-serif;
+    margin: 40px;
+    background-color: #f4f7f6; /* Light gray background to make cards pop */
+}
+
+.page {
+    width: 210mm;
+    min-height: 297mm;
+    padding: 20mm;
+    margin: 10mm auto;
+    background: transparent;
+    page-break-after: always;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+}
+
+.quote-card {
+    /* Colorful Gradient Border */
+    border: 10px solid transparent;
+    border-radius: 25px;
+    background: linear-gradient(white, white) padding-box,
+                linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #9b2e9d) border-box;
+
+    padding: 35px;
+    margin-bottom: 30px;
+    box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    page-break-inside: avoid; /* This prevents the card from splitting across pages */
+}
+
+.quote-content {
+    font-size: 28px; /* Significantly larger font */
+    font-weight: 700; /* Bold font */
+    line-height: 1.5;
+    color: #2c3e50; /* Dark, soft black for readability */
+    text-align: center;
+    margin-bottom: 25px;
+}
+
+.author {
+    font-size: 22px; /* Larger author font */
+    font-weight: bold;
+    color: #34495e;
+    text-align: left;
+    margin-top: auto; /* Pushes the author to the bottom of the card */
+}
+
+@media print {
+    body, .page {
+        margin: 0;
+        box-shadow: none;
+        background-color: white;
+    }
+    .page {
+        border: none;
+    }
+    /* Ensures print colors are rendered */
+    .quote-card {
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+    }
+}
+</style>
+</head>
+<body>
+
+<div class="page">
+    <div class="quote-card">
+        <div class="quote-content">"צוות חינוכי אפקטיבי הוא צוות שיודע לשתף פעולה, ללמוד ולהתפתח יחד. בית ספר שמטפח קהילה מקצועית לומדת של מורים יוצר תרבות של חדשנות, שיתוף ומצוינות שמשפיעה ישירות על הישגי התלמידים."</div>
+        <div class="author">- ד"ר שרי טימור</div>
+    </div>
+    <div class="quote-card">
+        <div class="quote-content">"החינוך הרלוונטי היום מכין את התלמידים להיות אזרחי הקהילה - בעלי מודעות חברתית, רגישות תרבותית ומחויבות לקידום צדק חברתי וסביבתי ברמה המקומית."</div>
+        <div class="author">- ד"ר אריה קיזל</div>
+    </div>
+    <div class="quote-card">
+        <div class="quote-content">"בתי ספר אפקטיביים הם אלה שיוצרים ברית משולשת בין תלמידים, משפחות וקהילה. כשהקהילה רואה בבית הספר משאב חיוני, ובית הספר רואה בקהילה שותף חינוכי, נוצרים תנאים אופטימליים ללמידה משמעותית."</div>
+        <div class="author">- ד"ר קארן מאפ</div>
+    </div>
+</div>
+
+<div class="page">
+    <div class="quote-card">
+        <div class="quote-content">"החינוך המסורתי נבנה על עיקרון של יציבות והמשכיות. העידן הנוכחי, לעומת זאת, מאופיין בשינוי מתמיד. עלינו לפתח פדגוגיה של אי-ודאות - חינוך שמכין את התלמידים להתמודד עם בעיות שאין להן תשובות מוכנות מראש."</div>
+        <div class="author">- פרופ' יואל וסטהיימר</div>
+    </div>
+    <div class="quote-card">
+        <div class="quote-content">"ה'ילידים הדיגיטליים' של ימינו מעבדים מידע באופן שונה מהותית מהדורות הקודמים. הם מצפים ללמידה אינטראקטיבית, רב-חושית ומיידית. תפקידנו כמחנכים השתנה מהעברת מידע לעיצוב חוויות למידה משמעותיות שיתחברו לעולמם."</div>
+        <div class="author">- מארק פרנסקי</div>
+    </div>
+    <div class="quote-card">
+        <div class="quote-content">"החינוך העכשווי מחייב התאמה מדויקת יותר לשלבי ההתפתחות הקוגניטיבית, הרגשית והחברתית של התלמיד. במקום להתייחס לגיל כרונולוגי בלבד, עלינו להבין את המורכבות ההתפתחותית של כל ילד ולהתאים את הפדגוגיה באופן אישי."</div>
+        <div class="author">- ד"ר יורם הרפז</div>
+    </div>
+</div>
+
+<div class="page">
+    <div class="quote-card">
+        <div class="quote-content">"החינוך העכשווי מחייב הבנה מעמיקה יותר של נקודות המפנה ההתפתחותיות. במקום לחלק את התלמידים לפי גילים, עלינו לאפשר התקדמות לפי רמות בשלות והתפתחות אישית, במיוחד בתחומים כמו אוריינות רגשית וחברתית."</div>
+        <div class="author">- שם הדובר/ה לא צוין</div>
+    </div>
+    <div class="quote-card">
+        <div class="quote-content">"האתגר החינוכי המשמעותי ביותר של זמננו הוא להכין את התלמידים לעבודות שעדיין לא קיימות, לפתור בעיות שטרם הוגדרו, ולהשתמש בטכנולוגיות שעדיין לא הומצאו."</div>
+        <div class="author">- פרופ' יזהר אופלטקה</div>
+    </div>
+    <div class="quote-card">
+        <div class="quote-content">"הילדים של היום נולדו לתוך עולם היפר-מקושר. האתגר החינוכי האמיתי אינו ללמד אותם להשתמש בטכנולוגיה, אלא לפתח אצלם את היכולת להבחין בין עיקר לטפל, לזהות מידע אמין ולהשתמש בטכנולוגיה באופן מושכל ואתי."</div>
+        <div class="author">- פרופ' גילה קורץ</div>
+    </div>
+</div>
+
+<div class="page">
+    <div class="quote-card">
+        <div class="quote-content">"הניסיון להאחיד את כל מערכת החינוך מתעלם מהעובדה שקצב ההתפתחות הקוגניטיבית והרגשית שונה מאוד מילד לילד. עלינו לעבור ממודל של 'אחידות' למודל של 'התאמה אישית' המכיר בשונות ההתפתחותית."</div>
+        <div class="author">- פרופ' דוד חן</div>
+    </div>
+    <div class="quote-card">
+        <div class="quote-content">"בית ספר מצליח חייב לערב את כל האנשים, כל הכוחות וכל היכולות שבתוכו."</div>
+        <div class="author">- אנדי הרגריבס</div>
+    </div>
+    <div class="quote-card">
+        <div class="quote-content">"למידה היא יצירה, לא צריכה. ידע אינו משהו שהלומד סופג, אלא משהו שהלומד יוצר בתוך הקשר חברתי."</div>
+        <div class="author">- ג'ורג' קורוס</div>
+    </div>
+</div>
+
+<div class="page">
+    <div class="quote-card">
+        <div class="quote-content">"למידה היא תהליך חברתי שמתרחש בתוך קהילה. היא אינה רק העברת מידע, אלא בניית משמעות משותפת."</div>
+        <div class="author">- לינדה דרלינג-המונד</div>
+    </div>
+    <div class="quote-card">
+        <div class="quote-content">"טכנולוגיה לעולם אינה תחליף למורה טוב, אלא כלי בידיו. השאלה המרכזית אינה איזו טכנולוגיה לאמץ, אלא איזו פדגוגיה מתאימה לעידן הדיגיטלי ולדור הנוכחי של התלמידים."</div>
+        <div class="author">- פרופ' סוגטה מיטרה</div>
+    </div>
+    <div class="quote-card">
+        <div class="quote-content">"דור האלפא הוא הדור המקושר, המגוון והמשכיל ביותר בהיסטוריה האנושית. ובכל זאת, הם מתמודדים עם אתגרים ייחודיים של בדידות, חרדה והצפה במידע. החינוך חייב לספק להם לא רק ידע, אלא כלים לניווט בעולם מורכב ורווי מידע."</div>
+        <div class="author">- ד"ר קלייר מדג'וויק</div>
+    </div>
+</div>
+
+<div class="page">
+    <div class="quote-card">
+        <div class="quote-content">"בעידן של בינה מלאכותית, הערך של למידה כרכישת מידע יורד, בעוד שהערך של פיתוח אישיות, אינטליגנציה רגשית ויכולת שיתוף פעולה עולה. החינוך צריך להתמקד בטיפוח האנושי שבנו."</div>
+        <div class="author">- יובל נוח הררי</div>
+    </div>
+    <div class="quote-card">
+        <div class="quote-content">"החוסן האישי הוא אולי המיומנות החשובה ביותר שאנחנו יכולים לטפח בתלמידים היום. זוהי היכולת להתמודד עם אתגרים, לקום אחרי כישלון, ולהמשיך ללמוד ולצמוח גם בתנאי אי-ודאות."</div>
+        <div class="author">- אנג'לה דאקוורת'</div>
+    </div>
+    <div class="quote-card">
+        <div class="quote-content">"לכל קהילה יש 'הון תרבותי' ייחודי שצריך להיות משולב בתוכניות הלימודים. החינוך המכיר בשונות התרבותית ומשלב אותה בתהליכי הלמידה מעצים את התלמידים ומחזק את הקשר בין בית הספר לקהילה."</div>
+        <div class="author">- פרופ' יוסי יונה</div>
+    </div>
+</div>
+
+<div class="page">
+    <div class="quote-card">
+        <div class="quote-content">"הנוירופלסטיות של המוח המתפתח מציבה בפנינו אפשרויות חדשות וגם אחריות עצומה. מערכות חינוך צריכות להתבסס על הבנה מעמיקה של התפתחות המוח בגילאים שונים ולספק סביבות למידה עשירות שתומכות בהתפתחות מיטבית בכל שלב."</div>
+        <div class="author">- ד"ר פמלה קנטור</div>
+    </div>
+    <div class="quote-card">
+        <div class="quote-content">"המורה במאה ה-21 צריך להיות בעצמו לומד נלהב, חוקר וסקרן. רק מורה שממשיך ללמוד ולהתפתח יכול להצית את אהבת הלמידה בתלמידיו ולהכין אותם לעולם של למידה מתמדת וחדשנות."</div>
+        <div class="author">- אנדי הרגריבס</div>
+    </div>
+    <div class="quote-card">
+        <div class="quote-content">"בעידן של בינה מלאכותית וכלים ממוחשבים, משתנה תפקיד המורה מ'מספק מידע' ל'מנחה חשיבה'. המורה האפקטיבי בימינו הוא זה שמלמד תלמידים איך לחשוב באופן עצמאי, איך להעריך מידע באופן ביקורתי ואיך לפתח תובנות מעמיקות."</div>
+        <div class="author">- סר קן רובינסון</div>
+    </div>
+</div>
+
+<div class="page">
+    <div class="quote-card">
+        <div class="quote-content">"המורה בימינו צריך להיות קודם כל אדם בעל רגישות תרבותית גבוהה, המסוגל לזהות את הצרכים המגוונים של תלמידיו ולספק להם מענה חינוכי מותאם. ללא יכולת זו, הידע המקצועי והפדגוגי אינו מספיק."</div>
+        <div class="author">- פרופ' גלוריה לדסון-בילינגס</div>
+    </div>
+     <div class="quote-card">
+        <div class="quote-content">"בית הספר של העתיד אינו יכול להיות מגדל שן. עליו להיות מוסד פורץ גבולות, שמחבר בין עולם בית הספר לעולם שבחוץ, שיוצר רשתות שיתוף פעולה עם הקהילה, עסקים ומוסדות תרבות."</div>
+        <div class="author">- פרופ' אנדי הרגריבס</div>
+    </div>
+</div>
+
+</body>
+</html>
