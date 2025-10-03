@@ -1,0 +1,569 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>סדנה: מדוע יש צורך בעדכון תפיסת החינוך היסודי?</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .presentation-container {
+            width: 100%;
+            max-width: 1200px;
+            aspect-ratio: 16/9;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+            position: relative;
+        }
+
+        .slide {
+            display: none;
+            width: 100%;
+            height: 100%;
+            padding: 60px;
+            animation: fadeIn 0.5s ease-in;
+        }
+
+        .slide.active {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        h1 {
+            font-size: 3.5em;
+            color: #2d3748;
+            margin-bottom: 30px;
+            text-align: center;
+            line-height: 1.2;
+        }
+
+        h2 {
+            font-size: 2.5em;
+            color: #4a5568;
+            margin-bottom: 40px;
+            text-align: center;
+        }
+
+        h3 {
+            font-size: 2em;
+            color: #667eea;
+            margin-bottom: 20px;
+        }
+
+        p, li {
+            font-size: 1.4em;
+            color: #4a5568;
+            line-height: 1.8;
+            margin-bottom: 15px;
+        }
+
+        .subtitle {
+            font-size: 1.8em;
+            color: #718096;
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .dimension-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-top: 40px;
+        }
+
+        .dimension-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 30px;
+            border-radius: 15px;
+            color: white;
+            text-align: center;
+            transition: transform 0.3s;
+        }
+
+        .dimension-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .dimension-card h3 {
+            color: white;
+            font-size: 1.5em;
+            margin-bottom: 10px;
+        }
+
+        .dimension-card p {
+            color: rgba(255,255,255,0.9);
+            font-size: 1.1em;
+        }
+
+        .icon {
+            font-size: 3em;
+            margin-bottom: 15px;
+        }
+
+        .highlight-box {
+            background: #edf2f7;
+            padding: 30px;
+            border-radius: 15px;
+            border-right: 5px solid #667eea;
+            margin: 30px 0;
+        }
+
+        .question-box {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            padding: 40px;
+            border-radius: 20px;
+            color: white;
+            text-align: center;
+            margin: 40px 0;
+        }
+
+        .question-box h2 {
+            color: white;
+        }
+
+        ul {
+            margin-right: 40px;
+        }
+
+        .task-box {
+            background: #fff5f5;
+            border: 3px solid #fc8181;
+            border-radius: 15px;
+            padding: 30px;
+            margin: 30px 0;
+        }
+
+        .task-box h3 {
+            color: #c53030;
+            margin-bottom: 20px;
+        }
+
+        .checkmark {
+            color: #48bb78;
+            font-size: 1.2em;
+            margin-left: 10px;
+        }
+
+        .navigation {
+            position: absolute;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 20px;
+            z-index: 100;
+        }
+
+        .nav-button {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 1.1em;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+
+        .nav-button:hover {
+            background: #764ba2;
+            transform: scale(1.05);
+        }
+
+        .nav-button:disabled {
+            background: #cbd5e0;
+            cursor: not-allowed;
+            transform: scale(1);
+        }
+
+        .slide-counter {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: rgba(102, 126, 234, 0.1);
+            padding: 10px 20px;
+            border-radius: 20px;
+            color: #667eea;
+            font-weight: bold;
+        }
+
+        .video-container {
+            text-align: center;
+            margin: 40px 0;
+        }
+
+        .video-placeholder {
+            background: #2d3748;
+            padding: 60px;
+            border-radius: 15px;
+            color: white;
+            font-size: 1.5em;
+        }
+
+        .conclusion-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+            margin-top: 30px;
+        }
+
+        .conclusion-item {
+            background: #f7fafc;
+            padding: 20px;
+            border-radius: 10px;
+            border-right: 4px solid #667eea;
+        }
+
+        @media (max-width: 768px) {
+            .slide {
+                padding: 30px;
+            }
+            
+            h1 {
+                font-size: 2em;
+            }
+            
+            h2 {
+                font-size: 1.5em;
+            }
+            
+            .dimension-grid,
+            .conclusion-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media print {
+            body {
+                background: white;
+            }
+            
+            .presentation-container {
+                box-shadow: none;
+            }
+            
+            .navigation {
+                display: none;
+            }
+            
+            .slide {
+                display: flex !important;
+                page-break-after: always;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="presentation-container">
+        <div class="slide-counter" id="slideCounter">1 / 13</div>
+
+        <!-- Slide 1: Title -->
+        <div class="slide active">
+            <h1>מדוע יש צורך בעדכון<br>תפיסת החינוך היסודי?</h1>
+            <p class="subtitle">סדנה לאנשי חינוך</p>
+            <div style="text-align: center; margin-top: 60px; font-size: 4em;">
+                🎓📚✨
+            </div>
+        </div>
+
+        <!-- Slide 2: Question -->
+        <div class="slide">
+            <div class="question-box">
+                <h1>שאלת המוקד</h1>
+                <h2 style="margin-top: 40px;">מדוע יש צורך בעדכון תפיסת החינוך היסודי?</h2>
+            </div>
+            <p style="text-align: center; font-size: 1.6em; margin-top: 40px;">
+                בחרו היגד אחד מתוך האוסף<br>
+                ושתפו בקבוצות מדוע הוא מדבר אליכם
+            </p>
+        </div>
+
+        <!-- Slide 3: 4 Dimensions Introduction -->
+        <div class="slide">
+            <h1>ארבעה מימדים מרכזיים<br>המשפיעים על החינוך היסודי</h1>
+            <div class="dimension-grid">
+                <div class="dimension-card">
+                    <div class="icon">🌍</div>
+                    <h3>מציאות משתנה<br>ומגמות עתיד</h3>
+                </div>
+                <div class="dimension-card">
+                    <div class="icon">👶</div>
+                    <h3>מאפייני גיל<br>היסודי (5-12)</h3>
+                </div>
+                <div class="dimension-card">
+                    <div class="icon">📱</div>
+                    <h3>דור האלפא<br>והביתא</h3>
+                </div>
+                <div class="dimension-card">
+                    <div class="icon">🤝</div>
+                    <h3>קהילות משפיעות<br>ואקוסיסטם</h3>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 4: Dimension 1 -->
+        <div class="slide">
+            <h2><span class="icon">🌍</span> מימד 1: מציאות משתנה ומגמות עתיד</h2>
+            <div class="highlight-box">
+                <h3>עולם VUCA</h3>
+                <ul>
+                    <li><strong>V</strong>olatile - תנודתי ובלתי צפוי</li>
+                    <li><strong>U</strong>ncertain - לא ודאי</li>
+                    <li><strong>C</strong>omplex - מורכב</li>
+                    <li><strong>A</strong>mbiguous - עמום</li>
+                </ul>
+            </div>
+            <div class="highlight-box">
+                <h3>מגמות STEEEP</h3>
+                <p><strong>S</strong>ocial | <strong>T</strong>echnological | <strong>E</strong>conomic | <strong>E</strong>nvironmental | <strong>E</strong>ducational | <strong>P</strong>olitical</p>
+                <p style="margin-top: 15px;">חברתיות • טכנולוגיות • כלכליות • סביבתיות • חינוכיות • פוליטיות</p>
+            </div>
+        </div>
+
+        <!-- Slide 5: Dimension 2 -->
+        <div class="slide">
+            <h2><span class="icon">👶</span> מימד 2: מאפייני גיל היסודי (5-12)</h2>
+            <div class="highlight-box">
+                <h3>שלבי התפתחות קריטיים</h3>
+                <ul>
+                    <li><strong>גילאי 5-6:</strong> ביסוס - חשיבה גמישה, טווח ריכוז 6-12 דקות</li>
+                    <li><strong>גילאי 7-9:</strong> העמקה - חשיבה קונקרטית, טווח ריכוז 7-18 דקות</li>
+                    <li><strong>גילאי 10-12:</strong> צמיחה - חשיבה מופשטת, טווח ריכוז 10-24 דקות</li>
+                </ul>
+            </div>
+            <p style="margin-top: 30px; font-size: 1.3em; text-align: center; color: #667eea;">
+                תקופה של עיצוב זהות, מיומנויות יסוד ודפוסים חברתיים-רגשיים
+            </p>
+        </div>
+
+        <!-- Slide 6: Dimension 3 -->
+        <div class="slide">
+            <h2><span class="icon">📱</span> מימד 3: דור האלפא והביתא</h2>
+            <div class="highlight-box">
+                <h3>דור האלפא (2010 ואילך)</h3>
+                <ul>
+                    <li><strong>ילידים וירטואליים</strong> - גדלו עם AI, טכנולוגיה ולמידה מרחוק</li>
+                    <li><strong>מודעות גלובלית</strong> - חשופים לאירועים עולמיים בזמן אמת</li>
+                    <li><strong>רגישות חברתית</strong> - שוויון, אקלים, זכויות אדם</li>
+                    <li><strong>חוויות משמעותיות</strong> - לא רק הישגים אקדמיים</li>
+                </ul>
+            </div>
+            <p style="margin-top: 30px; font-size: 1.3em; text-align: center; color: #667eea;">
+                הדור הראשון שחווה את ההשפעה המלאה של הבינה המלאכותית
+            </p>
+        </div>
+
+        <!-- Slide 7: Dimension 4 -->
+        <div class="slide">
+            <h2><span class="icon">🤝</span> מימד 4: קהילות משפיעות ואקוסיסטם</h2>
+            <div class="highlight-box">
+                <h3>בית הספר כחלק מרקמה חברתית</h3>
+                <ul>
+                    <li><strong>קהילה פנימית:</strong> תלמידים, צוות, הנהלה</li>
+                    <li><strong>קהילה חיצונית:</strong> הורים, רשויות, אקדמיה, מגזר שלישי</li>
+                </ul>
+            </div>
+            <div class="highlight-box">
+                <h3>מגוון דמוגרפי ותרבותי</h3>
+                <p>גיאוגרפי • תרבותי • חברתי-כלכלי • קהילות ייחודיות</p>
+            </div>
+            <p style="margin-top: 30px; font-size: 1.3em; text-align: center; color: #667eea;">
+                שותפויות וקשרים קהילתיים משמעותיים
+            </p>
+        </div>
+
+        <!-- Slide 8: Video Introduction -->
+        <div class="slide">
+            <h1>מכירים את דור האלפא?</h1>
+            <h2 style="margin-top: 40px;">בואו נפגש עם מאיה<br>ילדה בת 10 שפתחה עסק משלה</h2>
+            <div class="video-container">
+                <div class="video-placeholder">
+                    🎬<br>
+                    הצגת הסרטון:<br>
+                    https://youtu.be/Ws18x-nmnrQ
+                </div>
+            </div>
+            <div class="highlight-box" style="margin-top: 30px;">
+                <h3>שאלות להתבוננות:</h3>
+                <ul>
+                    <li>מה מייחד את מאיה מילדים בגילה בדורות קודמים?</li>
+                    <li>אילו מיומנויות היא מפגינה?</li>
+                    <li>מה התפקיד של בית הספר בטיפוח ילדים כמוה?</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Slide 9: Group Work Instructions -->
+        <div class="slide">
+            <h2>עבודה בקבוצות</h2>
+            <div class="task-box">
+                <h3>משימה: הכינו מצגת קצרה (3-4 דקות)</h3>
+                <ul>
+                    <li><span class="checkmark">✓</span> קראו את דף המידע שלכם (7 דקות)</li>
+                    <li><span class="checkmark">✓</span> דונו והכינו מצגת (18 דקות)</li>
+                </ul>
+            </div>
+            <div class="highlight-box">
+                <h3>המצגת תכלול:</h3>
+                <ul>
+                    <li><strong>מה חשוב לדעת?</strong> (2-3 נקודות מרכזיות)</li>
+                    <li><strong>איך זה נראה בשטח?</strong> (דוגמה מהשדה)</li>
+                    <li><strong>מה זה אומר עלינו?</strong> (השלכה אחת לעבודה החינוכית)</li>
+                </ul>
+            </div>
+            <p style="text-align: center; font-size: 1.5em; margin-top: 30px; color: #c53030; font-weight: bold;">
+                זמן הצגה: 3-4 דקות
+            </p>
+        </div>
+
+        <!-- Slide 10: Presentations Title -->
+        <div class="slide">
+            <h1>4 המימדים המשפיעים<br>על החינוך היסודי</h1>
+            <h2 style="margin-top: 60px;">מבט מהשטח</h2>
+            <div style="text-align: center; margin-top: 80px;">
+                <div class="dimension-grid">
+                    <div style="font-size: 3em;">🌍</div>
+                    <div style="font-size: 3em;">👶</div>
+                    <div style="font-size: 3em;">📱</div>
+                    <div style="font-size: 3em;">🤝</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 11: What's Unthinkable -->
+        <div class="slide">
+            <h2>לאור 4 המימדים שלמדנו</h2>
+            <div class="question-box">
+                <h1>מה לא יעלה על הדעת?</h1>
+                <h2 style="margin-top: 40px;">
+                    💭 שיהיה בבית הספר היסודי?<br><br>
+                    💭 שלא יהיה בבית הספר היסודי?
+                </h2>
+            </div>
+            <div style="margin-top: 40px;">
+                <h3>תהליך:</h3>
+                <ul>
+                    <li>חשיבה אישית (3 דקות)</li>
+                    <li>שיתוף בזוגות (5 דקות)</li>
+                    <li>קציר קבוצתי (10 דקות)</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Slide 12: Summary -->
+        <div class="slide">
+            <h2>החינוך היסודי היום פועל במציאות של:</h2>
+            <div class="conclusion-grid">
+                <div class="conclusion-item">
+                    <div style="font-size: 2em; margin-bottom: 10px;">🌍</div>
+                    <strong>שינוי מתמיד ואי-ודאות</strong>
+                </div>
+                <div class="conclusion-item">
+                    <div style="font-size: 2em; margin-bottom: 10px;">👶</div>
+                    <strong>צרכים התפתחותיים ייחודיים</strong>
+                </div>
+                <div class="conclusion-item">
+                    <div style="font-size: 2em; margin-bottom: 10px;">📱</div>
+                    <strong>דור חדש עם מאפיינים חדשים</strong>
+                </div>
+                <div class="conclusion-item">
+                    <div style="font-size: 2em; margin-bottom: 10px;">🤝</div>
+                    <strong>קהילות מגוונות ומשפיעות</strong>
+                </div>
+            </div>
+            <div class="highlight-box" style="margin-top: 40px; text-align: center;">
+                <h2 style="color: #667eea;">לכן: עלינו לעדכן את התפיסה החינוכית</h2>
+            </div>
+        </div>
+
+        <!-- Slide 13: Conclusion -->
+        <div class="slide">
+            <div class="question-box">
+                <h2>"החינוך העכשווי מחייב התאמה מתמדת למציאות משתנה, לצרכי הגיל ולמאפייני הדור, תוך בניית אקוסיסטם תומך ומאפשר"</h2>
+            </div>
+            <div style="text-align: center; margin-top: 60px;">
+                <h1>שאלות? תובנות? מחשבות?</h1>
+                <div style="font-size: 4em; margin-top: 40px;">
+                    💡🤔💬
+                </div>
+            </div>
+        </div>
+
+        <!-- Navigation -->
+        <div class="navigation">
+            <button class="nav-button" id="prevBtn" onclick="changeSlide(-1)">◄ הקודם</button>
+            <button class="nav-button" id="nextBtn" onclick="changeSlide(1)">הבא ►</button>
+        </div>
+    </div>
+
+    <script>
+        let currentSlide = 0;
+        const slides = document.querySelectorAll('.slide');
+        const totalSlides = slides.length;
+
+        function showSlide(n) {
+            slides[currentSlide].classList.remove('active');
+            
+            if (n >= totalSlides) {
+                currentSlide = totalSlides - 1;
+            } else if (n < 0) {
+                currentSlide = 0;
+            } else {
+                currentSlide = n;
+            }
+            
+            slides[currentSlide].classList.add('active');
+            updateNavigation();
+            updateCounter();
+        }
+
+        function changeSlide(direction) {
+            showSlide(currentSlide + direction);
+        }
+
+        function updateNavigation() {
+            document.getElementById('prevBtn').disabled = currentSlide === 0;
+            document.getElementById('nextBtn').disabled = currentSlide === totalSlides - 1;
+        }
+
+        function updateCounter() {
+            document.getElementById('slideCounter').textContent = `${currentSlide + 1} / ${totalSlides}`;
+        }
+
+        // Keyboard navigation
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'ArrowRight' || event.key === 'ArrowLeft') {
+                const direction = event.key === 'ArrowRight' ? -1 : 1; // Reversed for RTL
+                changeSlide(direction);
+            }
+        });
+
+        // Initialize
+        updateNavigation();
+        updateCounter();
+    </script>
+</body>
+</html>
