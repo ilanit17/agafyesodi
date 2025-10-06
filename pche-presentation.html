@@ -1,0 +1,1078 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pseudocholinesterase Deficiency: Unexpected Response to Succinylcholine</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .presentation-container {
+            width: 100%;
+            max-width: 1200px;
+            position: relative;
+        }
+
+        .slide {
+            background: white;
+            border-radius: 10px;
+            padding: 60px;
+            box-shadow: 0 10px 50px rgba(0,0,0,0.3);
+            min-height: 700px;
+            display: none;
+            position: relative;
+        }
+
+        .slide.active {
+            display: block;
+            animation: fadeIn 0.5s;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .slide h1 {
+            color: #6b46c1;
+            font-size: 48px;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .slide h2 {
+            color: #d53f8c;
+            font-size: 36px;
+            margin-bottom: 25px;
+            margin-top: 40px;
+        }
+
+        .slide h3 {
+            color: #6b46c1;
+            font-size: 28px;
+            margin-bottom: 20px;
+            margin-top: 30px;
+        }
+
+        .slide h4 {
+            color: #d53f8c;
+            font-size: 22px;
+            margin-bottom: 15px;
+        }
+
+        .content-box {
+            background: #f7fafc;
+            border-left: 4px solid #6b46c1;
+            padding: 25px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+
+        .content-box.pink {
+            background: #fff5f7;
+            border-left-color: #d53f8c;
+        }
+
+        .content-box.yellow {
+            background: #fefcbf;
+            border-left-color: #ecc94b;
+        }
+
+        .content-box.red {
+            background: #fff5f5;
+            border-left-color: #f56565;
+        }
+
+        .image-placeholder {
+            background: #e2e8f0;
+            border: 2px dashed #a0aec0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #718096;
+            font-weight: bold;
+            margin: 20px 0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .image-placeholder img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: none;
+        }
+
+        .image-placeholder.loaded img {
+            display: block;
+        }
+
+        .image-placeholder.loaded::before {
+            display: none;
+        }
+
+        .image-small { height: 200px; }
+        .image-medium { height: 350px; }
+        .image-large { height: 500px; }
+        .image-wide { height: 250px; width: 100%; }
+
+        .flex-container {
+            display: flex;
+            gap: 20px;
+            margin: 20px 0;
+        }
+
+        .flex-item {
+            flex: 1;
+        }
+
+        ul, ol {
+            margin: 15px 0 15px 30px;
+        }
+
+        li {
+            margin: 10px 0;
+            line-height: 1.6;
+        }
+
+        .navigation {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(255,255,255,0.95);
+            padding: 15px 30px;
+            border-radius: 50px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+            display: flex;
+            gap: 20px;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .nav-btn {
+            background: #6b46c1;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+
+        .nav-btn:hover {
+            background: #553c9a;
+            transform: scale(1.05);
+        }
+
+        .nav-btn:disabled {
+            background: #cbd5e0;
+            cursor: not-allowed;
+            transform: scale(1);
+        }
+
+        .slide-counter {
+            font-weight: bold;
+            color: #6b46c1;
+            min-width: 80px;
+            text-align: center;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #4a5568;
+            font-size: 24px;
+            margin: 20px 0;
+        }
+
+        .author-info {
+            text-align: center;
+            color: #718096;
+            margin-top: 40px;
+            font-size: 18px;
+        }
+
+        .warning-icon::before {
+            content: "⚠ ";
+            color: #ecc94b;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+
+        th, td {
+            padding: 12px;
+            text-align: right;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        th {
+            background: #6b46c1;
+            color: white;
+        }
+
+        .quote {
+            font-style: italic;
+            border-left: 4px solid #d53f8c;
+            padding-left: 20px;
+            margin: 20px 0;
+            color: #4a5568;
+        }
+
+        .sources {
+            font-size: 14px;
+            color: #718096;
+            margin-top: 30px;
+            font-style: italic;
+        }
+
+        strong {
+            color: #2d3748;
+        }
+    </style>
+</head>
+<body>
+    <div class="presentation-container">
+        
+        <!-- Slide 1: Title -->
+        <div class="slide active">
+            <div class="image-placeholder image-wide">
+                [תמונה 1: רקע רפואי מקצועי]
+            </div>
+            <h1>Pseudocholinesterase Deficiency: Unexpected Response to Succinylcholine</h1>
+            <h2 class="subtitle">Case presentation</h2>
+            <div class="image-placeholder image-medium">
+                [תמונה 2: אנסתזיולוג או חדר ניתוח]
+            </div>
+            <div class="author-info">
+                <p>Presented by- Dr Schwartz Gaia</p>
+                <p>Tutor- Dr Cohen Avital</p>
+            </div>
+        </div>
+
+        <!-- Slide 2: Case Presentation -->
+        <div class="slide">
+            <h2>Case Presentation</h2>
+            <h3>Patient Demographics</h3>
+            
+            <div class="flex-container">
+                <div class="flex-item">
+                    <div class="content-box">
+                        <h4>Patient Information:</h4>
+                        <ul>
+                            <li><strong>Age:</strong> 30 years old</li>
+                            <li><strong>Gender:</strong> Female</li>
+                            <li><strong>Weight:</strong> 52 kg</li>
+                            <li><strong>Medical History:</strong> Healthy, no known drug allergies</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="flex-item">
+                    <div class="image-placeholder image-medium">
+                        [תמונה 3: תיק רפואי או רישומים רפואיים]
+                    </div>
+                </div>
+            </div>
+
+            <div class="content-box pink">
+                <h4>Surgical Indication:</h4>
+                <ul>
+                    <li><strong>Diagnosis:</strong> Late missed abortion</li>
+                    <li><strong>Pregnancy:</strong> 5th pregnancy, 15+6 weeks gestation</li>
+                    <li><strong>Procedure:</strong> Dilation and Evacuation (D&E)</li>
+                    <li><strong>Surgery Type:</strong> Elective surgery</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Slide 3: Preoperative Assessment -->
+        <div class="slide">
+            <h2>Preoperative Assessment</h2>
+            <h3>History and Evaluation</h3>
+
+            <div class="image-placeholder image-small">
+                [תמונה 4: הערכה פרה-אופרטיבית]
+            </div>
+
+            <div class="content-box yellow">
+                <h4 class="warning-icon">Critical Point:</h4>
+                <p>Patient was asked twice by two different physicians about:</p>
+                <ul>
+                    <li>Previous anesthesia experiences</li>
+                    <li>Any complications with anesthesia</li>
+                    <li>Family history of anesthesia problems</li>
+                </ul>
+                <p style="color: #c53030; font-weight: bold; margin-top: 15px;">Patient denied any issues both times</p>
+            </div>
+
+            <div class="flex-container">
+                <div class="flex-item">
+                    <div class="content-box">
+                        <h4>Physical Examination:</h4>
+                        <ul>
+                            <li><strong>ASA Class II</strong> (due to pregnancy)</li>
+                            <li>Airway assessment: Mallampati I</li>
+                            <li>Vital signs: Normal</li>
+                            <li>No anticipated difficult intubation</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="flex-item">
+                    <div class="image-placeholder image-medium">
+                        [תמונה 5: בדיקה רפואית]
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 4: Anesthetic Management -->
+        <div class="slide">
+            <h2>Anesthetic Management</h2>
+            <h3>Induction and Maintenance</h3>
+
+            <div class="flex-container">
+                <div class="flex-item">
+                    <div class="content-box yellow">
+                        <h4>Clinical Indication for Modified RSI:</h4>
+                        <ul>
+                            <li>Patient was <strong>NPO</strong></li>
+                            <li>Patient complained of <strong>nausea</strong></li>
+                            <li><strong>Aspiration risk</strong> → Modified Rapid Sequence Induction chosen</li>
+                        </ul>
+                    </div>
+
+                    <div class="content-box">
+                        <h4>Induction Agents:</h4>
+                        <ul>
+                            <li><strong>Fentanyl:</strong> 100 mcg</li>
+                            <li><strong>Lidocaine:</strong> 50 mg</li>
+                            <li><strong>Midazolam:</strong> 2 mg</li>
+                            <li><strong>Propofol:</strong> 150 mg</li>
+                            <li><strong>Succinylcholine:</strong> 50 mg (≈1 mg/kg)</li>
+                        </ul>
+                    </div>
+
+                    <div class="content-box pink">
+                        <h4>Clinical Observation:</h4>
+                        <p>No fasciculations were observed after succinylcholine administration</p>
+                    </div>
+
+                    <div class="content-box">
+                        <h4>Intubation & Maintenance:</h4>
+                        <ul>
+                            <li>Easy intubation performed</li>
+                            <li>Maintenance: Propofol 2% infusion + Sevoflurane</li>
+                            <li>Intraoperative course: Uneventful</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="flex-item">
+                    <div class="image-placeholder image-large">
+                        [תמונה 6: מסך ניטור אנסתזיה עם גרפים]
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 5: Emergence & Extubation -->
+        <div class="slide">
+            <h2>Emergence & Extubation</h2>
+            <h3>Initial Recovery</h3>
+
+            <div class="flex-container">
+                <div class="flex-item">
+                    <div class="content-box">
+                        <h4>Timeline:</h4>
+                        <ul>
+                            <li><strong>Surgery ended:</strong> 12:50</li>
+                            <li><strong>Extubation time:</strong> 13:17 (27 minutes post-surgery)</li>
+                        </ul>
+                    </div>
+
+                    <div class="content-box pink">
+                        <h4>Emergence Phase:</h4>
+                        <ul>
+                            <li><strong>Observation:</strong> Slow awakening noted</li>
+                            <li><strong>Extubation criteria met:</strong>
+                                <ul>
+                                    <li>Patient opened eyes to command</li>
+                                    <li>Tidal volume: 200 mL</li>
+                                    <li>Regular respiratory pattern</li>
+                                </ul>
+                            </li>
+                            <li><strong>Decision:</strong> Patient extubated</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="flex-item">
+                    <div class="image-placeholder image-large">
+                        [תמונה 7: חדר התאוששות עם מוניטורים]
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 6: PACU Course -->
+        <div class="slide">
+            <h2>PACU Course & Neuromuscular Monitoring</h2>
+            <h3>Clinical Findings and Interpretation</h3>
+
+            <div class="image-placeholder image-medium">
+                [תמונה 8: יחידת התאוששות - PACU]
+            </div>
+
+            <div class="content-box red">
+                <h4 class="warning-icon">Patient Complaints in PACU:</h4>
+                <ul>
+                    <li>Generalized weakness</li>
+                    <li>Chest pain</li>
+                    <li>Difficulty breathing</li>
+                    <li>Difficulty swallowing</li>
+                    <li>Unable to lift head</li>
+                </ul>
+            </div>
+
+            <div class="flex-container">
+                <div class="flex-item">
+                    <div class="content-box">
+                        <h4>Clinical Assessment:</h4>
+                        <ul>
+                            <li><strong>Chest ECG:</strong> Normal (ruled out cardiac etiology)</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="flex-item">
+                    <div class="image-placeholder image-small">
+                        [תמונה 9: מכשיר TOF]
+                    </div>
+                </div>
+            </div>
+
+            <div class="content-box pink">
+                <h4>Train-of-Four Monitoring:</h4>
+                <h1 style="text-align: center; color: #d53f8c; margin: 20px 0;">TOF: 80%</h1>
+                <p style="text-align: center; font-style: italic;">Residual neuromuscular blockade</p>
+                
+                <table style="margin-top: 20px;">
+                    <tr>
+                        <th>TOF Range</th>
+                        <th>Clinical Significance</th>
+                    </tr>
+                    <tr style="background: #fed7d7;">
+                        <td>TOF 0-40%</td>
+                        <td>Deep blockade</td>
+                    </tr>
+                    <tr style="background: #feebc8;">
+                        <td>TOF 40-70%</td>
+                        <td>Moderate blockade</td>
+                    </tr>
+                    <tr style="background: #fefcbf;">
+                        <td>TOF 70-90%</td>
+                        <td><strong>Residual - explains symptoms</strong></td>
+                    </tr>
+                    <tr style="background: #c6f6d5;">
+                        <td>TOF >90%</td>
+                        <td>Safe for extubation</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+
+        <!-- Slide 7: The Diagnosis Revealed -->
+        <div class="slide">
+            <h2>The Diagnosis Revealed</h2>
+            <h3>Family Disclosure</h3>
+
+            <div class="image-placeholder image-medium">
+                [תמונה 10: שיחה רפואית רגישה]
+            </div>
+
+            <div class="content-box">
+                <h4>Family Finally Reveals in PACU:</h4>
+                <p>Patient's <strong>sister</strong> has:</p>
+                <ul>
+                    <li><strong>Diagnosed pseudocholinesterase deficiency</strong></li>
+                    <li><strong>History:</strong> 6-hour recovery after previous anesthesia</li>
+                    <li><strong>Likely homozygous variant</strong> (severe form)</li>
+                </ul>
+            </div>
+
+            <div class="content-box pink">
+                <h4>Patient's Clinical Picture:</h4>
+                <ul>
+                    <li><strong>Likely heterozygous variant</strong> (milder form)</li>
+                    <li>Explains prolonged response to succinylcholine</li>
+                </ul>
+            </div>
+
+            <div class="image-placeholder image-small">
+                [תמונה 11: תרשים גנטי או עץ משפחה]
+            </div>
+        </div>
+
+        <!-- Slide 8: Background -->
+        <div class="slide">
+            <h2>Background: Pseudocholinesterase Deficiency</h2>
+            <h3>Definition and Pathophysiology</h3>
+
+            <div class="flex-container">
+                <div class="flex-item">
+                    <div class="content-box">
+                        <h4>Definition:</h4>
+                        <p>Rare genetic or acquired deficiency of butyrylcholinesterase enzyme that metabolizes succinylcholine and mivacurium, leading to prolonged neuromuscular blockade</p>
+                    </div>
+
+                    <div class="content-box pink">
+                        <h4>Epidemiology:</h4>
+                        <ul>
+                            <li>Incidence: 1 in 3,200 to 1 in 5,000</li>
+                            <li>Higher in Persian Jewish, Alaskan Native, European descent</li>
+                            <li>Autosomal recessive inheritance</li>
+                        </ul>
+                    </div>
+
+                    <div class="content-box">
+                        <h4>Affected Drugs:</h4>
+                        <ul>
+                            <li>Succinylcholine (most significant)</li>
+                            <li>Mivacurium</li>
+                            <li>Ester local anesthetics (procaine, tetracaine)</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="flex-item">
+                    <div class="image-placeholder image-large">
+                        [תמונה 12: דיאגרמה של האנזים]
+                    </div>
+                </div>
+            </div>
+
+            <p class="sources">Sources: Trujillo & West, StatPearls 2023; Medscape 2024</p>
+        </div>
+
+        <!-- Slide 9: Genetic Variants -->
+        <div class="slide">
+            <h2>Genetic Variants</h2>
+            <h3>Types and Clinical Significance</h3>
+
+            <div class="image-placeholder image-wide">
+                [תמונה 13: מבנה DNA וגנטיקה]
+            </div>
+
+            <div class="content-box">
+                <h4>Dibucaine Number (DN):</h4>
+                <p>Measure of enzyme quality (not quantity)</p>
+                
+                <table style="margin-top: 20px;">
+                    <tr>
+                        <th>DN Range</th>
+                        <th>Variant Type</th>
+                    </tr>
+                    <tr>
+                        <td><strong>DN 70-80</strong></td>
+                        <td>Normal enzyme (homozygous normal)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>DN 40-60</strong></td>
+                        <td>Heterozygous (mild prolongation)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>DN 20-30</strong></td>
+                        <td>Homozygous atypical (severe prolongation)</td>
+                    </tr>
+                </table>
+            </div>
+
+            <div class="flex-container">
+                <div class="flex-item">
+                    <div class="content-box pink">
+                        <h4>Clinical Duration of Action:</h4>
+                        <ul>
+                            <li><strong>Normal:</strong> 5-10 minutes</li>
+                            <li><strong>Heterozygous:</strong> 20-30 minutes</li>
+                            <li><strong>Homozygous:</strong> 4-8 hours</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="flex-item">
+                    <div class="image-placeholder image-medium">
+                        [תמונה 14: גרף משך פעולה]
+                    </div>
+                </div>
+            </div>
+
+            <p class="sources">Sources: OpenAnesthesia 2024; Andersson et al., Anaesthesia 2019</p>
+        </div>
+
+        <!-- Slide 10: Neuromuscular Junction -->
+        <div class="slide">
+            <h2>Neuromuscular Junction Physiology</h2>
+            <h3>Acetylcholine and Succinylcholine Mechanism</h3>
+
+            <div class="image-placeholder image-large">
+                [תמונה 15: דיאגרמה של הצומת הנוירו-שרירי]
+            </div>
+
+            <div class="flex-container">
+                <div class="flex-item">
+                    <div class="content-box">
+                        <h4>Normal Acetylcholine (ACh) Function:</h4>
+                        <ul>
+                            <li>ACh released from motor neuron terminal</li>
+                            <li>Binds to nicotinic receptors on muscle endplate</li>
+                            <li>Causes depolarization → muscle contraction</li>
+                            <li>Rapidly broken down by <strong>acetylcholinesterase</strong> at the junction</li>
+                            <li>Allows repolarization and next contraction cycle</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="flex-item">
+                    <div class="content-box pink">
+                        <h4>Succinylcholine Mechanism:</h4>
+                        <ul>
+                            <li>Structure: <strong>Two ACh molecules linked together</strong></li>
+                            <li>Binds to same nicotinic receptors as ACh</li>
+                            <li><strong>NOT broken down by acetylcholinesterase</strong></li>
+                            <li>Causes <strong>prolonged depolarization</strong></li>
+                            <li>Phase I: Initial depolarization → <strong>fasciculations</strong></li>
+                            <li>Phase II: Sustained depolarization → <strong>flaccid paralysis</strong></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="content-box">
+                <h4>Succinylcholine Metabolism:</h4>
+                <ul>
+                    <li><strong>90-95%</strong> metabolized by <strong>pseudocholinesterase in plasma</strong> before reaching junction</li>
+                    <li>Only <strong>5-10%</strong> reaches neuromuscular junction</li>
+                    <li>Diffuses away from junction → metabolized by plasma pseudocholinesterase</li>
+                    <li>Normal duration: <strong>5-10 minutes</strong></li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Slide 11: Why No Fasciculations -->
+        <div class="slide">
+            <h2>Why No Fasciculations? The First Critical Clue</h2>
+            <h3>Understanding the Pathophysiology</h3>
+
+            <div class="image-placeholder image-medium">
+                [תמונה 16: השוואה ויזואלית]
+            </div>
+
+            <div class="content-box">
+                <h4>Normal Succinylcholine Action:</h4>
+                <ul>
+                    <li><strong>90%</strong> of the drug is hydrolyzed by <strong>plasma pseudocholinesterase</strong> before it reaches the muscle.</li>
+                    <li>The remaining <strong>10%</strong> reaches the neuromuscular junction (NMJ), causing initial, uncoordinated muscle firing.</li>
+                    <li>This initial firing is visible as <strong>fasciculations</strong>, followed by paralysis.</li>
+                </ul>
+            </div>
+
+            <div class="content-box pink">
+                <h4>Action with PChE Deficiency:</h4>
+                <ul>
+                    <li>The enzyme is deficient, so the drug is <strong>not hydrolyzed</strong> in the plasma.</li>
+                    <li>A much <strong>larger dose (effectively a 10x overdose)</strong> floods the NMJ all at once.</li>
+                    <li>This high concentration causes a rapid, profound depolarizing block that is too intense to produce fasciculations, leading directly to <strong>flaccid paralysis</strong>.</li>
+                </ul>
+            </div>
+
+            <div class="content-box red">
+                <h4 class="warning-icon">Clinical Takeaway:</h4>
+                <p>The absence of fasciculations is not a sign of drug failure. It is the <strong>earliest and most specific sign</strong> that a patient cannot metabolize succinylcholine, predicting a significantly prolonged duration of paralysis.</p>
+            </div>
+
+            <p class="sources">Sources: Trujillo & West, StatPearls 2023; Cornelius & Jacobs, Anesth Prog 2020; OpenAnesthesia 2024</p>
+        </div>
+
+        <!-- Slide 12: Pregnancy -->
+        <div class="slide">
+            <h2>Pregnancy and Pseudocholinesterase</h2>
+            <h3>Physiological Considerations</h3>
+
+            <div class="flex-container">
+                <div class="flex-item">
+                    <div class="content-box pink">
+                        <h4>Pregnancy Effects on PChE Activity:</h4>
+                        <ul>
+                            <li><strong>Decreased activity</strong> by 20-30% during pregnancy</li>
+                            <li>Lowest levels at term and early postpartum</li>
+                            <li>May unmask <strong>heterozygous variants</strong></li>
+                            <li>Returns to normal 6-8 weeks postpartum</li>
+                        </ul>
+                    </div>
+
+                    <div class="content-box">
+                        <h4>Mechanism:</h4>
+                        <ul>
+                            <li>Increased plasma volume (hemodilution)</li>
+                            <li>Decreased hepatic synthesis</li>
+                            <li>Hormonal factors (estrogen, progesterone)</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="flex-item">
+                    <div class="image-placeholder image-large">
+                        [תמונה 17: אישה בהריון בייעוץ רפואי]
+                    </div>
+                </div>
+            </div>
+
+            <div class="content-box pink">
+                <h4>Relevance to our case:</h4>
+                <p>Patient at 15+6 weeks gestation - pregnancy likely unmasked mild deficiency</p>
+            </div>
+
+            <p class="sources">Sources: StatPearls 2023; MedlinePlus Genetics</p>
+        </div>
+
+        <!-- Slide 13: Literature Review - Core Recommendations -->
+        <div class="slide">
+            <h2>Literature Review: Core Anesthesia Recommendations</h2>
+            <h3>Orphananesthesia Guidelines (Feb 2025)</h3>
+
+            <div class="image-placeholder image-small">
+                [תמונה 18: ספרות רפואית]
+            </div>
+
+            <div class="content-box red">
+                <h4>Contraindicated Drugs: Absolute Avoidance</h4>
+                <ul>
+                    <li><strong>Succinylcholine & Mivacurium:</strong> These are absolutely contraindicated in known or suspected PChE deficiency.</li>
+                    <li><strong>Ester Local Anesthetics:</strong> Drugs like tetracaine and procaine will have a prolonged duration and increased risk of systemic toxicity. Amide local anesthetics (e.g., Lidocaine, Ropivacaine) are safe.</li>
+                </ul>
+            </div>
+
+            <div class="content-box">
+                <h4>Safe Alternatives & Airway Management</h4>
+                <ul>
+                    <li><strong>For Rapid Sequence Induction (RSI):</strong> Use <strong>Rocuronium at 0.9 - 1.2 mg/kg</strong> instead of succinylcholine.</li>
+                    <li><strong>General Relaxant Choice:</strong> Non-depolarizing agents that are not metabolized by PChE (e.g., Rocuronium, Vecuronium, Cisatracurium) are the agents of choice.</li>
+                    <li><strong>Reversal:</strong> The availability of Sugammadex for rocuronium makes it a particularly attractive and safe alternative.</li>
+                </ul>
+            </div>
+
+            <p class="sources">Source: Schulze-Berge J, Hüppe T. Anaesthesia recommendations for Pseudocholinesterase Deficiency. Orphananesthesia. 2025.</p>
+        </div>
+
+        <!-- Slide 14: Literature Review - Awareness Risk -->
+        <div class="slide">
+            <h2>Literature Review: The Risk of Anesthesia Awareness</h2>
+            <h3>Orphananesthesia Guidelines (Feb 2025)</h3>
+
+            <div class="image-placeholder image-medium">
+                [תמונה 19: מטופל מודאג]
+            </div>
+
+            <div class="content-box red">
+                <h4>Alarming Data from the Danish Research Unit:</h4>
+                <p>Registry data from patients with confirmed PChE deficiency revealed a significant gap between knowledge and practice:</p>
+                <ul>
+                    <li><strong>72%</strong> of patients experienced <strong>"premature awakening"</strong> (i.e., anesthesia was stopped while they were still paralyzed).</li>
+                    <li>Only <strong>40%</strong> of patients underwent any neuromuscular monitoring at all.</li>
+                    <li>Of those, only <strong>20%</strong> were monitored at the end of the procedure, which is the most critical time to assess for recovery.</li>
+                </ul>
+            </div>
+
+            <div class="content-box pink">
+                <h4>The Clinical and Medicolegal Consequences</h4>
+                <p>This clinical gap leads to a high risk of conscious paralysis, which is associated with intense distress and a significantly increased risk of developing <strong>Post-Traumatic Stress Disorder (PTSD)</strong>. The guidelines emphasize that failure to monitor is a major medicolegal pitfall.</p>
+            </div>
+
+            <p class="sources">Source: Schulze-Berge J, Hüppe T. Anaesthesia recommendations for Pseudocholinesterase Deficiency. Orphananesthesia. 2025.</p>
+        </div>
+
+        <!-- Slide 15: Diagnosis & Treatment -->
+        <div class="slide">
+            <h2>Literature Review: Diagnosis & Treatment Strategy</h2>
+            <h3>Orphananesthesia Guidelines (Feb 2025)</h3>
+
+            <div class="flex-container">
+                <div class="flex-item">
+                    <div class="content-box">
+                        <h4>The Diagnostic Pathway</h4>
+                        <p>Since routine screening is not standard, diagnosis follows a path of suspicion:</p>
+                        <ol>
+                            <li><strong>Clinical Event:</strong> Patient fails to recover from succinylcholine/mivacurium.</li>
+                            <li><strong>Functional Testing:</strong> Confirm with laboratory tests:
+                                <ul>
+                                    <li>PChE plasma activity level.</li>
+                                    <li><strong>Dibucaine Number:</strong> Measures enzyme quality. (40-70% suggests heterozygote, <20% suggests homozygote).</li>
+                                </ul>
+                            </li>
+                            <li><strong>Genetic Confirmation:</strong> PCR testing can determine the specific hereditary cause.</li>
+                        </ol>
+                    </div>
+                </div>
+                <div class="flex-item">
+                    <div class="image-placeholder image-large">
+                        [תמונה 20: מעבדה עם בדיקות דם]
+                    </div>
+                </div>
+            </div>
+
+            <div class="content-box pink">
+                <h4>The FFP / Transfusion Controversy</h4>
+                <p>While transfusing Fresh Frozen Plasma (FFP) or whole blood *can* provide exogenous PChE to shorten recovery time, the guidelines state this is <strong>"generally deemed unnecessary."</strong></p>
+                <p><strong>Reasoning:</strong> The prognosis with supportive care (continued ventilation and sedation) is excellent, and the additional risks and costs associated with blood products are not justified.</p>
+            </div>
+
+            <p class="sources">Source: Schulze-Berge J, Hüppe T. Anaesthesia recommendations for Pseudocholinesterase Deficiency. Orphananesthesia. 2025.</p>
+        </div>
+
+        <!-- Slide 16: Systematic Review Part 1 -->
+        <div class="slide">
+            <h2>Literature Review: A Landmark Systematic Review (Part 1)</h2>
+            <h3>Andersson et al., Anaesthesia (2019)</h3>
+
+            <div class="image-placeholder image-wide">
+                [תמונה 21: מחקר מדעי גדול]
+            </div>
+
+            <div class="content-box">
+                <h4>Key Quantitative Findings: Prevalence & Duration</h4>
+                <p>This major systematic review analyzed 131 publications to consolidate the clinical data on Butyrylcholinesterase (BChE) deficiency. The findings provide a clear picture of risk:</p>
+                <ul>
+                    <li><strong>Prevalence:</strong> The review confirmed the genetic prevalence:
+                        <ul>
+                            <li><strong>Heterozygotes:</strong> Affects approximately <strong>1 in 25 to 1 in 50</strong> people.</li>
+                            <li><strong>Homozygotes:</strong> Affects approximately <strong>1 in 2,000 to 1 in 5,000</strong> people.</li>
+                        </ul>
+                    </li>
+                    <li><strong>Duration of Apnea after Succinylcholine:</strong> The data showed a distinct dose-response based on genotype.
+                        <ul>
+                            <li><strong>Heterozygotes:</strong> Experienced a <strong>mildly prolonged</strong> block, typically lasting <strong>9-13 minutes</strong> (a 1.5 to 2-fold increase).</li>
+                            <li><strong>Homozygotes:</strong> Experienced a <strong>severely prolonged</strong> block, with apnea lasting from <strong>60 minutes to several hours</strong>.</li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="content-box pink">
+                <h4>Clinical Context for Our Case:</h4>
+                <p>The duration of apnea in our patient (~27 minutes until extubation, with residual weakness) is significantly longer than the average for a heterozygote, but much shorter than a typical homozygote. This highlights that pregnancy (an acquired cause) combined with a heterozygous genotype can result in a <strong>clinically severe, intermediate phenotype</strong>.</p>
+            </div>
+
+            <p class="sources">Source: Andersson, M.L., Møller, A.M. and Wildgaard, K. (2019), Butyrylcholinesterase deficiency and its clinical importance in anaesthesia: a systematic review. Anaesthesia, 74: 518-528.</p>
+        </div>
+
+        <!-- Slide 17: Systematic Review Part 2 -->
+        <div class="slide">
+            <h2>Literature Review: A Landmark Systematic Review (Part 2)</h2>
+            <h3>Andersson et al., Anaesthesia (2019)</h3>
+
+            <div class="content-box">
+                <h4>The Problem of Mismanagement & Awareness</h4>
+                <p>The review's most powerful conclusion was not just about the condition itself, but about how it is frequently mismanaged, leading to preventable harm.</p>
+                <ul>
+                    <li><strong>Failure to Diagnose:</strong> In many reviewed cases, prolonged apnea was incorrectly attributed to other causes, leading to inappropriate treatments (like reversal agents) that could worsen the block.</li>
+                    <li><strong>Anesthesia Awareness:</strong> The most severe complication highlighted was the risk of the patient waking up while still fully paralyzed, an experience the authors note can be "devastating."</li>
+                </ul>
+            </div>
+
+            <div class="image-placeholder image-medium">
+                [תמונה 22: ביטוי דאגה של מטופל]
+            </div>
+
+            <div class="quote">
+                "The consequences of mismanagement, including awareness with recall of paralysis, can be devastating for the patient and may lead to complaints and litigation."
+            </div>
+
+            <div class="content-box pink">
+                <h4>Core Recommendations from the Review:</h4>
+                <p>Based on the evidence, the authors strongly advocate for a change in standard practice:</p>
+                <ul>
+                    <li><strong>Routine Neuromuscular Monitoring:</strong> They argue that because the condition is often unknown preoperatively, <strong>quantitative neuromuscular monitoring should be a standard of care</strong> whenever succinylcholine or mivacurium is used.</li>
+                    <li><strong>Patient Education and Family Screening:</strong> Once a diagnosis is made, it is imperative to counsel the patient, provide a medical alert card, and strongly advise family members to undergo testing.</li>
+                </ul>
+            </div>
+
+            <p class="sources">Source: Andersson, M.L., Møller, A.M. and Wildgaard, K. (2019), Butyrylcholinesterase deficiency and its clinical importance in anaesthesia: a systematic review. Anaesthesia, 74: 518-528.</p>
+        </div>
+
+        <!-- Slide 18: Patient Experience -->
+        <div class="slide">
+            <h2>Literature Review: The Patient Experience of Awareness</h2>
+            <h3>Davis et al., Int J Anesthetics and Anesthesiology (2021)</h3>
+
+            <div class="content-box">
+                <h4>Case Data: Two Heterozygous Patients</h4>
+                <p>This paper presents two compelling cases of undiagnosed heterozygous PChE deficiency. Notably, both patients had a <strong>non-contributory family history</strong>.</p>
+                <ul>
+                    <li><strong>Case 1 (40yo female):</strong> Total recovery time was <strong>210 minutes</strong>. Her dibucaine number was <strong>34</strong>, confirming heterozygosity.</li>
+                    <li><strong>Case 2 (38yo female):</strong> Total recovery time was <strong>360 minutes (6 hours)</strong>. Her dibucaine number was <strong>44</strong>, also confirming heterozygosity.</li>
+                </ul>
+            </div>
+
+            <div class="image-placeholder image-medium">
+                [תמונה 23: מטופל במצב של awareness]
+            </div>
+
+            <div class="content-box red">
+                <h4>Patient Perspectives on Anesthesia Awareness:</h4>
+                <div class="quote">
+                    "I felt trapped within my body. I could hear people speaking to me, but I couldn't respond. I couldn't open my mouth or move my arms or legs... I was terrified during the incident."
+                </div>
+                <div class="quote">
+                    "I felt an enormous amount of panic and doom... It felt like I was locked into place. It was a very disturbing and surreal feeling... One year later and I can still vividly remember the sensation."
+                </div>
+            </div>
+
+            <div class="content-box pink">
+                <h4>Key Discussion Points & Clinical Implications:</h4>
+                <ul>
+                    <li><strong>The Trauma of Awareness:</strong> The authors powerfully highlight that prolonged paralysis can be "quite distressing" and that it is <strong>"imperative that patients are re-sedated in a timely manner"</strong> to limit this psychological trauma.</li>
+                    <li><strong>Contraindication of Reversal Agents:</strong> The paper explicitly advises against using agents like neostigmine, stating that an "attempted reversal with these agents will prolong the neuromuscular blockade."</li>
+                    <li><strong>Importance of Patient Education:</strong> Both patients expressed relief at receiving follow-up and education, underscoring the need for clear counseling and family testing after a diagnosis.</li>
+                </ul>
+            </div>
+
+            <p class="sources">Source: Davis, J., Vincent, A., & Shanmugam, G. (2021). Pseudocholinesterase Deficiency and Patient Perspectives. International Journal of Anesthetics and Anesthesiology, 8(124).</p>
+        </div>
+
+        <!-- Slide 19: Take Home Messages -->
+        <div class="slide">
+            <h2>Take Home Messages</h2>
+            <h3>For the Practicing Anesthesiologist</h3>
+
+            <div class="image-placeholder image-small">
+                [תמונה 24: אנסתזיולוג בכנס]
+            </div>
+
+            <div class="content-box">
+                <p><strong>Trust the Silence.</strong> No fasciculations after succinylcholine is not a benign event or drug failure. It is your first, most reliable sign of PChE deficiency. Your diagnostic process begins at that moment.</p>
+            </div>
+
+            <div class="content-box pink">
+                <p><strong>Pregnancy Unmasks the Condition.</strong> The physiological drop in PChE during pregnancy acts as a "stress test." A negative family history in a pregnant patient is not reassuring and should not lower your index of suspicion.</p>
+            </div>
+
+            <div class="content-box yellow">
+                <p><strong>Paralyzed is Not Asleep.</strong> If you suspect prolonged paralysis, your immediate priority after securing the airway is ensuring adequate sedation. Prevent the trauma of anesthesia awareness at all costs.</p>
+            </div>
+
+            <div class="content-box">
+                <p><strong>Extubate Based on Data, Not Gestalt.</strong> Clinical signs of recovery are notoriously unreliable. Safe extubation is only guaranteed with objective evidence—do not remove the tube until you have a confirmed <strong>quantitative TOF ratio > 0.9.</strong></p>
+            </div>
+        </div>
+
+        <!-- Slide 20: References -->
+        <div class="slide">
+            <h2>References</h2>
+            <h3>Updated with Verifiable Sources</h3>
+
+            <div class="image-placeholder image-small">
+                [תמונה 25: מדפי ספרים רפואיים]
+            </div>
+
+            <div class="content-box">
+                <h4>Key Clinical Guidelines & Reviews:</h4>
+                <ol>
+                    <li>Davis J, et al. Pseudocholinesterase Deficiency and Patient Perspectives. Int J Anesthetic Anesthesiol. 2021.</li>
+                    <li>Radkowski P, et al. The Use of Muscle Relaxants in Pregnancy... Int J Gen Med. 2023.</li>
+                    <li>Savic L, et al. Drug-Induced Anaphylaxis During General Anesthesia... J Inflamm Res. 2023.</li>
+                    <li>Lockhart AM, et al. Prescribing recommendations for implementation of tier 1 pharmacogenetic genes... J Pers Med. 2023.</li>
+                    <li>Andersson ML, et al. Butyrylcholinesterase deficiency and its clinical importance in anaesthesia: a systematic review. Anaesthesia. 2019.</li>
+                    <li>Nias F, et al. Succinylcholine Induced Apnea. StatPearls. 2023.</li>
+                    <li>Trujillo R, West WP. Pseudocholinesterase deficiency. StatPearls. 2023.</li>
+                </ol>
+            </div>
+
+            <div class="content-box pink">
+                <h4>Relevant Case Reports & Studies:</h4>
+                <ol start="8">
+                    <li>Soliday FK, et al. A Case of Prolonged Paralysis After Succinylcholine Administration... Cureus. 2023.</li>
+                    <li>Amoa L, et al. Pharmacogenomics in Anesthesia... J Surg Case Reports and Images. 2025.</li>
+                </ol>
+            </div>
+        </div>
+
+        <!-- Slide 21: Thank You -->
+        <div class="slide">
+            <div class="image-placeholder image-large">
+                [תמונה 26: תודה - רקע מקצועי]
+            </div>
+            <h1 style="text-align: center; margin-top: 100px;">Thank you for the attention</h1>
+        </div>
+
+    </div>
+
+    <div class="navigation">
+        <button class="nav-btn" id="prevBtn" onclick="changeSlide(-1)">◀ Previous</button>
+        <span class="slide-counter" id="slideCounter">1 / 21</span>
+        <button class="nav-btn" id="nextBtn" onclick="changeSlide(1)">Next ▶</button>
+    </div>
+
+    <script>
+        let currentSlide = 1;
+        const totalSlides = 21;
+
+        function showSlide(n) {
+            const slides = document.querySelectorAll('.slide');
+            
+            if (n > totalSlides) currentSlide = totalSlides;
+            if (n < 1) currentSlide = 1;
+            
+            slides.forEach(slide => slide.classList.remove('active'));
+            slides[currentSlide - 1].classList.add('active');
+            
+            document.getElementById('slideCounter').textContent = `${currentSlide} / ${totalSlides}`;
+            
+            document.getElementById('prevBtn').disabled = currentSlide === 1;
+            document.getElementById('nextBtn').disabled = currentSlide === totalSlides;
+        }
+
+        function changeSlide(n) {
+            currentSlide += n;
+            showSlide(currentSlide);
+        }
+
+        // Keyboard navigation
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'ArrowRight' || event.key === 'ArrowDown') {
+                changeSlide(1);
+            } else if (event.key === 'ArrowLeft' || event.key === 'ArrowUp') {
+                changeSlide(-1);
+            }
+        });
+
+        // Initialize
+        showSlide(currentSlide);
+
+        // Function to load images
+        function loadImage(placeholder, imageSrc) {
+            const img = placeholder.querySelector('img') || document.createElement('img');
+            img.src = imageSrc;
+            img.onload = function() {
+                placeholder.classList.add('loaded');
+                if (!placeholder.querySelector('img')) {
+                    placeholder.appendChild(img);
+                }
+            };
+        }
+
+        // Example usage (uncomment when you have images):
+        // loadImage(document.querySelector('.slide:nth-child(1) .image-placeholder:nth-child(1)'), 'path/to/image1.jpg');
+    </script>
+</body>
+</html>
