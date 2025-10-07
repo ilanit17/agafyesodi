@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>בניית תוכנית עבודה מפורטת</title>
+    <title>בניית תוכנית ליווי בית ספרית בתחום הכלה והוגנות</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Assistant:wght@300;400;600;700&display=swap" rel="stylesheet">
     <style>
@@ -11,7 +11,7 @@
         .accordion-content { max-height: 0; overflow: hidden; transition: max-height 0.5s ease-out; }
         .accordion-content.is-open { max-height: 8000px; /* Large enough value */ }
         .rotate-45 { transform: rotate(45deg); transition: transform 0.3s ease; }
-        .multiselect-container { position: relative; }
+        .multiselect-container { position: relative; display: inline-block; width: 100%; }
         .multiselect-options { display: none; position: absolute; background-color: white; border: 1px solid #ddd; z-index: 10; width: 200px; max-height: 200px; overflow-y: auto; box-shadow: 0 4px 8px rgba(0,0,0,0.1); border-radius: 0.375rem; }
         .multiselect-container:hover .multiselect-options { display: block; }
         .metric-input-wrapper {
@@ -26,14 +26,21 @@
             border-radius: 0.25rem;
             padding: 0.1rem;
         }
+        .item-details {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 0.5rem;
+            margin-top: 0.25rem;
+        }
         @media print {
             body { background-color: white !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
             .no-print { display: none !important; }
             main { padding: 0 !important; }
-            table { font-size: 10px; width: 100%; }
+            table { font-size: 9px; width: 100%; }
             td, th { padding: 4px !important; }
             .bg-white { box-shadow: none !important; }
             .page-break-inside-avoid { page-break-inside: avoid; }
+            .item-details { grid-template-columns: 1fr; } /* Stack details on print */
         }
     </style>
 </head>
@@ -48,6 +55,10 @@
             selections: {},
             tableData: {},
             metricValues: {}, // To store values from X% inputs
+            generalInfo: {
+                schoolName: '', principalName: '', mentorName: '', coordinatorName: '',
+                guidanceHours: '', additionalTraining: '', globalPartners: ''
+            },
             recommendedGoalIds: new Set(),
             showImportNotification: false,
             expandedArenas: {},
@@ -142,7 +153,7 @@
                     { 
                         id: "a2g1", title: "הטמעת השימוש בכלי מיפוי 'העוגן'", 
                         activities: [{id:"a2g1-act1", text:"הצגת הכלי ומטרותיו לצוות הניהולי והחינוכי."}, {id:"a2g1-act2", text:"הכשרה וליווי לצוותים במילוי וניתוח הנתונים."}, {id:"a2g1-act3", text:"ניתוח נתונים ברמה מערכתית וצוותית."}, {id:"a2g1-act4", text:"שילוב התובנות בתוכנית העבודה הבית-ספרית."}], 
-                        tasks: [{id:"a2g1-tsk1", text:"להנחות סדנה על אופן השימוש בכלי וקריאת הדשבורדים."}, {id:"a2g1-tsk2", text:"ללוות צוותי שכבה בניתוח הנתונים הכיתתיים והשכבתיים."}, {id:"a2g1-tsk3", text:"להוביל דיונים המקשרים בין נתוני 'העוגן' לצרכים פדגוגיים ספציфиים."}, {id:"a2g1-tsk4", text:"לסייע בתרגום המגמות ליעדים בפיתוח המקצועי."}],
+                        tasks: [{id:"a2g1-tsk1", text:"להנחות סדנה על אופן השימוש בכלי וקריאת הדшבורדים."}, {id:"a2g1-tsk2", text:"ללוות צוותי שכבה בניתוח הנתונים הכיתתיים והשכבתיים."}, {id:"a2g1-tsk3", text:"להוביל דיונים המקשרים בין נתוני 'העוגן' לצרכים פדגוגיים ספציфиים."}, {id:"a2g1-tsk4", text:"לסייע בתרגום המגמות ליעדים בפיתוח המקצועי."}],
                         output_metrics: [{id:"a2g1-opm1", text:"כלי 'העוגן' משמש באופן שוטף (X% מהמורות ממלאות פעם בשנה)."}, {id:"a2g1-opm2", text:"X% מתוכניות העבודה מבוססות על נתונים מהכלי."}, {id:"a2g1-opm3", text:"התקיימו לפחות X מפגשי הדרכה על ניתוח נתונים."}],
                         outcome_metrics: [{id:"a2g1-ocm1", text:"מתבססת תרבות ארגונית של קבלת החלטות מבוססת מידע (X% מהמורים מדווחים על שימוש בנתונים)."}] 
                     },
@@ -232,6 +243,10 @@
             this.render();
         },
         
+        handleGeneralInfoChange(field, value) {
+            this.state.generalInfo[field] = value;
+        },
+
         handleMultiSelectChange(id, partner) {
             let current = this.state.tableData[id]?.partners || [];
             if (current.includes(partner)) {
@@ -278,22 +293,35 @@
                 reader.onload = (e) => {
                     try {
                         const data = JSON.parse(e.target.result);
-                        if (!data.selectedItems) throw new Error("קובץ לא תקין");
                         
-                        this.state.recommendedGoalIds.clear();
-                        const keyMappings = { 'planning_instruction': 'a1g1', 'classroom_management': 'a1g9', 'assessment_feedback': 'a1g7', 'data_based_planning': 'a2g1', 'interdisciplinary_team': 'a3g1', 'parent_partnership': 'a4g1', 'coordinator_guidance': 'a3g3', 'teacher_knowledge_deepening': 'a3g2', 'belonging_involvement': 'a4g2', 'learning_spaces': 'a5g1' };
+                        // Extract general info
+                        this.state.generalInfo = {
+                            schoolName: data.schoolName || '',
+                            principalName: data.principalName || '',
+                            mentorName: data.mentorName || '',
+                            coordinatorName: data.coordinatorName || '',
+                            guidanceHours: data.guidanceHours || '',
+                            additionalTraining: data.additionalTraining ? Object.keys(data.additionalTraining).filter(k => data.additionalTraining[k]).join(', ') : '',
+                            globalPartners: data.globalPartners ? Object.keys(data.globalPartners).filter(k => data.globalPartners[k]).join(', ') : ''
+                        };
 
-                        Object.keys(data.selectedItems).forEach(key => {
-                            if (data.selectedItems[key]) {
-                                for (const mapKey in keyMappings) {
-                                    if (key.includes(mapKey)) this.state.recommendedGoalIds.add(keyMappings[mapKey]);
+                        // Extract recommended goals
+                        if (data.selectedItems) {
+                            this.state.recommendedGoalIds.clear();
+                            const keyMappings = { 'planning_instruction': 'a1g1', 'classroom_management': 'a1g9', 'assessment_feedback': 'a1g7', 'data_based_planning': 'a2g1', 'interdisciplinary_team': 'a3g1', 'parent_partnership': 'a4g1', 'coordinator_guidance': 'a3g3', 'teacher_knowledge_deepening': 'a3g2', 'belonging_involvement': 'a4g2', 'learning_spaces': 'a5g1' };
+
+                            Object.keys(data.selectedItems).forEach(key => {
+                                if (data.selectedItems[key]) {
+                                    for (const mapKey in keyMappings) {
+                                        if (key.includes(mapKey)) this.state.recommendedGoalIds.add(keyMappings[mapKey]);
+                                    }
                                 }
-                            }
-                        });
+                            });
+                        }
                         
                         this.state.showImportNotification = true;
                         this.state.selections = {};
-                        alert('סיכום נטען בהצלחה! הזירות והיעדים הרלוונטיים הודגשו עבורך.');
+                        alert('סיכום נטען בהצלחה! הפרטים הכלליים והיעדים המומלצים עודכנו.');
                         this.render();
                     } catch (err) { alert("שגיאה בטעינת הקובץ: " + err.message); }
                 };
@@ -303,6 +331,7 @@
         },
 
         renderTextWithInputs(text, id) {
+            if (!text.includes('X%')) return text;
             const value = this.state.metricValues[id] || '';
             const replacement = `<span class="metric-input-wrapper"><input type="number" value="${value}" class="metric-input" placeholder="X" min="0" max="100" onchange="App.handleMetricValueChange('${id}', this.value)" onclick="(e) => e.stopPropagation()"><span>אחוזים</span></span>`;
             const parts = text.split('X%');
@@ -326,11 +355,29 @@
                 notification = `<div id="notification" class="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4 mb-6 rounded-md relative"><p class="font-bold">הנתונים יובאו בהצלחה!</p><p>הזירות והיעדים המומלצים על בסיס סיכום השיח הודגשו עבורך. כעת באפשרותך לבחור את הרכיבים המדויקים לתכנית העבודה.</p><button onclick="App.state.showImportNotification=false; App.render();" class="absolute top-2 left-2 text-yellow-500 font-bold text-xl">&times;</button></div>`;
             }
 
+            const { schoolName, principalName, mentorName, coordinatorName, guidanceHours, additionalTraining, globalPartners } = this.state.generalInfo;
+
             return `
-                <header class="mb-8"><h1 class="text-4xl md:text-5xl font-bold text-teal-800">בניית תוכנית עבודה</h1><p class="text-lg text-stone-600 mt-2">בחירת רכיבי התערבות על בסיס ממצאי השיח</p></header>
+                <header class="mb-8"><h1 class="text-4xl md:text-5xl font-bold text-teal-800">בניית תוכנית ליווי בית ספרית בתחום הכלה והוגנות</h1></header>
                 ${notification}
-                <div class="bg-white p-6 rounded-xl shadow-md space-y-4 mb-8 no-print"><div class="flex flex-col sm:flex-row justify-between items-center gap-4"><div><h2 class="text-xl font-semibold text-stone-700">שלב 1: ייבוא והדגשת המלצות</h2><p class="text-stone-600">טענו את קובץ סיכום השיח (JSON) כדי להדגיש אוטומטית את הרכיבים המומלצים.</p></div><button onclick="App.importSummary()" class="bg-teal-600 text-white px-5 py-2 rounded-lg font-semibold hover:bg-teal-700">טען סיכום שיח...</button></div></div>
-                <h2 class="text-xl font-semibold text-stone-700 mb-4 no-print">שלב 2: בחירת רכיבי תוכנית</h2>
+                
+                <div class="bg-white p-6 rounded-xl shadow-md mb-8">
+                    <div class="flex flex-col sm:flex-row justify-between items-start mb-4 border-b pb-4">
+                        <h2 class="text-2xl font-semibold text-stone-700">שלב 1: פרטים כלליים</h2>
+                        <button onclick="App.importSummary()" class="bg-teal-600 text-white px-5 py-2 rounded-lg font-semibold hover:bg-teal-700 mt-4 sm:mt-0 no-print">טען נתונים מסיכום שיח...</button>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 text-sm">
+                        <div><label class="font-bold text-stone-600 block mb-1">בית הספר:</label><input type="text" value="${schoolName}" onchange="App.handleGeneralInfoChange('schoolName', this.value)" class="w-full p-2 border rounded"></div>
+                        <div><label class="font-bold text-stone-600 block mb-1">שם המנהל/ת:</label><input type="text" value="${principalName}" onchange="App.handleGeneralInfoChange('principalName', this.value)" class="w-full p-2 border rounded"></div>
+                        <div><label class="font-bold text-stone-600 block mb-1">שם המדריכה:</label><input type="text" value="${mentorName}" onchange="App.handleGeneralInfoChange('mentorName', this.value)" class="w-full p-2 border rounded"></div>
+                        <div><label class="font-bold text-stone-600 block mb-1">שם רכז/ת ההכלה:</label><input type="text" value="${coordinatorName}" onchange="App.handleGeneralInfoChange('coordinatorName', this.value)" class="w-full p-2 border rounded"></div>
+                        <div><label class="font-bold text-stone-600 block mb-1">היקף שעות הדרכה:</label><input type="text" value="${guidanceHours}" onchange="App.handleGeneralInfoChange('guidanceHours', this.value)" class="w-full p-2 border rounded"></div>
+                        <div class="md:col-span-3"><label class="font-bold text-stone-600 block mb-1">שותפים מרכזיים:</label><input type="text" value="${globalPartners}" onchange="App.handleGeneralInfoChange('globalPartners', this.value)" class="w-full p-2 border rounded"></div>
+                        <div class="md:col-span-4"><label class="font-bold text-stone-600 block mb-1">תחומי דעת נוספים בהדרכה:</label><input type="text" value="${additionalTraining}" onchange="App.handleGeneralInfoChange('additionalTraining', this.value)" class="w-full p-2 border rounded"></div>
+                    </div>
+                </div>
+
+                <h2 class="text-2xl font-semibold text-stone-700 mb-4">שלב 2: בחירת רכיבי תוכנית</h2>
                 <div class="space-y-4">
                 ${Object.entries(this.data.arenas).map(([arenaId, arena]) => {
                     const isExpanded = this.state.expandedArenas[arenaId];
@@ -376,55 +423,119 @@
                 <div class="mt-8 text-center no-print"><button onclick="App.generateTable()" class="bg-green-600 text-white px-8 py-3 rounded-lg font-bold text-lg hover:bg-green-700 transition-transform hover:scale-105" ${Object.values(this.state.selections).some(s=>s)?'':'disabled'}>צור טבלת תכנון</button></div>`;
         },
 
+       renderPlanHeader() {
+            if (!this.state.generalInfo) return '';
+            const { schoolName, principalName, mentorName, coordinatorName, guidanceHours, additionalTraining, globalPartners } = this.state.generalInfo;
+            return `
+                <div class="bg-white p-6 rounded-xl shadow-md mb-6 page-break-inside-avoid">
+                    <h1 class="text-2xl font-bold text-teal-800 border-b pb-2 mb-4">תוכנית ליווי בית ספרית בתחום הכלה והוגנות</h1>
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-x-8 gap-y-4 text-sm">
+                        <div><span class="font-bold text-stone-600 block">בית הספר:</span> <span class="text-stone-800">${schoolName}</span></div>
+                        <div><span class="font-bold text-stone-600 block">שם המנהל/ת:</span> <span class="text-stone-800">${principalName}</span></div>
+                        <div><span class="font-bold text-stone-600 block">שם המדריכה:</span> <span class="text-stone-800">${mentorName}</span></div>
+                        <div><span class="font-bold text-stone-600 block">שם רכז/ת ההכלה:</span> <span class="text-stone-800">${coordinatorName}</span></div>
+                        <div><span class="font-bold text-stone-600 block">היקף שעות הדרכה:</span> <span class="text-stone-800">${guidanceHours}</span></div>
+                        <div class="col-span-full md:col-span-3"><span class="font-bold text-stone-600 block">שותפים מרכזיים:</span> <span class="text-stone-800">${globalPartners}</span></div>
+                        <div class="col-span-full"><span class="font-bold text-stone-600 block">תחומי דעת נוספים בהדרכה:</span> <span class="text-stone-800">${additionalTraining}</span></div>
+                    </div>
+                </div>
+            `;
+        },
+
         renderTableView() {
             const getComponentById = (id) => { if (id.startsWith('custom-')) { for (const goalId in this.state.customItems) { const item = this.state.customItems[goalId].find(i => i.id === id); if (item) { for (const arena of Object.values(this.data.arenas)) { const goal = arena.goals.find(g => g.id === goalId); if (goal) return { component: item, type: item.type, goal, arena }; } } } return null; } for (const a of Object.values(this.data.arenas)) for (const g of a.goals) for (const t of ['activities', 'tasks', 'output_metrics', 'outcome_metrics']) for(const c of (g[t]||[])) if(c.id === id) return {component: c, type:t, goal:g, arena:a}; return null; };
             const selectedItems = Object.entries(this.state.selections).filter(([_,v])=>v).map(([id,_])=>getComponentById(id)).filter(Boolean);
-            if (selectedItems.length === 0) return `<div class="text-center bg-white p-8 rounded-lg shadow-md"><h2 class="text-2xl font-bold">לא נבחרו רכיבים</h2><p class="mb-6">חזור לשלב הבחירה.</p><button onclick="App.state.view='selection'; App.render()" class="bg-gray-500 text-white px-6 py-2 rounded-lg">חזור לבחירה</button></div>`;
-            const grouped = selectedItems.reduce((acc, {component, type, goal, arena}) => { if (!acc[arena.title]) acc[arena.title] = { color: arena.color, goals: {} }; if (!acc[arena.title].goals[goal.title]) acc[arena.title].goals[goal.title] = []; acc[arena.title].goals[goal.title].push({ ...component, type }); return acc; }, {});
+            if (selectedItems.length === 0) return `
+                ${this.renderPlanHeader()}
+                <div class="text-center bg-white p-8 rounded-lg shadow-md"><h2 class="text-2xl font-bold">לא נבחרו רכיבים לתוכנית</h2><p class="mb-6">חזור לשלב הבחירה כדי להוסיף יעדים, פעילויות ומשימות.</p><button onclick="App.state.view='selection'; App.render()" class="bg-gray-500 text-white px-6 py-2 rounded-lg">חזור לבחירה</button></div>`;
+            
+            const grouped = selectedItems.reduce((acc, {component, type, goal, arena}) => {
+                if (!acc[arena.title]) { acc[arena.title] = { color: arena.color, goals: {} }; }
+                if (!acc[arena.title].goals[goal.title]) { acc[arena.title].goals[goal.title] = { goalId: goal.id, activities: [], tasks: [], output_metrics: [], outcome_metrics: [] }; }
+                acc[arena.title].goals[goal.title][type].push(component);
+                return acc;
+            }, {});
+
             let tableRows = '';
             for (const arenaTitle in grouped) {
-                const arena = grouped[arenaTitle]; let isFirstArenaRow = true; const totalArenaRows = Object.values(arena.goals).flat().length;
+                const arena = grouped[arenaTitle];
+                let isFirstArenaRow = true;
+                const totalArenaRows = Object.keys(arena.goals).length;
+                
                 for (const goalTitle in arena.goals) {
-                    const components = arena.goals[goalTitle]; let isFirstGoalRow = true;
-                    components.forEach(comp => {
-                        const compData = this.state.tableData[comp.id] || {}; const selectedPartners = compData.partners || []; const typeMap = {activities:'פעילות מרכזית', tasks:'משימה למדריכה', output_metrics:'מדד תפוקה', outcome_metrics:'מדד תוצאה'};
-                        const isMetric = ['output_metrics', 'outcome_metrics'].includes(comp.type);
+                    const goalData = arena.goals[goalTitle];
+                    const renderCellContent = (items, type) => {
+                        if (!items || items.length === 0) return '<td class="p-2 align-top"></td>';
+                        const isMetric = ['output_metrics', 'outcome_metrics'].includes(type);
                         
-                        let displayText = comp.text;
-                        if (isMetric) {
-                            const metricValue = this.state.metricValues[comp.id];
-                            const displayValue = metricValue ? `<strong>${metricValue}</strong>` : '<strong>X</strong>';
-                            displayText = displayText.replace(/X%/g, `${displayValue} אחוזים`);
-                        }
+                        let content = items.map(item => {
+                            let text = item.text;
+                            if (isMetric) {
+                                const metricValue = this.state.metricValues[item.id];
+                                const displayValue = metricValue ? `<strong>${metricValue}</strong>` : '<strong>X</strong>';
+                                text = text.replace(/X%/g, `${displayValue} אחוזים`);
+                                return `<li>${text}</li>`;
+                            } else {
+                                const compData = this.state.tableData[item.id] || {};
+                                const selectedPartners = compData.partners || [];
+                                return `<div class="mb-2 last:mb-0">
+                                    <p>${text}</p>
+                                    <div class="item-details text-xs">
+                                        <div class="multiselect-container">
+                                            <div class="border rounded p-1 cursor-pointer bg-white min-h-[24px]">${selectedPartners.length > 0 ? selectedPartners.join(', ') : 'שותפים...'}</div>
+                                            <div class="multiselect-options shadow-lg rounded-md">${this.data.partners.map(p => `<label class="block p-2 hover:bg-stone-100"><input type="checkbox" onchange="App.handleMultiSelectChange('${item.id}', '${p}')" ${selectedPartners.includes(p) ? 'checked' : ''}> ${p}</label>`).join('')}</div>
+                                        </div>
+                                        <select onchange="App.handleTableInputChange('${item.id}', 'timeFrame', this.value)" class="w-full border rounded p-1"><option value="">זמן...</option>${this.data.timeFrames.map(tf => `<option value="${tf}" ${compData.timeFrame === tf ? 'selected' : ''}>${tf}</option>`).join('')}</select>
+                                        <select onchange="App.handleTableInputChange('${item.id}', 'frequency', this.value)" class="w-full border rounded p-1"><option value="">תדירות...</option>${this.data.frequencies.map(f => `<option value="${f}" ${compData.frequency === f ? 'selected' : ''}>${f}</option>`).join('')}</select>
+                                    </div>
+                                </div>`;
+                            }
+                        }).join('');
 
-                        const inputCells = !isMetric ? `
-                            <td class="p-2 align-top"><div class="multiselect-container"><div class="border rounded p-1 text-xs cursor-pointer bg-white min-h-[24px]">${selectedPartners.length > 0 ? selectedPartners.join(', ') : 'בחר...'}</div><div class="multiselect-options shadow-lg rounded-md">${this.data.partners.map(p => `<label class="block p-2 hover:bg-stone-100 text-xs"><input type="checkbox" onchange="App.handleMultiSelectChange('${comp.id}', '${p}')" ${selectedPartners.includes(p) ? 'checked' : ''}> ${p}</label>`).join('')}${selectedPartners.includes('אחר') ? `<input type="text" placeholder="פירוט" class="w-full mt-1 p-1 border rounded text-xs" onchange="App.handleTableInputChange('${comp.id}', 'customPartner', this.value)" value="${compData.customPartner || ''}">` : ''}</div></div></td>
-                            <td class="p-2 align-top"><select onchange="App.handleTableInputChange('${comp.id}', 'timeFrame', this.value)" class="w-full border rounded p-1 text-xs"><option value="">בחר...</option>${this.data.timeFrames.map(tf => `<option value="${tf}" ${compData.timeFrame === tf ? 'selected' : ''}>${tf}</option>`).join('')}</select>${compData.timeFrame === 'אחר (מילוי ידני)' ? `<input type="text" placeholder="פירוט" class="w-full mt-1 p-1 border rounded text-xs" onchange="App.handleTableInputChange('${comp.id}', 'customTimeFrame', this.value)" value="${compData.customTimeFrame || ''}">` : ''}</td>
-                            <td class="p-2 align-top"><select onchange="App.handleTableInputChange('${comp.id}', 'frequency', this.value)" class="w-full border rounded p-1 text-xs"><option value="">בחר...</option>${this.data.frequencies.map(f => `<option value="${f}" ${compData.frequency === f ? 'selected' : ''}>${f}</option>`).join('')}</select>${compData.frequency === 'אחר (מילוי ידני)' ? `<input type="text" placeholder="פירוט" class="w-full mt-1 p-1 border rounded text-xs" onchange="App.handleTableInputChange('${comp.id}', 'customFrequency', this.value)" value="${compData.customFrequency || ''}">` : ''}</td>` 
-                            : `<td class="p-2 bg-stone-50" colspan="3"></td>`;
-                        tableRows += `<tr class="border-t">
-                            ${isFirstArenaRow ? `<td rowspan="${totalArenaRows}" class="p-3 align-top font-bold text-${arena.color}-800">${arenaTitle}</td>` : ''}
-                            ${isFirstGoalRow ? `<td rowspan="${components.length}" class="p-3 align-top text-sm">${goalTitle}</td>` : ''}
-                            <td class="p-2 align-top"><span class="font-semibold text-xs text-${arena.color}-700">${typeMap[comp.type]}</span></td>
-                            <td class="p-2 align-top text-sm">${displayText}</td>
-                            ${inputCells}
-                        </tr>`;
-                        isFirstArenaRow = false; isFirstGoalRow = false;
-                    });
+                        return `<td class="p-2 align-top">${isMetric ? `<ul class="list-disc pr-4 space-y-2">${content}</ul>` : `<div class="space-y-2">${content}</div>`}</td>`;
+                    };
+
+                    tableRows += `<tr class="border-t">`;
+                    if (isFirstArenaRow) {
+                        tableRows += `<td rowspan="${totalArenaRows}" class="p-3 align-top font-bold text-${arena.color}-800 w-[10%]">${arenaTitle}</td>`;
+                    }
+                    tableRows += `<td class="p-3 align-top text-sm font-semibold w-[15%]">${goalTitle}</td>`;
+                    tableRows += renderCellContent(goalData.activities, 'activities');
+                    tableRows += renderCellContent(goalData.tasks, 'tasks');
+                    tableRows += renderCellContent(goalData.output_metrics, 'output_metrics');
+                    tableRows += renderCellContent(goalData.outcome_metrics, 'outcome_metrics');
+                    tableRows += `</tr>`;
+
+                    isFirstArenaRow = false;
                 }
             }
+
             return `
-                <header class="mb-6 flex justify-between items-center no-print"><div><h1 class="text-3xl font-bold text-teal-800">טבלת תוכנית עבודה</h1><p class="text-md text-stone-600">שלב 3: הגדרת פרמטרים וגיבוש תוכנית סופית</p></div><div class="flex items-center gap-2"><button onclick="App.state.view='gantt'; App.render()" class="bg-blue-600 text-white px-5 py-2 rounded-lg font-semibold hover:bg-blue-700">הצג לוח גאנט</button><button onclick="App.state.view='selection'; App.render()" class="bg-gray-500 text-white px-5 py-2 rounded-lg font-semibold hover:bg-gray-600">חזור לבחירה</button><button onclick="window.print()" class="bg-teal-600 text-white px-5 py-2 rounded-lg font-semibold hover:bg-teal-700">הדפס תוכנית</button></div></header>
-                <div class="bg-white p-4 rounded-xl shadow-md"><table class="w-full text-sm">
-                    <thead class="bg-stone-100"><tr><th class="p-2 text-right w-[15%]">זירה</th><th class="p-2 text-right w-[20%]">יעד אסטרטגי</th><th class="p-2 text-right w-[10%]">סוג</th><th class="p-2 text-right w-[25%]">פירוט</th><th class="p-2 text-right w-[15%]">שותפים</th><th class="p-2 text-right w-[7.5%]">זמן</th><th class="p-2 text-right w-[7.5%]">תדירות</th></tr></thead>
-                    <tbody>${tableRows}</tbody>
-                </table></div>`;
+                ${this.renderPlanHeader()}
+                <header class="mb-6 flex justify-between items-center no-print"><div><h2 class="text-3xl font-bold text-teal-800">פירוט התוכנית</h2></div><div class="flex items-center gap-2"><button onclick="App.state.view='gantt'; App.render()" class="bg-blue-600 text-white px-5 py-2 rounded-lg font-semibold hover:bg-blue-700">הצג לוח גאנט</button><button onclick="App.state.view='selection'; App.render()" class="bg-gray-500 text-white px-5 py-2 rounded-lg font-semibold hover:bg-gray-600">חזור לבחירה</button><button onclick="window.print()" class="bg-teal-600 text-white px-5 py-2 rounded-lg font-semibold hover:bg-teal-700">הדפס תוכנית</button></div></header>
+                <div class="bg-white p-4 rounded-xl shadow-md overflow-x-auto">
+                    <table class="w-full text-sm min-w-[1200px]">
+                        <thead class="bg-stone-100">
+                            <tr>
+                                <th class="p-2 text-right w-[10%]">זירה</th>
+                                <th class="p-2 text-right w-[15%]">יעד אסטרטגי</th>
+                                <th class="p-2 text-right w-[20%]">פעילויות מרכזיות</th>
+                                <th class="p-2 text-right w-[20%]">משימות למדריכה</th>
+                                <th class="p-2 text-right w-[17.5%]">מדדי תפוקה</th>
+                                <th class="p-2 text-right w-[17.5%]">מדדי תוצאה</th>
+                            </tr>
+                        </thead>
+                        <tbody>${tableRows}</tbody>
+                    </table>
+                </div>`;
         },
 
         renderGanttView() {
             const getComponentById = (id) => { if (id.startsWith('custom-')) { for (const goalId in this.state.customItems) { const item = this.state.customItems[goalId].find(i => i.id === id); if (item) { for (const arena of Object.values(this.data.arenas)) { const goal = arena.goals.find(g => g.id === goalId); if (goal) return { component: item, type: item.type, goal, arena }; } } } return null; } for (const a of Object.values(this.data.arenas)) for (const g of a.goals) for (const t of ['activities', 'tasks', 'output_metrics', 'outcome_metrics']) for(const c of (g[t]||[])) if(c.id === id) return {component: c, type:t, goal:g, arena:a}; return null; };
             const ganttData = Object.entries(this.state.selections).filter(([_,v])=>v).map(([id,_])=>getComponentById(id)).filter(item => item && !['output_metrics', 'outcome_metrics'].includes(item.type));
-            if (ganttData.length === 0) return `<div class="text-center bg-white p-8 rounded-lg shadow-md"><h2 class="text-2xl font-bold">לא נבחרו פעילויות או משימות לתצוגה</h2><p class="mb-6">חזור לטבלה או לשלב הבחירה.</p><button onclick="App.state.view='table'; App.render()" class="bg-gray-500 text-white px-6 py-2 rounded-lg">חזור לטבלה</button></div>`;
+            if (ganttData.length === 0) return `
+                ${this.renderPlanHeader()}
+                <div class="text-center bg-white p-8 rounded-lg shadow-md"><h2 class="text-2xl font-bold">לא נבחרו פעילויות או משימות לתצוגה</h2><p class="mb-6">חזור לטבלה או לשלב הבחירה.</p><button onclick="App.state.view='table'; App.render()" class="bg-gray-500 text-white px-6 py-2 rounded-lg">חזור לטבלה</button></div>`;
             const getTimeFrameMonths = (tf) => ({ 'חודשיים ראשונים': [0, 1], 'אמצע שנה': [2, 3, 4, 5, 6, 7], 'סוף שנה': [8, 9], 'לאורך השנה': Array.from({length: 10}, (_, i) => i) }[tf] || []);
             let ganttRows = '';
             ganttData.forEach(item => {
@@ -445,7 +556,8 @@
             });
 
             return `
-                <header class="mb-6 flex justify-between items-center no-print"><div><h1 class="text-3xl font-bold text-teal-800">לוח גאנט - תוכנית עבודה</h1></div><div class="flex items-center gap-2"><button onclick="App.state.view='table'; App.render()" class="bg-gray-500 text-white px-5 py-2 rounded-lg font-semibold hover:bg-gray-600">הצג טבלה</button><button onclick="window.print()" class="bg-teal-600 text-white px-5 py-2 rounded-lg font-semibold hover:bg-teal-700">הדפס גאנט</button></div></header>
+                ${this.renderPlanHeader()}
+                <header class="mb-6 flex justify-between items-center no-print"><div><h2 class="text-3xl font-bold text-teal-800">לוח גאנט - תוכנית עבודה</h2></div><div class="flex items-center gap-2"><button onclick="App.state.view='table'; App.render()" class="bg-gray-500 text-white px-5 py-2 rounded-lg font-semibold hover:bg-gray-600">הצג טבלה</button><button onclick="window.print()" class="bg-teal-600 text-white px-5 py-2 rounded-lg font-semibold hover:bg-teal-700">הדפס גאנט</button></div></header>
                 <div class="bg-white p-4 rounded-xl shadow-md">
                     <div class="overflow-x-auto"><table class="w-full text-sm border-collapse">
                         <thead class="bg-stone-100"><tr><th class="p-2 text-right w-[30%]">רכיב</th><th class="p-2 text-right w-[20%]">יעד</th><th class="p-2 text-center w-[10%]">זירה</th>${this.data.months.map(m => `<th class="p-2 border">${m}</th>`).join('')}</tr></thead>
