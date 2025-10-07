@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>מדריך למשתמש - תכנון תוכנית ליווי</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;600;700&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Heebo', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: #fafbfc;
+            min-height: 100vh;
+            padding: 40px 20px;
+            direction: rtl;
+        }
+        
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            text-align: center;
+            color: #1a1a2e;
+            margin-bottom: 50px;
+        }
+        
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            font-weight: 600;
+            letter-spacing: -0.5px;
+        }
+        
+        .header p {
+            font-size: 1.1em;
+            color: #6b7280;
+            font-weight: 300;
+            line-height: 1.6;
+        }
+        
+        .process-container {
+            background: white;
+            border-radius: 16px;
+            padding: 40px;
+            border: 1px solid #e5e7eb;
+        }
+        
+        .step {
+            margin-bottom: 24px;
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid #e5e7eb;
+            transition: all 0.3s ease;
+        }
+        
+        .step:hover {
+            border-color: #d1d5db;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        }
+        
+        .step-header {
+            padding: 28px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            transition: all 0.3s ease;
+            background: white;
+        }
+        
+        .step-a .step-header {
+            background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+        }
+        
+        .step-b .step-header {
+            background: linear-gradient(135deg, #fefce8 0%, #fef9c3 100%);
+        }
+        
+        .step-c .step-header {
+            background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
+        }
+        
+        .step-number {
+            width: 48px;
+            height: 48px;
+            background: white;
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.3em;
+            font-weight: 600;
+            flex-shrink: 0;
+            color: #1a1a2e;
+        }
+        
+        .step-a .step-number {
+            border-color: #8b5cf6;
+            color: #8b5cf6;
+        }
+        
+        .step-b .step-number {
+            border-color: #f59e0b;
+            color: #f59e0b;
+        }
+        
+        .step-c .step-number {
+            border-color: #3b82f6;
+            color: #3b82f6;
+        }
+        
+        .step-title {
+            flex-grow: 1;
+        }
+        
+        .step-title h2 {
+            font-size: 1.4em;
+            margin-bottom: 5px;
+            font-weight: 600;
+            color: #1a1a2e;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+        
+        .header-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: white;
+            color: #8b5cf6;
+            padding: 6px 14px;
+            border-radius: 6px;
+            text-decoration: none;
+            font-size: 0.75em;
+            font-weight: 500;
+            border: 1px solid #e5e7eb;
+            transition: all 0.2s ease;
+        }
+        
+        .header-link:hover {
+            background: #8b5cf6;
+            color: white;
+            border-color: #8b5cf6;
+            transform: translateY(-1px);
+        }
+        
+        .step-b .header-link {
+            color: #f59e0b;
+        }
+        
+        .step-b .header-link:hover {
+            background: #f59e0b;
+            color: white;
+            border-color: #f59e0b;
+        }
+        
+        .step-c .header-link {
+            color: #3b82f6;
+        }
+        
+        .step-c .header-link:hover {
+            background: #3b82f6;
+            color: white;
+            border-color: #3b82f6;
+        }
+        
+        .step-title .subtitle {
+            font-size: 0.9em;
+            color: #6b7280;
+            font-weight: 400;
+        }
+        
+        .toggle-icon {
+            font-size: 1.3em;
+            transition: transform 0.3s ease;
+            color: #9ca3af;
+        }
+        
+        .step.active .toggle-icon {
+            transform: rotate(180deg);
+        }
+        
+        .step-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.4s ease;
+            background: white;
+        }
+        
+        .step.active .step-content {
+            max-height: 2000px;
+        }
+        
+        .step-inner {
+            padding: 30px;
+            border-top: 1px solid #f3f4f6;
+        }
+        
+        .info-box {
+            background: #f9fafb;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            border-right: 3px solid #8b5cf6;
+        }
+        
+        .info-box.warning {
+            border-right-color: #f59e0b;
+            background: #fffbeb;
+        }
+        
+        .info-box.success {
+            border-right-color: #3b82f6;
+            background: #eff6ff;
+        }
+        
+        .info-row {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+            align-items: flex-start;
+        }
+        
+        .info-row:last-child {
+            margin-bottom: 0;
+        }
+        
+        .info-label {
+            font-weight: 600;
+            color: #374151;
+            min-width: 80px;
+        }
+        
+        .info-value {
+            flex-grow: 1;
+            line-height: 1.6;
+            color: #4b5563;
+        }
+        
+        .process-list {
+            list-style: none;
+            padding: 0;
+        }
+        
+        .process-list li {
+            padding: 14px 14px 14px 40px;
+            margin-bottom: 10px;
+            background: #f9fafb;
+            border-radius: 8px;
+            position: relative;
+            line-height: 1.7;
+            color: #374151;
+            border: 1px solid #f3f4f6;
+        }
+        
+        .process-list li:before {
+            content: "✓";
+            position: absolute;
+            right: 14px;
+            color: #8b5cf6;
+            font-weight: 600;
+            font-size: 1.1em;
+        }
+        
+        .tool-link {
+            display: inline-block;
+            background: #8b5cf6;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 8px;
+            text-decoration: none;
+            margin-top: 10px;
+            transition: all 0.3s ease;
+            font-weight: 500;
+            font-size: 0.95em;
+        }
+        
+        .tool-link:hover {
+            background: #7c3aed;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3);
+        }
+        
+        .connector {
+            text-align: center;
+            font-size: 2em;
+            color: #d1d5db;
+            margin: 20px 0;
+        }
+        
+        .highlight {
+            background: #fef3c7;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-weight: 600;
+            color: #92400e;
+        }
+        
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 1.8em;
+            }
+            
+            .process-container {
+                padding: 20px;
+            }
+            
+            .step-header {
+                padding: 20px;
+            }
+            
+            .step-number {
+                width: 40px;
+                height: 40px;
+                font-size: 1.2em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎯 מדריך למשתמש</h1>
+            <p>מתכנון השיח ועד בניית תוכנית ליווי בית ספרית בתחום ההכלה וההוגנות</p>
+        </div>
+        
+        <div class="process-container">
+            <!-- שלב א' -->
+            <div class="step step-a active">
+                <div class="step-header" onclick="toggleStep(this)">
+                    <div class="step-number">א'</div>
+                    <div class="step-title">
+                        <h2>
+                            <span>היערכות לשיח - בחירת נושאי מיקוד</span>
+                            <a href="https://drive.google.com/file/d/19alPjb4qb0EuWqImPczxspmMfO2ipZde/view?usp=drive_link" target="_blank" class="header-link">
+                                📄 דף בחירת נושאים
+                            </a>
+                        </h2>
+                        <div class="subtitle">שלב ראשון: הגדרת הבסיס לשיח הממוקד</div>
+                    </div>
+                    <div class="toggle-icon">▼</div>
+                </div>
+                <div class="step-content">
+                    <div class="step-inner">
+                        <div class="info-box">
+                            <div class="info-row">
+                                <div class="info-label">🎯 מטרה:</div>
+                                <div class="info-value">מיקוד שיח ההדרכה בנושאים בעלי העדיפות הגבוהה ביותר עבור בית הספר</div>
+                            </div>
+                            <div class="info-row">
+                                <div class="info-label">👥 אחריות:</div>
+                                <div class="info-value">מנהל/ת בית הספר ורכז/ת ההכלה</div>
+                            </div>
+                            <div class="info-row">
+                                <div class="info-label">🛠️ הכלי:</div>
+                                <div class="info-value">"דף בחירת נושאים להדרכה" (מסמך מודפס)</div>
+                            </div>
+                        </div>
+                        
+                        <h3 style="margin: 25px 0 15px 0; color: #374151; font-weight: 600;">תהליך העבודה:</h3>
+                        <ol class="process-list">
+                            <li>עברו יחד על "דף בחירת הנושאים להדרכה"</li>
+                            <li>נהלו דיון ובחרו <span class="highlight">עד 4 נושאים מרכזיים</span> להתמקדות בהדרכה הקרובה</li>
+                            <li>הנושאים הנבחרים יהוו את הבסיס לשיח הממוקד שיתקיים בשלב הבא עם המדריכ/ה</li>
+                        </ol>
+                        
+                        <div class="info-box warning">
+                            <strong>⚠️ חשוב:</strong> שלב זה חיוני כדי להבטיח שהשיח עם המדריכה יהיה ממוקד, רלוונטי ויעיל
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="connector">↓</div>
+            
+            <!-- שלב ב' -->
+            <div class="step step-b">
+                <div class="step-header" onclick="toggleStep(this)">
+                    <div class="step-number">ב'</div>
+                    <div class="step-title">
+                        <h2>
+                            <span>קיום שיח ממוקד באמצעות "כלי השיח"</span>
+                            <a href="https://ilanit17.github.io/agafyesodi/code%20-%202025-07-20T134820.457.html" target="_blank" class="header-link">
+                                🔗 כלי השיח המקוון
+                            </a>
+                        </h2>
+                        <div class="subtitle">שלב שני: עבודה עם הכלי הדיגיטלי</div>
+                    </div>
+                    <div class="toggle-icon">▼</div>
+                </div>
+                <div class="step-content">
+                    <div class="step-inner">
+                        <div class="info-box">
+                            <div class="info-row">
+                                <div class="info-label">🎯 מטרה:</div>
+                                <div class="info-value">העמקה בנושאים שנבחרו, איתור חוזקות ואתגרים, ובחירת פרקטיקות להתערבות</div>
+                            </div>
+                            <div class="info-row">
+                                <div class="info-label">👥 אחריות:</div>
+                                <div class="info-value">מדריכ/ה, מנהל/ת ורכז/ת הכלה</div>
+                            </div>
+                            <div class="info-row">
+                                <div class="info-label">🛠️ הכלי:</div>
+                                <div class="info-value">
+                                    <a href="https://ilanit17.github.io/agafyesodi/code%20-%202025-07-20T134820.457.html" class="tool-link" target="_blank">
+                                        🔗 כלי השיח המקוון
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <h3 style="margin: 25px 0 15px 0; color: #374151; font-weight: 600;">תהליך העבודה:</h3>
+                        <ol class="process-list">
+                            <li>המדריכ/ה פותח/ת את כלי השיח המקוון ומשתפ/ת מסך</li>
+                            <li>השיח יתמקד <span class="highlight">אך ורק בנושאים שסומנו מראש</span> בשלב א'</li>
+                            <li>עבור כל נושא, יש לנהל דיון בהתאם לשאלות המנחות ולסמן את האפשרויות הרלוונטיות בכלי</li>
+                        </ol>
+                        
+                        <h3 style="margin: 25px 0 15px 0; color: #374151; font-weight: 600;">💾 שמירה וטעינה של השיח:</h3>
+                        <div class="info-box success">
+                            <p style="margin-bottom: 15px;"><strong>ניתן לנהל את השיח במספר פגישות:</strong></p>
+                            <div style="margin-bottom: 15px;">
+                                <strong>📥 שמירת התקדמות:</strong> בסיום כל פגישה, יש ללחוץ על <span class="highlight">"שמור סיכום שיח"</span>. פעולה זו תוריד למחשב קובץ JSON.
+                            </div>
+                            <div>
+                                <strong>📤 המשך שיח:</strong> בפגישה הבאה, יש לפתוח את הכלי, ללחוץ על <span class="highlight">"טען סיכום שיח"</span> ולבחור את הקובץ השמור. הכלי ייטען עם כל הבחירות הקודמות.
+                            </div>
+                        </div>
+                        
+                        <div class="info-box">
+                            <strong>🎁 תוצר סופי:</strong> קובץ JSON מסכם ומעודכן, המכיל את כל פרטי השיח הממוקד
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="connector">↓</div>
+            
+            <!-- שלב ג' -->
+            <div class="step step-c">
+                <div class="step-header" onclick="toggleStep(this)">
+                    <div class="step-number">ג'</div>
+                    <div class="step-title">
+                        <h2>
+                            <span>בניית תוכנית עבודה</span>
+                            <a href="https://ilanit17.github.io/agafyesodi/tochnithachala.html" target="_blank" class="header-link">
+                                🔗 כלי בניית התוכנית
+                            </a>
+                        </h2>
+                        <div class="subtitle">שלב שלישי: יצירת תוכנית מפורטת ומדידה</div>
+                    </div>
+                    <div class="toggle-icon">▼</div>
+                </div>
+                <div class="step-content">
+                    <div class="step-inner">
+                        <div class="info-box">
+                            <div class="info-row">
+                                <div class="info-label">🎯 מטרה:</div>
+                                <div class="info-value">תרגום התובנות מהשיח לתוכנית עבודה שנתית, מפורטת ומדידה</div>
+                            </div>
+                            <div class="info-row">
+                                <div class="info-label">👥 אחריות:</div>
+                                <div class="info-value">מדריכ/ה (בשיתוף צוות בית הספר)</div>
+                            </div>
+                            <div class="info-row">
+                                <div class="info-label">🛠️ הכלי:</div>
+                                <div class="info-value">
+                                    <a href="https://ilanit17.github.io/agafyesodi/tochnithachala.html" class="tool-link" target="_blank">
+                                        🔗 כלי לבניית תוכנית ליווי בית ספרית
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <h3 style="margin: 25px 0 15px 0; color: #374151; font-weight: 600;">תהליך העבודה:</h3>
+                        <ol class="process-list">
+                            <li>פתחו את כלי בניית התוכנית</li>
+                            <li>בשלב 1 ("פרטים כלליים"), לחצו על <span class="highlight">"טען נתונים מסיכום שיח..."</span> ובחרו את קובץ ה-JSON הסופי משלב ב'</li>
+                            <li>הפעולה תטען אוטומטית את <span class="highlight">הפרטים הכלליים</span> של בית הספר ו<span class="highlight">תדגיש את היעדים המומלצים</span> בשלב 2</li>
+                            <li>עברו על היעדים המומלצים, בחרו את הרכיבים הרצויים (פעילויות, משימות, מדדים) והגדירו ערכים מספריים במדדים הכמותיים</li>
+                            <li>לחצו על <span class="highlight">"צור טבלת תכנון"</span></li>
+                            <li>בטבלה הסופית, הגדירו <span class="highlight">שותפים, מסגרת זמן ותדירות</span> עבור כל פעילות ומשימה</li>
+                            <li>בסיום, ניתן להדפיס את התוכנית כטבלה או לצפות בה כתצוגת גאנט</li>
+                        </ol>
+                        
+                        <div class="info-box success">
+                            <strong>✅ סיימתם!</strong> כעת יש בידיכם תוכנית עבודה שנתית מלאה ומפורטת
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        function toggleStep(header) {
+            const step = header.parentElement;
+            step.classList.toggle('active');
+        }
+        
+        // פתיחת שלב א' כברירת מחדל
+        document.addEventListener('DOMContentLoaded', function() {
+            const firstStep = document.querySelector('.step-a');
+            if (firstStep) {
+                firstStep.classList.add('active');
+            }
+        });
+    </script>
+</body>
+</html>
