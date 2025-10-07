@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>בניית תוכנית עבודה מפורטת</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Assistant:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Assistant', sans-serif; }
+        .accordion-content { max-height: 0; overflow: hidden; transition: max-height 0.5s ease-out; }
+        .accordion-content.is-open { max-height: 8000px; /* Large enough value */ }
+        .rotate-45 { transform: rotate(45deg); transition: transform 0.3s ease; }
+        .multiselect-container { position: relative; }
+        .multiselect-options { display: none; position: absolute; background-color: white; border: 1px solid #ddd; z-index: 10; width: 200px; max-height: 200px; overflow-y: auto; box-shadow: 0 4px 8px rgba(0,0,0,0.1); border-radius: 0.375rem; }
+        .multiselect-container:hover .multiselect-options { display: block; }
+        .metric-input-wrapper {
+            display: inline-flex;
+            align-items: baseline;
+            gap: 0.25rem; /* 4px */
+        }
+        .metric-input {
+            width: 4rem; /* 64px */
+            text-align: center;
+            border: 1px solid #cbd5e1;
+            border-radius: 0.25rem;
+            padding: 0.1rem;
+        }
+        @media print {
+            body { background-color: white !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+            .no-print { display: none !important; }
+            main { padding: 0 !important; }
+            table { font-size: 10px; width: 100%; }
+            td, th { padding: 4px !important; }
+            .bg-white { box-shadow: none !important; }
+            .page-break-inside-avoid { page-break-inside: avoid; }
+        }
+    </style>
+</head>
+<body class="bg-stone-50 text-stone-800">
+
+    <main id="app" class="max-w-7xl mx-auto p-4 sm:p-6 md:p-10"></main>
+
+    <script>
+    const App = {
+        state: {
+            view: 'selection',
+            selections: {},
+            tableData: {},
+            metricValues: {}, // To store values from X% inputs
+            recommendedGoalIds: new Set(),
+            showImportNotification: false,
+            expandedArenas: {},
+            customItems: {},
+        },
+        data: {
+            partners: ['רכזת הכלה', 'מנהל/ת', 'סגנ/ית', 'רכז/ת שכבה', 'יועצ/ת', 'צוות חינוכי', 'הורים', 'תלמידים', 'אחר'],
+            timeFrames: ['חודשיים ראשונים', 'אמצע שנה', 'סוף שנה', 'לאורך השנה', 'אחר (מילוי ידני)'],
+            frequencies: ['שבועית', 'דו-שבועית', 'חודשית', 'חד-פעמית', 'לפי צורך', 'אחר (מילוי ידני)'],
+            months: ['ספטמבר', 'אוקטובר', 'נובמבר', 'דצמבר', 'ינואר', 'פברואר', 'מרץ', 'אפריל', 'מאי', 'יוני'],
+            arenas: {
+                 arena1: { title: "זירה 1: הוראה, למידה והערכה", color: "teal", goals: [
+                    { 
+                        id: "a1g1", title: "הבניית והטמעת מחוון לתכנון שיעור מבוסס UDL", 
+                        activities: [{id:"a1g1-act1", text:"הכשרת מורים ליישום התבנית ופיתוח שפה פדגוגית אחידה."}, {id:"a1g1-act2", text:"התאמת תבנית תכנון שיעור משרדית לעקרונות UDL ולשפת ההכלה הבית-ספרית."}, {id:"a1g1-act3", text:"שיתוף צוותים רב-מקצועיים בתכנון שיעורים משותפים."}, {id:"a1g1-act4", text:"ליווי תהליכי רפלקציה והערכה."}], 
+                        tasks: [{id:"a1g1-tsk1", text:"להוביל ישיבות צוות רב-מקצועי להתאמת תבנית השיעור הUDL שבנה אגף יסודי לתפיסה ולמאפייני בית הספר המודרך"}, {id:"a1g1-tsk2", text:"לעצב ולהעביר סדנאות על שלושת עקרונות ה-UDL (ייצוג, הפעלה והבעה, הנעה ומעורבות)."}, {id:"a1g1-tsk3", text:"להדגים תכנון שיעור באמצעות המחוון החדש"}, {id:"a1g1-tsk4", text:"ללוות מורים בתכנון משותף של שיעורים בהתאמה לתבנית השיעור ה-UDL"}, {id:"a1g1-tsk5", text:"לבנות מנגנון לתצפיות עמיתים ושיחות משוב מבוססות מחוון."}],
+                        output_metrics: [{id:"a1g1-opm2", text:"X% מאנשי הצוות החינוכי עברו הכשרה על שלושת עקרונות ה-UDL."}, {id:"a1g1-opm3", text:"X% מהצוות עברו הכשרה על המחוון תוך 3 חודשים."}, {id:"a1g1-opm4", text:"לפחות ב-X% מתכניות השיעורים השבועיות נעשה שימוש במחוון UDL."}, {id:"a1g1-opm5", text:"עלייה של X% לפחות במורות המדווחות על תכנון שיעורים בהתאמה לעקרונות ה-UDL."}],
+                        outcome_metrics: [{id:"a1g1-ocm1", text:"עלייה של X% לפחות בתלמידים המעורבים ופעילים בשיעור (מדידה על ידי תצפיות מובנות)."}, {id:"a1g1-ocm2", text:"X% מהמורים מפגינים מיומנות גבוהה בתכנון שיעורים המקדמים נגישות, השתתפות וביטוי אישי."}, {id:"a1g1-ocm3", text:"עלייה של X% לפחות בתלמידים המדווחים על תחושת מסוגלות ומעורבות גבוהה יותר."}, {id:"a1g1-ocm4", text:"שיפור של X% לפחות בהישגים של תלמידים במיקוד."}] 
+                    },
+                    { 
+                        id: "a1g2", title: "ביסוס פדגוגיה מכוונת הסרת חסמים", 
+                        activities: [{id:"a1g2-act1", text:"הכשרת מורים לזיהוי חסמים בזמן אמת והתאמת ההוראה."}, {id:"a1g2-act2", text:"ניתוח חסמים סביבתיים והצגת מענים יצירתיים בצוותים רב-מקצועיים."}, {id:"a1g2-act3", text:"שילוב כלים לזיהוי והסרת חסמים בתבנית תכנון השיעור."}, {id:"a1g2-act4", text:"ליווי ומשוב על תהליכי הסרת חסמים בכיתה."}], 
+                        tasks: [{id:"a1g2-tsk1", text:"להכיר לצוות המורים את מושג חסמי למידה מעורבות כחלק מתפיסת הUDL."}, {id:"a1g2-tsk2", text:"להנחות את הצוותים בזיהוי של מגוון חסמים (קוגניטיביים, רגשיים, סביבתיים)."}, {id:"a1g2-tsk3", text:"להציג ולהדגים מגוון מענים."}, {id:"a1g2-tsk4", text:"לקיים תצפיות בשיעורים בדגש על זיהוי חסמים ופעולות להסרתם ולמשב את המורים."}, {id:"a1g2-tsk5", text:"לרכז מאגר בית-ספרי של מענים אפקטיביים לחסמים נפוצים."}],
+                        output_metrics: [{id:"a1g2-opm1", text:"X% מהמורים משתמשים באופן שוטף במושג 'חסמי למידה ומעורבות'."}, {id:"a1g2-opm2", text:"X% מהמורים לוו והונחו בזיהוי מגוון חסמים."}, {id:"a1g2-opm3", text:"X% מתבניות תכנון השיעורים הבית-ספריות כוללות התייחסות לחסמים ומענים."}, {id:"a1g2-opm4", text:"נוצר מאגר בית-ספרי הכולל לפחות X מענים מתועדים לחסמים נפוצים."}],
+                        outcome_metrics: [{id:"a1g2-ocm1", text:"X% מהמורים מפגינים יכולת גבוהה למפות קשיים וחסמים ולבחור מענים מותאמים."}, {id:"a1g2-ocm2", text:"עלייה של X% בתלמידים המדווחים על קבלת עזרה מותאמת כאשר נתקלים בקושי."}, {id:"a1g2-ocm3", text:"ירידה של X% במספר התלמידים המופנים לקבלת סיוע וליווי חיצוני."}]
+                    },
+                    { 
+                        id: "a1g3", title: "קידום למידה פעילה והפחתת 'זמן מע\"מ'", 
+                        activities: [{id:"a1g3-act1", text:"הקניית פרקטיקות הוראה מגוונות המקדמות למידה פעילה."}, {id:"a1g3-act2", text:"הובלת שיח צוותי על בניית שגרות כיתתיות המקדמות שיח ובחירה."}, {id:"a1g3-act3", text:"התאמת תבנית תכנון השיעור לשילוב רכיבי למידה פעילה."}, {id:"a1g3-act4", text:"ליווי באמצעות תצפיות ומשוב על יחס דיבור מורה-פעילות תלמידים."}], 
+                        tasks: [{id:"a1g3-tsk1", text:"להנחות סדנאות על תפקיד המורה כמנחה ומתווך."}, {id:"a1g3-tsk2", text:"להדגים מגוון אסטרטגיות למידה פעילה."}, {id:"a1g3-tsk3", text:"ללוות מורים בתכנון שיעורים מופחתי מע\"מ."}, {id:"a1g3-tsk4", text:"לערוך תצפיות ולספק למורים משוב מותאם."}],
+                        output_metrics: [{id:"a1g3-opm1", text:"מתבססת שפה פדגוגית אחידה המקדמת למידה פעילה (לפחות X% מהמורים משתמשים במושגים קבועים)."}, {id:"a1g3-opm2", text:"ירידה משמעותית בזמן ההוראה הפרונטלית (ירידה של X% לפחות בזמן מע\"מ)."}, {id:"a1g3-opm3", text:"התקיימו X סדנאות למורים בנושא תפקיד המורה."}, {id:"a1g3-opm4", text:"נערכו X תצפיות הכוללות מתן משוב מותאם."}],
+                        outcome_metrics: [{id:"a1g3-ocm1", text:"עלייה של X% בתלמידים המדווחים על מעורבות אקטיבית בשיעור."}, {id:"a1g3-ocm2", text:"עלייה של X% ברמת השביעות של המורים מהשיעורים שלהם."}]
+                    },
+                     { 
+                        id: "a1g4", title: "קידום הוראה מפורשת", 
+                        activities: [{id:"a1g4-act1", text:"הכשרת מורים להיכרות עם הוראה מפורשת."}, {id:"a1g4-act2", text:"בחירה ובניה משותפת של פרקטיקות בית ספריות."}, {id:"a1g4-act3", text:"יצירת תיאום פדגוגי בין תחומי הדעת."}, {id:"a1g4-act4", text:"התאמת תבנית תכנון השיעור לשלבי הוראה מפורשת."}, {id:"a1g4-act5", text:"ליווי ורפלקציה על יישום הוראה מפורשת."}], 
+                        tasks: [{id:"a1g4-tsk1", text:"להכיר לצוות החינוכי את מושג הוראה מפורשת."}, {id:"a1g4-tsk2", text:"להציג למורים את עקרונות ושלבי ההוראה המפורשת."}, {id:"a1g4-tsk3", text:"להדגים 'חשיבה בקול רם' ככלי מודלינג."}, {id:"a1g4-tsk4", text:"לסייע למורים לפרק מיומנויות מורכבות."}, {id:"a1g4-tsk5", text:"להטמיע את מהלך כלים שלובים כשגרת הוראה."}, {id:"a1g4-tsk6", text:"לערוך תצפיות ולספק משוב מותאם."}],
+                        output_metrics: [{id:"a1g4-opm1", text:"בוצעו X הדגמות ומודלינג של עקרונות ההוראה המפורשת."}, {id:"a1g4-opm2", text:"מתבססת שפה הוראתית אחידה (X% מהמורים משתמשים)."}, {id:"a1g4-opm3", text:"X% מהמורים מובילים שיעורים באופן ברור ושיטתי."}, {id:"a1g4-opm4", text:"נערכו X תצפיות הכוללות מתן משוב מותאם."}],
+                        outcome_metrics: [{id:"a1g4-ocm1", text:"תלמידים מראים שיפור של X% לפחות בהבנת המשימות וברכישת מיומנויות."}, {id:"a1g4-ocm2", text:"עלייה של X% בתלמידים המדווחים על הבנה ברורה של ציפיות השיעור."}]
+                    },
+                    { 
+                        id: "a1g5", title: "קידום תפקודים ניהוליים וויסות עצמי", 
+                        activities: [{id:"a1g5-act1", text:"הכשרת מורים בשימוש בשפה מטה-קוגניטיבית."}, {id:"a1g5-act2", text:"הקניית פרקטיקות לפירוק משימות וויסות רגשי."}, {id:"a1g5-act3", text:"שילוב רכיבים לפיתוח תפקודים ניהוליים בתכנון השיעור."}, {id:"a1g5-act4", text:"בניית שגרות כיתתיות המקדמות תכנון ורפלקציה."}], 
+                        tasks: [{id:"a1g5-tsk1", text:"להכיר לצוות את התפקודים הניהוליים המרכזיים."}, {id:"a1g5-tsk2", text:"לספק כלים מעשיים לתרגול תפקודים אלו."}, {id:"a1g5-tsk3", text:"להדריך מורים כיצד לשלב שאלות מטה-קוגניטיביות."}, {id:"a1g5-tsk4", text:"לסייע בהתאמת המרחב הלימודי לקידום ויסות עצמי."}],
+                        output_metrics: [{id:"a1g5-opm1", text:"מתבססת שפה פדגוגית אחידה (X% מהמורים משתמשים)."}, {id:"a1g5-opm2", text:"X% מהמורים מתכננים פעילויות המקדמות עצמאות וויסות עצמי."}, {id:"a1g5-opm3", text:"בוצעו X הדרכות למורים להקניית כלים מעשיים."}],
+                        outcome_metrics: [{id:"a1g5-ocm1", text:"תלמידים מפגינים שיפור של X% ביכולתם לתכנן, לארגן ולווסת את למידתם."}]
+                    },
+                    { 
+                        id: "a1g6", title: "קידום גמישות פדגוגית", 
+                        activities: [{id:"a1g6-act1", text:"הכשרת מורים בתכנון וניהול דינמי של זמן, סביבה, תכנים ולומדים."}, {id:"a1g6-act2", text:"התאמת תכנון השיעור לגמישות בארבעת המארגנים."}, {id:"a1g6-act3", text:"ליווי ורפלקציה על יישום גמישות פדגוגית."}], 
+                        tasks: [{id:"a1g6-tsk1", text:"להנחות סדנאות ייעודיות לכל אחד מארבעת המארגנים."}, {id:"a1g6-tsk2", text:"לסייע בתכנון יחידות לימוד עם הרכבים משתנים."}, {id:"a1g6-tsk3", text:"להוביל סיעור מוחות על ארגון מחדש של המרחב הפיזי."}, {id:"a1g6-tsk4", text:"לרכז ולהנגיש מגוון תכנים וחומרי למידה."}],
+                        output_metrics: [{id:"a1g6-opm1", text:"X% מהמורים מתכננים ומובילים שיעורים גמישים."}, {id:"a1g6-opm2", text:"בוצעו X סדנאות לארבעת המארגנים."}, {id:"a1g6-opm3", text:"נעשה שימוש יעיל בארבעת המארגנים ב-X% מהשיעורים."}],
+                        outcome_metrics: [{id:"a1g6-ocm1", text:"עלייה של X% במורים המדווחים על שימוש רב יותר בעקרונות גמישות פדגוגית."}, {id:"a1g6-ocm2", text:"עלייה של X% בתלמידים המדווחים על חווית למידה רלוונטית ומשמעותית."}]
+                    },
+                     { 
+                        id: "a1g7", title: "הבניית פרקטיקות הערכה ומשוב מכווני שונות", 
+                        activities: [{id:"a1g7-act1", text:"גיבוש חזון בית-ספרי להערכה מותאמת."}, {id:"a1g7-act2", text:"פיתוח מיומנויות הצוות בהערכה חלופית ומשוב."}, {id:"a1g7-act3", text:"בניית מאגר בית-ספרי של כלי הערכה ומשוב."}, {id:"a1g7-act4", text:"הפעלת מנגנון לבחינת יעילות הפרקטיקות."}], 
+                        tasks: [{id:"a1g7-tsk1", text:"להוביל סדנאות על הערכה לשם למידה (מעצבת)."}, {id:"a1g7-tsk2", text:"לסייע בפיתוח מחוונים ברורים למשימות הערכה."}, {id:"a1g7-tsk3", text:"להדריך מורים במתן משוב בונה ומקדם."}, {id:"a1g7-tsk4", text:"להקים צוות רב-מקצועי לניתוח נתוני הערכה."}],
+                        output_metrics: [{id:"a1g7-opm1", text:"X% מהמשוב הניתן לתלמידים הוא תהליכי, אישי ומקדם למידה."}, {id:"a1g7-opm2", text:"X% ממשימות ההערכה מלווים במחוון תואם."}, {id:"a1g7-opm3", text:"בוצעו X הדרכות למורים בנושא משוב מקדם למידה."}],
+                        outcome_metrics: [{id:"a1g7-ocm1", text:"עלייה של X% במורים המשתמשים במגוון כלי הערכה."}, {id:"a1g7-ocm2", text:"לפחות X% מהתלמידים מפגינים יכולת רפלקציה והערכה עצמית."}, {id:"a1g7-ocm3", text:"עלייה של X% בתלמידים המדווחים על מעורבות ותחושת מסוגלות."}]
+                    },
+                    { 
+                        id: "a1g8", title: "הבניית כלי לכתיבת תוכניות עבודה לתלמידים במיקוד", 
+                        activities: [{id:"a1g8-act1", text:"פיתוח פורמט אחיד וגמיש לתוכנית עבודה אישית."}, {id:"a1g8-act2", text:"ליווי מורים בתהליך כתיבת התוכניות."}, {id:"a1g8-act3", text:"שילוב התוכניות בשגרות העבודה הבית-ספריות."}, {id:"a1g8-act4", text:"הגדרת נקודות עצירה להערכה מחודשת."}], 
+                        tasks: [{id:"a1g8-tsk1", text:"להוביל צוות לפיתוח תבנית לתוכנית עבודה אישית."}, {id:"a1g8-tsk2", text:"להעביר סדנאות כתיבה מונחות למורים."}, {id:"a1g8-tsk3", text:"לקיים שיחות ייעוץ אישיות עם מורים."}, {id:"a1g8-tsk4", text:"לסייע בהטמעת התוכניות בתכנון השיעור ובשיחות."}],
+                        output_metrics: [{id:"a1g8-opm1", text:"קיים כלי בית-ספרי מובנה לכתיבת תוכניות עבודה אישיות."}, {id:"a1g8-opm2", text:"התקיימו לפחות X סדנאות מונחות לכתיבת תכנית עבודה."}, {id:"a1g8-opm3", text:"התקיימו לפחות X שיחות ייעוץ אישיות למורים."}],
+                        outcome_metrics: [{id:"a1g8-ocm1", text:"שיפור של X% באפקטיביות תכניות העבודה (מדידה על ידי השגת יעדים)."}, {id:"a1g8-ocm2", text:"X% מהתלמידים במיקוד חווים תהליך אישי, ממוקד ומקדם."}, {id:"a1g8-ocm3", text:"X% מהמורים מפגינים יכולת גבוהה לכתיבת תוכניות מותאמות."}]
+                    },
+                    { 
+                        id: "a1g9", title: "שילוב כלים לעבודה עם תלמידים מאתגרים התנהגותית", 
+                        activities: [{id:"a1g9-act1", text:"הכשרת מורים ליצירת קשר מיטיב והצבת גבולות אמפתיים."}, {id:"a1g9-act2", text:"ביסוס שפה ועקרונות עבודה משותפים."}, {id:"a1g9-act3", text:"שילוב כלים לוויסות רגשי והתנהגותי."}, {id:"a1g9-act4", text:"יצירת הזדמנויות לתפקידים חיוביים בשיעור."}], 
+                        tasks: [{id:"a1g9-tsk1", text:"להנחות שיח צוותי על הבנת התנהגות כביטוי לצורך."}, {id:"a1g9-tsk2", text:"לספק למורים כלים מעשיים לוויסות."}, {id:"a1g9-tsk3", text:"לסייע בתכנון שיעורים המאפשרים תפקידים משמעותיים."}, {id:"a1g9-tsk4", text:"להדריך מורים בשימוש בשפה מקרבת ובניהול שיח מכבד."}],
+                        output_metrics: [{id:"a1g9-opm1", text:"התקיימו לפחות X מפגשי הנחייה לצוות על כלים להתמודדות."}, {id:"a1g9-opm2", text:"X% מתכנון השיעורים כולל מתן מענים לתלמידים מאתגרים."}, {id:"a1g9-opm3", text:"התקיימו לפחות X מפגשי הדרכה למורים על שפה מקרבת."}],
+                        outcome_metrics: [{id:"a1g9-ocm1", text:"עלייה של X% בתחושת המסוגלות של המורים בהתמודדות עם אתגרי התנהגות."}, {id:"a1g9-ocm2", text:"ירידה של X% באירועי משמעת חמורים."}, {id:"a1g9-ocm3", text:"עלייה של X% בתלמידים מאתגרים המדווחים על תחושת שייכות."}]
+                    },
+                     { 
+                        id: "a1g10", title: "קידום הנעה ללמידה (מוטיבציה)", 
+                        activities: [{id:"a1g10-act1", text:"הכשרת מורים ביצירת שיעור המניע למעורבות."}, {id:"a1g10-act2", text:"שילוב עקרונות הנעה (בחירה, רלוונטיות, שייכות) בתכנון."}, {id:"a1g10-act3", text:"פיתוח שיעורים מבוססי פרויקטים וחקר."}, {id:"a1g10-act4", text:"הבניית מנגנון רפלקציה על רמת ההנעה בשיעורים."}], 
+                        tasks: [{id:"a1g10-tsk1", text:"להציג למורים את עקרונות המוטיבציה הפנימית."}, {id:"a1g10-tsk2", text:"לסייע בתכנון משימות המאפשרות בחירה אישית."}, {id:"a1g10-tsk3", text:"להנחות צוותים בפיתוח יחידות לימוד המחוברות לעולם התלמידים."}, {id:"a1g10-tsk4", text:"להוביל תהליכי משוב מתלמידים על רמת העניין והרלוונטיות."}],
+                        output_metrics: [{id:"a1g10-opm1", text:"X% מהמורים מתכננים ומובילים שיעורים המעודדים הנעה פנימית."}, {id:"a1g10-opm2", text:"התקיימו X מפגשי הדרכה על עקרונות המוטיבציה הפנימית."}, {id:"a1g10-opm3", text:"בוצעו לפחות X תהליכי משוב מתלמידים על רמת עניין ורלוונטיות."}],
+                        outcome_metrics: [{id:"a1g10-ocm1", text:"עלייה של X% במורים המיישמים פרקטיקות מכלילות."}, {id:"a1g10-ocm2", text:"עלייה של X% במעורבות התלמידים בשיעורים."}, {id:"a1g10-ocm3", text:"עלייה של X% בתלמידים עם 'אג'נסי' הפועלים מתוך סקרנות ומשמעות."}]
+                    },
+                    { 
+                        id: "a1g11", title: "קידום שיח פסיכופדגוגי", 
+                        activities: [{id:"a1g11-act1", text:"הטמעת התבוננות רגשית-חברתית בשיח הלימודי."}, {id:"a1g11-act2", text:"שימוש בכלים מגוונים לקידום שיח."}, {id:"a1g11-act3", text:"למידה מתוך תהליך ההוראה - זיהוי דפוסים ותגובות."}, {id:"a1g11-act4", text:"חיזוק תחושת השייכות והערך של התלמיד."}], 
+                        tasks: [{id:"a1g11-tsk1", text:"להכשיר מורים 'לקרוא' את התנהגות התלמידים כביטוי לעולמם הפנימי."}, {id:"a1g11-tsk2", text:"להכיר לצוות כלים לניהול שיח בקבוצות קטנות ולרפלקציה אישית."}, {id:"a1g11-tsk3", text:"להנחות דיונים לניתוח אירועים מהכיתה דרך עדשה פסיכופדגוגית."}, {id:"a1g11-tsk4", text:"לסייע למורים לתכנן תגובות פדגוגיות מבוססות הבנת צרכי התלמיד."}],
+                        output_metrics: [{id:"a1g11-opm1", text:"X% מהמורים מזהים את צורכי התלמידים ומתכננים מענים מותאמים."}, {id:"a1g11-opm2", text:"X% מהמורים מפגינים מסוגלות גבוהה לשלב שיח פסיכופדגוגי בהוראה."}, {id:"a1g11-opm3", text:"התקיימו לפחות X מפגשי הדרכה לקידום שיח פסיכופדגוגי."}],
+                        outcome_metrics: [{id:"a1g11-ocm1", text:"עלייה של X% במורים המיישמים פרקטיקות מכלילות."}, {id:"a1g11-ocm2", text:"עלייה של X% בתלמידים המרגישים מובנים, מוכרים וחווים תחושת שייכות."}]
+                    }
+                ]},
+                arena2: { title: "זירה 2: תרבות ומדיניות הכלה", color: "sky", goals: [
+                    { 
+                        id: "a2g1", title: "הטמעת השימוש בכלי מיפוי 'העוגן'", 
+                        activities: [{id:"a2g1-act1", text:"הצגת הכלי ומטרותיו לצוות הניהולי והחינוכי."}, {id:"a2g1-act2", text:"הכשרה וליווי לצוותים במילוי וניתוח הנתונים."}, {id:"a2g1-act3", text:"ניתוח נתונים ברמה מערכתית וצוותית."}, {id:"a2g1-act4", text:"שילוב התובנות בתוכנית העבודה הבית-ספרית."}], 
+                        tasks: [{id:"a2g1-tsk1", text:"להנחות סדנה על אופן השימוש בכלי וקריאת הדשבורדים."}, {id:"a2g1-tsk2", text:"ללוות צוותי שכבה בניתוח הנתונים הכיתתיים והשכבתיים."}, {id:"a2g1-tsk3", text:"להוביל דיונים המקשרים בין נתוני 'העוגן' לצרכים פדגוגיים ספציфиים."}, {id:"a2g1-tsk4", text:"לסייע בתרגום המגמות ליעדים בפיתוח המקצועי."}],
+                        output_metrics: [{id:"a2g1-opm1", text:"כלי 'העוגן' משמש באופן שוטף (X% מהמורות ממלאות פעם בשנה)."}, {id:"a2g1-opm2", text:"X% מתוכניות העבודה מבוססות על נתונים מהכלי."}, {id:"a2g1-opm3", text:"התקיימו לפחות X מפגשי הדרכה על ניתוח נתונים."}],
+                        outcome_metrics: [{id:"a2g1-ocm1", text:"מתבססת תרבות ארגונית של קבלת החלטות מבוססת מידע (X% מהמורים מדווחים על שימוש בנתונים)."}] 
+                    },
+                    { 
+                        id: "a2g2", title: "בניית מפת מענים בית-ספרית מרובדת (MTSS)", 
+                        activities: [{id:"a2g2-act1", text:"הובלה ניהולית להטמעת מודל ה-MTSS."}, {id:"a2g2-act2", text:"מיפוי צרכים ומשאבים קיימים."}, {id:"a2g2-act3", text:"בניית סרגל מאמצים תלת-רובדי."}, {id:"a2g2-act4", text:"הטמעה והכשרת הצוותים לשימוש במפה."}], 
+                        tasks: [{id:"a2g2-tsk1", text:"להעביר השתלמות על הרציונל של מודל ה-MTSS."}, {id:"a2g2-tsk2", text:"להנחות צוות רב-מקצועי במיפוי וסיווג המענים."}, {id:"a2g2-tsk3", text:"לסייע למורים לחזק את פרקטיקות ההוראה ברובד 1."}, {id:"a2g2-tsk4", text:"להדריך בקביעת קריטריונים ברורים להפניה בין הרבדים."}],
+                        output_metrics: [{id:"a2g2-opm1", text:"קיימת מפת מענים נגישה ומוכרת ל-X% מהצוות."}, {id:"a2g2-opm2", text:"X% מצוות בית הספר פועל מתוך תפיסה מערכתית ומדורגת."}, {id:"a2g2-opm3", text:"התקיימו לפחות X מפגשי הדרכה על מיפוי מענים."}],
+                        outcome_metrics: [{id:"a2g2-ocm1", text:"X% מהמשאבים הבית-ספריים מנוצלים באופן יעיל ומדויק יותר."}, {id:"a2g2-ocm2", text:"ירידה של X% בהפניית משאבים לרובד ממוקד."}]
+                    },
+                    { 
+                        id: "a2g3", title: "הגדרת חזון ותקנון בית הספר באופן שישקף הכלה", 
+                        activities: [{id:"a2g3-act1", text:"יצירת הסכמה על הצורך בשינוי בשיח שיתופי."}, {id:"a2g3-act2", text:"בחינה ביקורתית של המסמכים הקיימים."}, {id:"a2g3-act3", text:"ניסוח מחודש בשפה חיובית ומכילה."}, {id:"a2g3-act4", text:"הטמעה והפצה של המסמכים המעודכנים."}], 
+                        tasks: [{id:"a2g3-tsk1", text:"להנחות סדנאות לזיהוי שפה או נהלים מדירים."}, {id:"a2g3-tsk2", text:"להציג דוגמאות לחזון ותקנון מבתי ספר אחרים."}, {id:"a2g3-tsk3", text:"להוביל קבוצות עבודה לניסוח מחודש."}, {id:"a2g3-tsk4", text:"לסייע בתכנון מהלך להטמעת החזון החדש."}],
+                        output_metrics: [{id:"a2g3-opm1", text:"לבית הספר חזון ותקנון מעודכנים (בהשתתפות של X% מהצוות וההורים)."}, {id:"a2g3-opm2", text:"המסגרת הערכית של בית הספר ברורה ותומכת במרחב בטוח ושוויוני."}],
+                        outcome_metrics: [{id:"a2g3-ocm1", text:"עלייה של X% במורים המשתמשים בשיח מעולם ההכלה."}, {id:"a2g3-ocm2", text:"קהילת בית הספר חווה תחושת שייכות והשפעה (עלייה של X% בסקרים)."}, {id:"a2g3-ocm3", text:"ירידה של X% במספר התלמידים המושעים."}]
+                    },
+                     { 
+                        id: "a2g4", title: "עיצוב תעודת מחצית המשקפת הוגנות", 
+                        activities: [{id:"a2g4-act1", text:"קיום שיח צוותי רפלקטיבי על התעודה הקיימת."}, {id:"a2g4-act2", text:"גיבוש עקרונות הערכה חדשים."}, {id:"a2g4-act3", text:"שיתוף תלמידים והורים בתהליך."}, {id:"a2g4-act4", text:"עיצוב תבנית תעודה מותאמת והטמעתה."}], 
+                        tasks: [{id:"a2g4-tsk1", text:"להנחות ישיבת צוות לניתוח ביקורתי של התעודה הנוכחית."}, {id:"a2g4-tsk2", text:"להציג דוגמאות לרכיבים הוגנים בתעודה."}, {id:"a2g4-tsk3", text:"להוביל צוות מורים לתכנון תבנית חדשה."}, {id:"a2g4-tsk4", text:"להכשיר מורים בכתיבת הערכות בשפה מעצימה."}],
+                        output_metrics: [{id:"a2g4-opm1", text:"X% מתעודות ההערכה משקפות את ייחודיות התלמיד בשפה הוגנת ומעצימה."}, {id:"a2g4-opm2", text:"התקיימו לפחות X מפגשי הנחייה לצוות בנושא."}],
+                        outcome_metrics: [{id:"a2g4-ocm1", text:"עלייה של X% בתלמידים והורים המדווחים על חוויית הערכה חיובית."}, {id:"a2g4-ocm2", text:"תהליך ההערכה נתפס ככלי לצמיחה (X% מההורים והמורים מסכימים)."}]
+                    }
+                ]},
+                 arena3: { title: "זירה 3: מסוגלות הצוות החינוכי", color: "amber", goals: [
+                     { 
+                        id: "a3g1", title: "קידום למידת עמיתים: המורים כמומחים", 
+                        activities: [{id:"a3g1-act1", text:"בניית מסגרת קבועה ללמידת עמיתים."}, {id:"a3g1-act2", text:"הובלת קבוצות למידה מקצועיות ממוקדות נושא."}, {id:"a3g1-act3", text:"פיתוח מנגנוני התייעצות ואימון פנים-צוותיים."}, {id:"a3g1-act4", text:"הקמת בנק ידע מקצועי בית-ספרי."}], 
+                        tasks: [{id:"a3g1-tsk1", text:"להדגים תהליכי צפיית עמיתים ומתן משוב מקדם."}, {id:"a3g1-tsk2", text:"לסייע בהקמת פלטפורמה לשיתוף חומרי הוראה."}, {id:"a3g1-tsk3", text:"ללוות ולהנחות את מפגשי הלמידה."}],
+                        output_metrics: [{id:"a3g1-opm1", text:"מתקיימים שיעורי צפיית עמיתים (לפחות 1-2 פעמים לכל מורה בשנה)."}, {id:"a3g1-opm2", text:"הוקמה פלטפורמה לשיתוף חומרים (עם לפחות X פריטים חדשים בשנה)."}, {id:"a3g1-opm3", text:"התקיימו לפחות X מפגשי ליווי והנחייה."}],
+                        outcome_metrics: [{id:"a3g1-ocm1", text:"מתפתחת תרבות ארגונית של אמון ושיתוף (X% מהמורים מדווחים)."}, {id:"a3g1-ocm2", text:"עלייה של X% מהמורים הרואים בעמיתיהם מקור ידע."}, {id:"a3g1-ocm3", text:"שיפור של X% בשביעות רצון המורים מהפיתוח המקצועי."}]
+                    },
+                    { 
+                        id: "a3g2", title: "טיפוח 'חדר מורים לומד'", 
+                        activities: [{id:"a3g2-act1", text:"בחירת נושא מרכזי ללמידה משותפת."}, {id:"a3g2-act2", text:"קיום סדרת מפגשי למידה."}, {id:"a3g2-act3", text:"שימוש במקורות ידע מגוונים ודיון בדוגמאות."}], 
+                        tasks: [{id:"a3g2-tsk1", text:"להוביל תהליך שיתופי לבחירת נושא רלוונטי."}, {id:"a3g2-tsk2", text:"לרכז חומרי למידה מגוונים."}, {id:"a3g2-tsk3", text:"להנחות את מפגשי הלמידה באופן פעיל וחווייתי."}, {id:"a3g2-tsk4", text:"לעודד מורים לשתף ביישומים מהכיתה."}],
+                        output_metrics: [{id:"a3g2-opm1", text:"נוצרת שפה מקצועית משותפת בקרב X% מהצוות."}, {id:"a3g2-opm2", text:"מתקיימים לפחות X מפגשי למידה חווייתיים."}, {id:"a3g2-opm3", text:"X% מהמורים משתפים ביישום הנלמד."}],
+                        outcome_metrics: [{id:"a3g2-ocm1", text:"עקרונות הלמידה מיושמים בהוראה היומיומית (X% מהמורים מדווחים)."}, {id:"a3g2-ocm2", text:"תחושת השותפות המקצועית מתחזקת (עלייה של X% בסקר מורים)."}]
+                    },
+                    { 
+                        id: "a3g3", title: "ליווי רכזת ההכלה ביישום תוכנית העבודה", 
+                        activities: [{id:"a3g3-act1", text:"קיום פגישות ליווי מקצועי שוטפות."}, {id:"a3g3-act2", text:"תמיכה בהובלת תהליכים צוותיים."}, {id:"a3g3-act3", text:"סיוע בתיאום, הטמעה ומעקב."}, {id:"a3g3-act4", text:"פיתוח משותף של כלים ותהליכים."}], 
+                        tasks: [{id:"a3g3-tsk1", text:"לשמש כחונכת ומנטורית לרכזת ההכלה."}, {id:"a3g3-tsk2", text:"לתכנן במשותף ישיבות, סדנאות והשתלמויות."}, {id:"a3g3-tsk3", text:"לסייע בפירוק תוכנית העבודה ליעדים ומשימות."}, {id:"a3g3-tsk4", text:"לספק כלים ומשאבים לניהול התהליך."}],
+                        output_metrics: [{id:"a3g3-opm1", text:"X% מתוכנית ההכלה מיושמת באופן אפקטיבי."}, {id:"a3g3-opm2", text:"X% מיעדי העבודה של רכזת ההכלה מיושמים."}, {id:"a3g3-opm3", text:"התקיימו לפחות X מפגשי הנחייה וסדנאות בהנחייה משותפת."}],
+                        outcome_metrics: [{id:"a3g3-ocm1", text:"רכזת ההכלה פועלת מתוך מסוגלות מקצועית גבוהה (דירוג 4-5 בדיווח עצמי)."}, {id:"a3g3-ocm2", text:"עבודת רכזת ההכלה מוערכת ובעלת השפעה (X% מהמורים מזהים את תרומתה)."}]
+                    }
+                ]},
+                 arena4: { title: "זירה 4: יחסי קרבה ואכפתיות", color: "rose", goals: [
+                     { 
+                        id: "a4g1", title: "הפחתת השימוש בפרקטיקות מדירות", 
+                        activities: [{id:"a4g1-act1", text:"מיפוי פרקטיקות מדירות קיימות."}, {id:"a4g1-act2", text:"קידום ייצוג תרבותי מגוון."}, {id:"a4g1-act3", text:"חיזוק הקשר עם הורים מגישה מכבדת."}, {id:"a4g1-act4", text:"הובלת שינוי בשגרות ובשיח."}], 
+                        tasks: [{id:"a4g1-tsk1", text:"להנחות סדנה על הטיות לא מודעות."}, {id:"a4g1-tsk2", text:"לסייע בגיוון חומרי הלימוד."}, {id:"a4g1-tsk3", text:"להדריך בניהול שיח מקרב עם הורים."}, {id:"a4g1-tsk4", text:"להוביל בחינה מחדש של נהלים."}],
+                        output_metrics: [{id:"a4g1-opm1", text:"התקיימו לפחות X מפגשים/סדנאות בנושא הטיות."}, {id:"a4g1-opm2", text:"התקיימו לפחות X מפגשי ליווי בנושא גיוון חומרי לימוד."}, {id:"a4g1-opm3", text:"המרחב ותכני הלימוד מבטאים גיוון (לפחות X% מהתכנים)."}] ,
+                        outcome_metrics: [{id:"a4g1-ocm1", text:"הקשר עם המשפחות מתחזק (עלייה של X% בהשתתפות הורים)."}, {id:"a4g1-ocm2", text:"השפה הבית-ספרית הופכת רגישה ומכבדת (X% מהתלמידים מסכימים)."}, {id:"a4g1-ocm3", text:"עלייה של X% במורים המדווחים על היכרות מעמיקה עם תלמידיהם."}]
+                    },
+                    { 
+                        id: "a4g2", title: "שימוש ב'פרח ההוגנות' כמצפן", 
+                        activities: [{id:"a4g2-act1", text:"היכרות עם מודל 'פרח ההוגנות'."}, {id:"a4g2-act2", text:"שימוש בעקרונות הפרח ככלי תכנון."}, {id:"a4g2-act3", text:"קיום רפלקציה צוותית דרך 'משקפי ההוגנות'."}], 
+                        tasks: [{id:"a4g2-tsk1", text:"להציג את מודל 'פרח ההוגנות' ושבעת עקרונותיו."}, {id:"a4g2-tsk2", text:"להנחות צוותים להשתמש בפרח כמחוון לבחינת שגרות קיימות."}, {id:"a4g2-tsk3", text:"לשלב את עקרונות הפרח בתכנון יוזמות חדשות."}],
+                        output_metrics: [{id:"a4g2-opm1", text:"X% מהצוות משתמש ב'פרח ההוגנות' באופן שוטף."}, {id:"a4g2-opm2", text:"עקרונות ההוגנות נוכחים בתכנון (ב-X% מתכניות השיעורים)."}, {id:"a4g2-opm3", text:"התקיימו לפחות X מפגשים לצוות על שימוש בפרח."}] ,
+                        outcome_metrics: [{id:"a4g2-ocm1", text:"האקוסיסטם הבית-ספרי מבטא הוגנות באופן עקבי (דירוג ממוצע 4/5 במחוון)."}]
+                    }
+                ]},
+                 arena5: { title: "זירה 5: סביבת למידה", color: "violet", goals: [
+                     { 
+                        id: "a5g1", title: "שימוש במרחבי למידה מגוונים", 
+                        activities: [{id:"a5g1-act1", text:"מיפוי מרחבי למידה קיימים ופוטנציאליים."}, {id:"a5g1-act2", text:"תכנון פדגוגי מותאם למרחב."}, {id:"a5g1-act3", text:"ארגון פיזי של המרחבים."}, {id:"a5g1-act4", text:"הטמעת השימוש במרחבים מגוונים בשגרה."}], 
+                        tasks: [{id:"a5g1-tsk1", text:"למפות את מרחבי הלמידה ולזהות מרחבים לא מנוצלים."}, {id:"a5g1-tsk2", text:"להנחות סדנאות לתכנון שיעורים מבוססי מקום."}, {id:"a5g1-tsk3", text:"לייצר שיתופיות ברעיונות לעיצוב מחדש של הכיתה."}, {id:"a5g1-tsk4", text:"לסייע ביצירת שותפויות עם גורמים בקהילה."}],
+                        output_metrics: [{id:"a5g1-opm1", text:"התקיימו לפחות X מפגשי הנחייה/סדנאות לתכנון שיעורים מבוססי מקום."}, {id:"a5g1-opm2", text:"המרחב הפיזי מאורגן באופן גמיש ומזמין (לפחות X מרחבים פעילים)."}, {id:"a5g1-opm3", text:"השימוש במרחבים מגוונים הופך לאינטגרלי (%X מהשיעורים)."}] ,
+                        outcome_metrics: [{id:"a5g1-ocm1", text:"תלמידים חווים למידה פעילה ורלוונטית (עלייה של X% בסקרי שביעות רצון)."}, {id:"a5g1-ocm2", text:"עלייה של X% בתחושת השייכות והמעורבות של התלמידים."}]
+                    }
+                ]}
+            }
+        },
+
+        init() { this.render(); },
+        
+        handleSelectionChange(id, isChecked) {
+            this.state.selections[id] = isChecked;
+            this.render();
+        },
+
+        handleTableInputChange(id, field, value) {
+            if (!this.state.tableData[id]) { this.state.tableData[id] = {}; }
+            this.state.tableData[id][field] = value;
+            this.render();
+        },
+        
+        handleMultiSelectChange(id, partner) {
+            let current = this.state.tableData[id]?.partners || [];
+            if (current.includes(partner)) {
+                current = current.filter(p => p !== partner);
+            } else {
+                current.push(partner);
+            }
+            this.handleTableInputChange(id, 'partners', current);
+        },
+
+        handleMetricValueChange(id, value) {
+            if (!this.state.metricValues) { this.state.metricValues = {}; }
+            this.state.metricValues[id] = value;
+            // No need to re-render, the input holds its own state visually
+        },
+        
+        generateTable() { this.state.view = 'table'; this.render(); },
+        
+        toggleArenaExpansion(arenaId) {
+            this.state.expandedArenas[arenaId] = !this.state.expandedArenas[arenaId];
+            this.render();
+        },
+
+        addCustomItem(goalId, type) {
+            const inputEl = document.getElementById(`custom-input-${goalId}-${type}`);
+            const text = inputEl.value.trim();
+            if (!text) return;
+            if (!this.state.customItems[goalId]) this.state.customItems[goalId] = [];
+            const newItem = { id: `custom-${Date.now()}`, text: text, type: type };
+            this.state.customItems[goalId].push(newItem);
+            this.state.selections[newItem.id] = true;
+            inputEl.value = '';
+            this.render();
+        },
+        
+        importSummary() {
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = '.json';
+            input.onchange = (event) => {
+                const file = event.target.files[0];
+                if (!file) return;
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    try {
+                        const data = JSON.parse(e.target.result);
+                        if (!data.selectedItems) throw new Error("קובץ לא תקין");
+                        
+                        this.state.recommendedGoalIds.clear();
+                        const keyMappings = { 'planning_instruction': 'a1g1', 'classroom_management': 'a1g9', 'assessment_feedback': 'a1g7', 'data_based_planning': 'a2g1', 'interdisciplinary_team': 'a3g1', 'parent_partnership': 'a4g1', 'coordinator_guidance': 'a3g3', 'teacher_knowledge_deepening': 'a3g2', 'belonging_involvement': 'a4g2', 'learning_spaces': 'a5g1' };
+
+                        Object.keys(data.selectedItems).forEach(key => {
+                            if (data.selectedItems[key]) {
+                                for (const mapKey in keyMappings) {
+                                    if (key.includes(mapKey)) this.state.recommendedGoalIds.add(keyMappings[mapKey]);
+                                }
+                            }
+                        });
+                        
+                        this.state.showImportNotification = true;
+                        this.state.selections = {};
+                        alert('סיכום נטען בהצלחה! הזירות והיעדים הרלוונטיים הודגשו עבורך.');
+                        this.render();
+                    } catch (err) { alert("שגיאה בטעינת הקובץ: " + err.message); }
+                };
+                reader.readAsText(file);
+            };
+            input.click();
+        },
+
+        renderTextWithInputs(text, id) {
+            const value = this.state.metricValues[id] || '';
+            const replacement = `<span class="metric-input-wrapper"><input type="number" value="${value}" class="metric-input" placeholder="X" min="0" max="100" onchange="App.handleMetricValueChange('${id}', this.value)" onclick="(e) => e.stopPropagation()"><span>אחוזים</span></span>`;
+            const parts = text.split('X%');
+            return parts.join(replacement);
+        },
+
+        render() {
+            const el = document.getElementById('app');
+            if (this.state.view === 'selection') {
+                el.innerHTML = this.renderSelectionView();
+            } else if (this.state.view === 'table') {
+                el.innerHTML = this.renderTableView();
+            } else if (this.state.view === 'gantt') {
+                el.innerHTML = this.renderGanttView();
+            }
+        },
+
+        renderSelectionView() {
+            let notification = '';
+            if (this.state.showImportNotification) {
+                notification = `<div id="notification" class="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4 mb-6 rounded-md relative"><p class="font-bold">הנתונים יובאו בהצלחה!</p><p>הזירות והיעדים המומלצים על בסיס סיכום השיח הודגשו עבורך. כעת באפשרותך לבחור את הרכיבים המדויקים לתכנית העבודה.</p><button onclick="App.state.showImportNotification=false; App.render();" class="absolute top-2 left-2 text-yellow-500 font-bold text-xl">&times;</button></div>`;
+            }
+
+            return `
+                <header class="mb-8"><h1 class="text-4xl md:text-5xl font-bold text-teal-800">בניית תוכנית עבודה</h1><p class="text-lg text-stone-600 mt-2">בחירת רכיבי התערבות על בסיס ממצאי השיח</p></header>
+                ${notification}
+                <div class="bg-white p-6 rounded-xl shadow-md space-y-4 mb-8 no-print"><div class="flex flex-col sm:flex-row justify-between items-center gap-4"><div><h2 class="text-xl font-semibold text-stone-700">שלב 1: ייבוא והדגשת המלצות</h2><p class="text-stone-600">טענו את קובץ סיכום השיח (JSON) כדי להדגיש אוטומטית את הרכיבים המומלצים.</p></div><button onclick="App.importSummary()" class="bg-teal-600 text-white px-5 py-2 rounded-lg font-semibold hover:bg-teal-700">טען סיכום שיח...</button></div></div>
+                <h2 class="text-xl font-semibold text-stone-700 mb-4 no-print">שלב 2: בחירת רכיבי תוכנית</h2>
+                <div class="space-y-4">
+                ${Object.entries(this.data.arenas).map(([arenaId, arena]) => {
+                    const isExpanded = this.state.expandedArenas[arenaId];
+                    const isArenaRecommended = arena.goals.some(g => this.state.recommendedGoalIds.has(g.id));
+                    return `<div class="accordion-item bg-white rounded-lg shadow-sm border ${isArenaRecommended ? `border-${arena.color}-400 ring-2 ring-${arena.color}-200` : 'border-stone-200'}">
+                        <button onclick="App.toggleArenaExpansion('${arenaId}')" class="accordion-header w-full text-right p-4 flex justify-between items-center"><span class="font-semibold text-lg text-${arena.color}-800 flex items-center gap-3">${arena.title} ${isArenaRecommended ? `<span class="text-xs font-bold bg-yellow-200 text-yellow-800 px-2 py-1 rounded-full">מומלץ בעקבות השיח</span>` : ''}</span><span class="accordion-icon text-2xl font-light text-${arena.color}-600 transition-transform ${isExpanded ? 'rotate-45' : ''}">+</span></button>
+                        <div class="accordion-content ${isExpanded ? 'is-open' : ''}"><div class="p-6 border-t space-y-6">
+                        ${arena.goals.map(goal => {
+                            const isGoalRecommended = this.state.recommendedGoalIds.has(goal.id);
+                            const customItemsForGoal = this.state.customItems[goal.id] || [];
+                            return `<div class="border-r-4 ${isGoalRecommended ? `border-${arena.color}-500 bg-${arena.color}-50` : `border-${arena.color}-200`} p-4 rounded-r-lg">
+                                <h4 class="font-bold text-stone-800 text-lg flex items-center gap-2">${goal.title} ${isGoalRecommended ? `<span class="text-xs font-bold bg-yellow-200 text-yellow-800 px-2 py-1 rounded-full">מומלץ</span>`:``}</h4>
+                                <div class="mt-4 grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-8">
+                                    ${['activities', 'tasks', 'output_metrics', 'outcome_metrics'].map(type => {
+                                        const customItemsOfType = customItemsForGoal.filter(item => item.type === type);
+                                        const typeName = {activities:'פעילויות מרכזיות', tasks:'משימות למדריכה', output_metrics:'מדדי תפוקה', outcome_metrics:'מדדי תוצאה'}[type];
+                                        const itemsForType = goal[type] || [];
+                                        if (itemsForType.length === 0 && customItemsOfType.length === 0) return '';
+                                        return `<div>
+                                            <h5 class="font-bold text-orange-700 mb-2">${typeName}</h5>
+                                            <div class="space-y-2">
+                                                ${itemsForType.map(item => `<label class="flex items-start gap-3 text-sm">
+                                                    <input type="checkbox" onchange="App.handleSelectionChange('${item.id}', this.checked)" ${this.state.selections[item.id] ? 'checked' : ''} class="mt-1 flex-shrink-0">
+                                                    <span class="text-stone-600">${this.renderTextWithInputs(item.text, item.id)}</span>
+                                                </label>`).join('')}
+                                                ${customItemsOfType.map(item => `<label class="flex items-start gap-3 text-sm font-medium italic">
+                                                    <input type="checkbox" onchange="App.handleSelectionChange('${item.id}', this.checked)" ${this.state.selections[item.id] ? 'checked' : ''} class="mt-1 flex-shrink-0">
+                                                    <span class="text-stone-600">${item.text}</span>
+                                                </label>`).join('')}
+                                            </div>
+                                            ${['activities', 'tasks'].includes(type) ? `<div class="mt-3 flex gap-2">
+                                                <input type="text" id="custom-input-${goal.id}-${type}" placeholder="הוסף ${typeName.slice(0,-1)} אחר..." class="flex-grow p-1 border rounded text-xs">
+                                                <button onclick="App.addCustomItem('${goal.id}', '${type}')" class="bg-stone-200 hover:bg-stone-300 text-stone-700 px-2 py-1 text-xs rounded font-semibold">הוסף</button>
+                                            </div>` : ''}
+                                        </div>`
+                                    }).join('')}
+                                </div>
+                            </div>`
+                        }).join('')}
+                        </div></div>
+                    </div>`}).join('')}
+                </div>
+                <div class="mt-8 text-center no-print"><button onclick="App.generateTable()" class="bg-green-600 text-white px-8 py-3 rounded-lg font-bold text-lg hover:bg-green-700 transition-transform hover:scale-105" ${Object.values(this.state.selections).some(s=>s)?'':'disabled'}>צור טבלת תכנון</button></div>`;
+        },
+
+        renderTableView() {
+            const getComponentById = (id) => { if (id.startsWith('custom-')) { for (const goalId in this.state.customItems) { const item = this.state.customItems[goalId].find(i => i.id === id); if (item) { for (const arena of Object.values(this.data.arenas)) { const goal = arena.goals.find(g => g.id === goalId); if (goal) return { component: item, type: item.type, goal, arena }; } } } return null; } for (const a of Object.values(this.data.arenas)) for (const g of a.goals) for (const t of ['activities', 'tasks', 'output_metrics', 'outcome_metrics']) for(const c of (g[t]||[])) if(c.id === id) return {component: c, type:t, goal:g, arena:a}; return null; };
+            const selectedItems = Object.entries(this.state.selections).filter(([_,v])=>v).map(([id,_])=>getComponentById(id)).filter(Boolean);
+            if (selectedItems.length === 0) return `<div class="text-center bg-white p-8 rounded-lg shadow-md"><h2 class="text-2xl font-bold">לא נבחרו רכיבים</h2><p class="mb-6">חזור לשלב הבחירה.</p><button onclick="App.state.view='selection'; App.render()" class="bg-gray-500 text-white px-6 py-2 rounded-lg">חזור לבחירה</button></div>`;
+            const grouped = selectedItems.reduce((acc, {component, type, goal, arena}) => { if (!acc[arena.title]) acc[arena.title] = { color: arena.color, goals: {} }; if (!acc[arena.title].goals[goal.title]) acc[arena.title].goals[goal.title] = []; acc[arena.title].goals[goal.title].push({ ...component, type }); return acc; }, {});
+            let tableRows = '';
+            for (const arenaTitle in grouped) {
+                const arena = grouped[arenaTitle]; let isFirstArenaRow = true; const totalArenaRows = Object.values(arena.goals).flat().length;
+                for (const goalTitle in arena.goals) {
+                    const components = arena.goals[goalTitle]; let isFirstGoalRow = true;
+                    components.forEach(comp => {
+                        const compData = this.state.tableData[comp.id] || {}; const selectedPartners = compData.partners || []; const typeMap = {activities:'פעילות מרכזית', tasks:'משימה למדריכה', output_metrics:'מדד תפוקה', outcome_metrics:'מדד תוצאה'};
+                        const isMetric = ['output_metrics', 'outcome_metrics'].includes(comp.type);
+                        
+                        let displayText = comp.text;
+                        if (isMetric) {
+                            const metricValue = this.state.metricValues[comp.id];
+                            const displayValue = metricValue ? `<strong>${metricValue}</strong>` : '<strong>X</strong>';
+                            displayText = displayText.replace(/X%/g, `${displayValue} אחוזים`);
+                        }
+
+                        const inputCells = !isMetric ? `
+                            <td class="p-2 align-top"><div class="multiselect-container"><div class="border rounded p-1 text-xs cursor-pointer bg-white min-h-[24px]">${selectedPartners.length > 0 ? selectedPartners.join(', ') : 'בחר...'}</div><div class="multiselect-options shadow-lg rounded-md">${this.data.partners.map(p => `<label class="block p-2 hover:bg-stone-100 text-xs"><input type="checkbox" onchange="App.handleMultiSelectChange('${comp.id}', '${p}')" ${selectedPartners.includes(p) ? 'checked' : ''}> ${p}</label>`).join('')}${selectedPartners.includes('אחר') ? `<input type="text" placeholder="פירוט" class="w-full mt-1 p-1 border rounded text-xs" onchange="App.handleTableInputChange('${comp.id}', 'customPartner', this.value)" value="${compData.customPartner || ''}">` : ''}</div></div></td>
+                            <td class="p-2 align-top"><select onchange="App.handleTableInputChange('${comp.id}', 'timeFrame', this.value)" class="w-full border rounded p-1 text-xs"><option value="">בחר...</option>${this.data.timeFrames.map(tf => `<option value="${tf}" ${compData.timeFrame === tf ? 'selected' : ''}>${tf}</option>`).join('')}</select>${compData.timeFrame === 'אחר (מילוי ידני)' ? `<input type="text" placeholder="פירוט" class="w-full mt-1 p-1 border rounded text-xs" onchange="App.handleTableInputChange('${comp.id}', 'customTimeFrame', this.value)" value="${compData.customTimeFrame || ''}">` : ''}</td>
+                            <td class="p-2 align-top"><select onchange="App.handleTableInputChange('${comp.id}', 'frequency', this.value)" class="w-full border rounded p-1 text-xs"><option value="">בחר...</option>${this.data.frequencies.map(f => `<option value="${f}" ${compData.frequency === f ? 'selected' : ''}>${f}</option>`).join('')}</select>${compData.frequency === 'אחר (מילוי ידני)' ? `<input type="text" placeholder="פירוט" class="w-full mt-1 p-1 border rounded text-xs" onchange="App.handleTableInputChange('${comp.id}', 'customFrequency', this.value)" value="${compData.customFrequency || ''}">` : ''}</td>` 
+                            : `<td class="p-2 bg-stone-50" colspan="3"></td>`;
+                        tableRows += `<tr class="border-t">
+                            ${isFirstArenaRow ? `<td rowspan="${totalArenaRows}" class="p-3 align-top font-bold text-${arena.color}-800">${arenaTitle}</td>` : ''}
+                            ${isFirstGoalRow ? `<td rowspan="${components.length}" class="p-3 align-top text-sm">${goalTitle}</td>` : ''}
+                            <td class="p-2 align-top"><span class="font-semibold text-xs text-${arena.color}-700">${typeMap[comp.type]}</span></td>
+                            <td class="p-2 align-top text-sm">${displayText}</td>
+                            ${inputCells}
+                        </tr>`;
+                        isFirstArenaRow = false; isFirstGoalRow = false;
+                    });
+                }
+            }
+            return `
+                <header class="mb-6 flex justify-between items-center no-print"><div><h1 class="text-3xl font-bold text-teal-800">טבלת תוכנית עבודה</h1><p class="text-md text-stone-600">שלב 3: הגדרת פרמטרים וגיבוש תוכנית סופית</p></div><div class="flex items-center gap-2"><button onclick="App.state.view='gantt'; App.render()" class="bg-blue-600 text-white px-5 py-2 rounded-lg font-semibold hover:bg-blue-700">הצג לוח גאנט</button><button onclick="App.state.view='selection'; App.render()" class="bg-gray-500 text-white px-5 py-2 rounded-lg font-semibold hover:bg-gray-600">חזור לבחירה</button><button onclick="window.print()" class="bg-teal-600 text-white px-5 py-2 rounded-lg font-semibold hover:bg-teal-700">הדפס תוכנית</button></div></header>
+                <div class="bg-white p-4 rounded-xl shadow-md"><table class="w-full text-sm">
+                    <thead class="bg-stone-100"><tr><th class="p-2 text-right w-[15%]">זירה</th><th class="p-2 text-right w-[20%]">יעד אסטרטגי</th><th class="p-2 text-right w-[10%]">סוג</th><th class="p-2 text-right w-[25%]">פירוט</th><th class="p-2 text-right w-[15%]">שותפים</th><th class="p-2 text-right w-[7.5%]">זמן</th><th class="p-2 text-right w-[7.5%]">תדירות</th></tr></thead>
+                    <tbody>${tableRows}</tbody>
+                </table></div>`;
+        },
+
+        renderGanttView() {
+            const getComponentById = (id) => { if (id.startsWith('custom-')) { for (const goalId in this.state.customItems) { const item = this.state.customItems[goalId].find(i => i.id === id); if (item) { for (const arena of Object.values(this.data.arenas)) { const goal = arena.goals.find(g => g.id === goalId); if (goal) return { component: item, type: item.type, goal, arena }; } } } return null; } for (const a of Object.values(this.data.arenas)) for (const g of a.goals) for (const t of ['activities', 'tasks', 'output_metrics', 'outcome_metrics']) for(const c of (g[t]||[])) if(c.id === id) return {component: c, type:t, goal:g, arena:a}; return null; };
+            const ganttData = Object.entries(this.state.selections).filter(([_,v])=>v).map(([id,_])=>getComponentById(id)).filter(item => item && !['output_metrics', 'outcome_metrics'].includes(item.type));
+            if (ganttData.length === 0) return `<div class="text-center bg-white p-8 rounded-lg shadow-md"><h2 class="text-2xl font-bold">לא נבחרו פעילויות או משימות לתצוגה</h2><p class="mb-6">חזור לטבלה או לשלב הבחירה.</p><button onclick="App.state.view='table'; App.render()" class="bg-gray-500 text-white px-6 py-2 rounded-lg">חזור לטבלה</button></div>`;
+            const getTimeFrameMonths = (tf) => ({ 'חודשיים ראשונים': [0, 1], 'אמצע שנה': [2, 3, 4, 5, 6, 7], 'סוף שנה': [8, 9], 'לאורך השנה': Array.from({length: 10}, (_, i) => i) }[tf] || []);
+            let ganttRows = '';
+            ganttData.forEach(item => {
+                const tableInfo = this.state.tableData[item.component.id] || {};
+                const timeFrame = tableInfo.timeFrame || '';
+                const frequency = tableInfo.frequency || '';
+                let freqSymbol = {'שבועית':'●●●●', 'דו-שבועית':'● ●', 'חודשית':'●', 'חד-פעמית':'◆'}[frequency] || '';
+
+                ganttRows += `<tr class="border-t">
+                    <td class="p-2 align-top text-sm font-medium">${item.component.text}</td>
+                    <td class="p-2 align-top text-xs">${item.goal.title}</td>
+                    <td class="p-2 align-top text-center"><span class="inline-block px-2 py-1 rounded text-xs text-black font-semibold" style="background-color:${item.arena.color}80">${item.arena.title.match(/(\d+)/)[0]}</span></td>
+                    ${this.data.months.map((_, monthIndex) => {
+                        const isActive = getTimeFrameMonths(timeFrame).includes(monthIndex);
+                        return `<td class="border p-1 text-center">${isActive ? `<div class="h-8 rounded flex items-center justify-center" style="background-color:${item.arena.color}40" title="${item.component.text}"><span class="font-mono text-xs">${freqSymbol}</span></div>` : ''}</td>`;
+                    }).join('')}
+                </tr>`;
+            });
+
+            return `
+                <header class="mb-6 flex justify-between items-center no-print"><div><h1 class="text-3xl font-bold text-teal-800">לוח גאנט - תוכנית עבודה</h1></div><div class="flex items-center gap-2"><button onclick="App.state.view='table'; App.render()" class="bg-gray-500 text-white px-5 py-2 rounded-lg font-semibold hover:bg-gray-600">הצג טבלה</button><button onclick="window.print()" class="bg-teal-600 text-white px-5 py-2 rounded-lg font-semibold hover:bg-teal-700">הדפס גאנט</button></div></header>
+                <div class="bg-white p-4 rounded-xl shadow-md">
+                    <div class="overflow-x-auto"><table class="w-full text-sm border-collapse">
+                        <thead class="bg-stone-100"><tr><th class="p-2 text-right w-[30%]">רכיב</th><th class="p-2 text-right w-[20%]">יעד</th><th class="p-2 text-center w-[10%]">זירה</th>${this.data.months.map(m => `<th class="p-2 border">${m}</th>`).join('')}</tr></thead>
+                        <tbody>${ganttRows}</tbody>
+                    </table></div>
+                    <div class="mt-8 grid grid-cols-1 md:grid-cols-2 gap-6 page-break-inside-avoid"><div class="bg-gray-50 p-4 rounded-lg"><h3 class="font-bold mb-3">מקרא תדירות:</h3><div class="space-y-2 text-sm"><div class="flex items-center gap-2"><span class="font-mono text-lg w-10 text-center">●●●●</span><span>שבועי</span></div><div class="flex items-center gap-2"><span class="font-mono text-lg w-10 text-center">● ●</span><span>דו-שבועי</span></div><div class="flex items-center gap-2"><span class="font-mono text-lg w-10 text-center">●</span><span>חודשי</span></div><div class="flex items-center gap-2"><span class="font-mono text-lg w-10 text-center">◆</span><span>חד-פעמי</span></div></div></div><div class="bg-gray-50 p-4 rounded-lg"><h3 class="font-bold mb-3">זירות:</h3><div class="space-y-2 text-sm">${Object.values(this.data.arenas).map(a => `<div class="flex items-center gap-2"><div class="w-4 h-4 rounded" style="background-color:${a.color}80"></div><span>${a.title}</span></div>`).join('')}</div></div></div>
+                </div>`;
+        },
+    };
+    App.init();
+    </script>
+</body>
+</html>
