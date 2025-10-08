@@ -879,8 +879,8 @@
                 let freqSymbol = {'שבועית':'●●●●', 'דו-שבועית':'● ●', 'חודשית':'●', 'חד-פעמית':'◆'}[frequency] || '';
 
                 ganttRows += `<tr class="border-t">
-                    <td class="p-2 align-middle text-sm font-medium">${item.component.text}</td>
                     <td class="p-2 align-middle text-xs">${item.goal.title}</td>
+                    <td class="p-2 align-middle text-sm font-medium">${item.component.text}</td>
                     ${this.data.months.map((_, monthIndex) => {
                         const isActive = getTimeFrameMonths(timeFrame).includes(monthIndex);
                         return `<td class="border p-1 text-center align-middle" style="min-height: 40px;">${isActive ? `<div class="h-full min-h-[35px] rounded flex items-center justify-center bg-${item.arena.color}-200" title="${item.component.text}"><span class="font-mono text-xs text-${item.arena.color}-800">${freqSymbol}</span></div>` : ''}</td>`;
@@ -894,11 +894,15 @@
                 <div class="bg-white p-4 rounded-xl shadow-md print-container">
                     <div class="overflow-x-auto"><table class="w-full text-sm border-collapse">
                         <colgroup>
-                            <col style="width: 25%;">
                             <col style="width: 15%;">
+                            <col style="width: 25%;">
                             ${this.data.months.map(() => `<col style="width: 6%;">`).join('')}
                         </colgroup>
-                        <thead class="bg-stone-100"><tr><th class="p-2 text-right">רכיב</th><th class="p-2 text-right">יעד</th>${this.data.months.map(m => `<th class="p-1 border text-[10px] leading-tight">${m}</th>`).join('')}</tr></thead>
+                        <thead class="bg-stone-100"><tr>
+                            <th class="p-2 text-right">יעד</th>
+                            <th class="p-2 text-right">רכיב</th>
+                            ${this.data.months.map(m => `<th class="p-1 border text-[10px] leading-tight">${m}</th>`).join('')}
+                        </tr></thead>
                         <tbody>${ganttRows}</tbody>
                     </table></div>
                     <div class="mt-8 grid grid-cols-1 md:grid-cols-2 gap-6 page-break-inside-avoid"><div class="bg-gray-50 p-4 rounded-lg"><h3 class="font-bold mb-3">מקרא תדירות:</h3><div class="space-y-2 text-sm"><div class="flex items-center gap-2"><span class="font-mono text-lg w-10 text-center">●●●●</span><span>שבועי</span></div><div class="flex items-center gap-2"><span class="font-mono text-lg w-10 text-center">● ●</span><span>דו-שבועי</span></div><div class="flex items-center gap-2"><span class="font-mono text-lg w-10 text-center">●</span><span>חודשי</span></div><div class="flex items-center gap-2"><span class="font-mono text-lg w-10 text-center">◆</span><span>חד-פעמי</span></div></div></div><div class="bg-gray-50 p-4 rounded-lg"><h3 class="font-bold mb-3">זירות:</h3><div class="space-y-2 text-sm">${Object.values(this.data.arenas).map(a => `<div class="flex items-center gap-2"><div class="w-4 h-4 rounded bg-${a.color}-200"></div><span>${a.title}</span></div>`).join('')}</div></div></div>
