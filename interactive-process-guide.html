@@ -185,6 +185,8 @@
             font-size: 1.3em;
             transition: transform 0.3s ease;
             color: #9ca3af;
+            flex-shrink: 0;
+            margin-right: 8px;
         }
         
         .step.active .toggle-icon {
@@ -254,7 +256,7 @@
         }
         
         .process-list li {
-            padding: 14px 14px 14px 40px;
+            padding: 14px 18px;
             margin-bottom: 10px;
             background: #f9fafb;
             border-radius: 8px;
@@ -262,15 +264,6 @@
             line-height: 1.7;
             color: #374151;
             border: 1px solid #f3f4f6;
-        }
-        
-        .process-list li:before {
-            content: "✓";
-            position: absolute;
-            right: 14px;
-            color: #8b5cf6;
-            font-weight: 600;
-            font-size: 1.1em;
         }
         
         .tool-link {
@@ -370,8 +363,8 @@
                         
                         <h3 style="margin: 25px 0 15px 0; color: #374151; font-weight: 600;">תהליך העבודה:</h3>
                         <ol class="process-list">
-                            <li>עברו יחד על "דף בחירת הנושאים להדרכה"</li>
-                            <li>נהלו דיון ובחרו <span class="highlight">עד 4 נושאים מרכזיים</span> להתמקדות בהדרכה הקרובה</li>
+                            <li>עברו יחד על "דף בחירת הנושאים להדרכה". ניתן להיעזר גם ב"מפת ההכלה החינוכית" הכלולה בתוך העלון "הכלה למעשה", איגרת מס' 17, בנושא: שיח מכוון תוצאות עם מנהלי בתי הספר</li>
+                            <li>נהלו דיון מבוסס נתונים, ובחרו <span class="highlight">עד 4 נושאים מרכזיים</span> להתמקדות בהדרכה הקרובה</li>
                             <li>הנושאים הנבחרים יהוו את הבסיס לשיח הממוקד שיתקיים בשלב הבא עם המדריכ/ה</li>
                         </ol>
                         
@@ -424,7 +417,7 @@
                         <ol class="process-list">
                             <li>המדריכ/ה פותח/ת את כלי השיח המקוון ומשתפ/ת מסך</li>
                             <li>השיח יתמקד <span class="highlight">אך ורק בנושאים שסומנו מראש</span> בשלב א'</li>
-                            <li>עבור כל נושא, יש לנהל דיון בהתאם לשאלות המנחות ולסמן את האפשרויות הרלוונטיות בכלי</li>
+                            <li>עבור כל נושא, יש לנהל דיון בהתאם לשאלות המנחות ולסמן את האפשרויות הרלוונטיות בכלי. ניתן להיעזר גם ב"מפת ההכלה החינוכית" הכלולה בתוך העלון "הכלה למעשה", איגרת מס' 17, בנושא: שיח מכוון תוצאות עם מנהלי בתי הספר</li>
                         </ol>
                         
                         <h3 style="margin: 25px 0 15px 0; color: #374151; font-weight: 600;">💾 שמירה וטעינה של השיח:</h3>
@@ -493,6 +486,17 @@
                             <li>בטבלה הסופית, הגדירו <span class="highlight">שותפים, מסגרת זמן ותדירות</span> עבור כל פעילות ומשימה</li>
                             <li>בסיום, ניתן להדפיס את התוכנית כטבלה או לצפות בה כתצוגת גאנט</li>
                         </ol>
+                        
+                        <h3 style="margin: 25px 0 15px 0; color: #374151; font-weight: 600;">💾 שמירה וטעינה של תוכנית עבודה:</h3>
+                        <div class="info-box success">
+                            <p style="margin-bottom: 15px;"><strong>ניתן לשמור ולעדכן את התוכנית לאורך זמן:</strong></p>
+                            <div style="margin-bottom: 15px;">
+                                <strong>📥 שמירת תוכנית:</strong> בסיום בניית התוכנית, יש ללחוץ על <span class="highlight">"שמור תוכנית"</span>. פעולה זו תוריד למחשב קובץ JSON המכיל את כל התכנון המפורט.
+                            </div>
+                            <div>
+                                <strong>📤 טעינת תוכנית:</strong> בשלב מאוחר יותר, ניתן ללחוץ על <span class="highlight">"טען תוכנית"</span> ולבחור את הקובץ השמור. כך תוכלו להוסיף תוצאות בפועל, תובנות, ולעדכן את התוכנית בהתאם להתקדמות בפועל.
+                            </div>
+                        </div>
                         
                         <div class="info-box success">
                             <strong>✅ סיימתם!</strong> כעת יש בידיכם תוכנית עבודה שנתית מלאה ומפורטת
