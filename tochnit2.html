@@ -19,7 +19,6 @@
         .metric-input-wrapper { display: inline-flex; align-items: baseline; gap: 0.25rem; }
         .metric-input { width: 4rem; text-align: center; border: 1px solid #cbd5e1; border-radius: 0.25rem; padding: 0.1rem; }
         
-        /* --- UPDATED: Enhanced styling for selected and recommended items --- */
         .selection-label {
             display: flex;
             align-items: flex-start;
@@ -33,22 +32,20 @@
         .selection-label:hover {
              background-color: #f7faf9;
         }
-        /* Style for items actively checked */
         .selection-label:has(input:checked) {
-            background-color: #ccfbf1; /* Light teal */
+            background-color: #ccfbf1;
             border-color: #5eead4;
         }
         .selection-label:has(input:checked) span {
             font-weight: 600;
-            color: #0f766e; /* Dark teal */
+            color: #0f766e;
         }
-        /* Additional style for items that were recommended from import */
         .recommended-item {
-            background-color: #fef9c3 !important; /* Light yellow for recommendation */
+            background-color: #fef9c3 !important;
             border-color: #fde047 !important;
         }
         .recommended-item:has(input:checked) {
-             background-color: #dcfce7 !important; /* Light green if recommended AND checked */
+             background-color: #dcfce7 !important;
              border-color: #86efac !important;
         }
 
@@ -327,13 +324,12 @@
             baselineData: {},
             goalBaselines: {},
             otherInputs: {},
-            // --- UPDATED: Added guidanceDays to general info ---
             generalInfo: {
                 schoolName: '', principalName: '', mentorName: '', coordinatorName: '',
                 guidanceHours: '', guidanceDays: '', additionalTraining: '', globalPartners: ''
             },
             recommendedGoalIds: new Set(),
-            recommendedItemIds: new Set(), // --- NEW: To highlight individual items ---
+            recommendedItemIds: new Set(),
             showImportNotification: false,
             expandedArenas: {},
         },
@@ -812,7 +808,7 @@
             input.click();
         },
 
-        // --- UPDATED: Major update to import logic ---
+        // --- FIXED: Simplified and corrected import logic ---
         importSummary() {
             const input = document.createElement('input');
             input.type = 'file';
@@ -825,7 +821,7 @@
                     try {
                         const data = JSON.parse(e.target.result);
 
-                        // --- Reset State before import ---
+                        // Reset state before import
                         this.state.selections = {};
                         this.state.tableData = {};
                         this.state.metricValues = {};
@@ -836,46 +832,46 @@
                         this.state.recommendedGoalIds.clear();
                         this.state.recommendedItemIds.clear();
 
-                        // --- Update General Info, including guidanceDays ---
+                        // Update General Info
                         const guidanceDays = data.guidanceDays ? Object.keys(data.guidanceDays).filter(day => data.guidanceDays[day]).join(', ') : '';
-                        
                         this.state.generalInfo = {
                             schoolName: data.schoolName || '',
                             principalName: data.principalName || '',
                             mentorName: data.mentorName || '',
                             coordinatorName: data.coordinatorName || '',
                             guidanceHours: data.guidanceHours || '',
-                            guidanceDays: guidanceDays, // Added this field
+                            guidanceDays: guidanceDays,
                             additionalTraining: data.additionalTraining ? Object.keys(data.additionalTraining).filter(k => data.additionalTraining[k]).join(', ') : '',
                             globalPartners: data.globalPartners ? Object.keys(data.globalPartners).filter(p => data.globalPartners[p]).join(', ') : ''
                         };
 
                         const recommendedIds = data.recommendedComponentIds ? Object.keys(data.recommendedComponentIds) : [];
                         
-                        recommendedIds.forEach(id => {
-                            // Find the component in the data structure to get its parent goal
-                            for (const arena of Object.values(this.data.arenas)) {
-                                const goal = arena.goals.find(g => g.id === id);
-                                if (goal) {
-                                    this.state.recommendedGoalIds.add(id); // Highlight the parent goal container
-                                } else {
-                                    for (const g of arena.goals) {
-                                        const allItems = [
-                                            ...(g.activities || []),
-                                            ...(g.tasks || []),
-                                            ...(g.output_metrics || []),
-                                            ...(g.outcome_metrics || [])
-                                        ];
-                                        if (allItems.some(item => item.id === id)) {
-                                            this.state.selections[id] = true; // Automatically check the specific item
-                                            this.state.recommendedGoalIds.add(g.id); // Also highlight its parent goal
-                                            this.state.recommendedItemIds.add(id); // And highlight the item itself
-                                            break; 
-                                        }
+                        // Iterate through all goals and their items to find matches
+                        for (const arena of Object.values(this.data.arenas)) {
+                            for (const goal of arena.goals) {
+                                let goalIsRecommended = recommendedIds.includes(goal.id);
+                                
+                                const allItems = [
+                                    ...(goal.activities || []),
+                                    ...(goal.tasks || []),
+                                    ...(goal.output_metrics || []),
+                                    ...(goal.outcome_metrics || [])
+                                ];
+
+                                allItems.forEach(item => {
+                                    if (recommendedIds.includes(item.id)) {
+                                        this.state.selections[item.id] = true;
+                                        this.state.recommendedItemIds.add(item.id);
+                                        goalIsRecommended = true; // Mark the parent goal as recommended if any child is
                                     }
+                                });
+
+                                if (goalIsRecommended) {
+                                    this.state.recommendedGoalIds.add(goal.id);
                                 }
                             }
-                        });
+                        }
 
                         this.state.showImportNotification = true;
                         
@@ -952,7 +948,6 @@
                 </div>`;
             }
 
-            // --- UPDATED: Destructure guidanceDays as well ---
             const { schoolName, principalName, mentorName, coordinatorName, guidanceHours, guidanceDays, additionalTraining, globalPartners } = this.state.generalInfo;
             return `
                 <header class="mb-8"><h1 class="text-4xl md:text-5xl font-bold text-teal-800">בניית תוכנית ליווי בית ספרית בתחום הכלה והוגנות</h1></header>
@@ -972,7 +967,6 @@
                          <div><label class="font-bold text-stone-600 block mb-1">שם המדריכה:</label><input type="text" value="${mentorName}" onchange="App.handleGeneralInfoChange('mentorName', this.value)" class="w-full p-2 border rounded"></div>
                          <div><label class="font-bold text-stone-600 block mb-1">שם רכז/ת ההכלה:</label><input type="text" value="${coordinatorName}" onchange="App.handleGeneralInfoChange('coordinatorName', this.value)" class="w-full p-2 border rounded"></div>
                          <div><label class="font-bold text-stone-600 block mb-1">היקף שעות הדרכה:</label><input type="text" value="${guidanceHours}" onchange="App.handleGeneralInfoChange('guidanceHours', this.value)" class="w-full p-2 border rounded"></div>
-                         <!-- UPDATED: Added Guidance Days field -->
                          <div><label class="font-bold text-stone-600 block mb-1">ימי הדרכה:</label><input type="text" value="${guidanceDays}" onchange="App.handleGeneralInfoChange('guidanceDays', this.value)" class="w-full p-2 border rounded"></div>
                          <div class="col-span-2"><label class="font-bold text-stone-600 block mb-1">שותפים מרכזיים:</label><input type="text" value="${globalPartners}" onchange="App.handleGeneralInfoChange('globalPartners', this.value)" class="w-full p-2 border rounded"></div>
                          <div class="col-span-4"><label class="font-bold text-stone-600 block mb-1">תחומי דעת נוספים בהדרכה:</label><input type="text" value="${additionalTraining}" onchange="App.handleGeneralInfoChange('additionalTraining', this.value)" class="w-full p-2 border rounded"></div>
@@ -1167,7 +1161,6 @@
         },
 
        renderPlanHeader() {
-            // --- UPDATED: Destructure and display guidanceDays ---
             const { schoolName, principalName, mentorName, coordinatorName, guidanceHours, guidanceDays, additionalTraining, globalPartners } = this.state.generalInfo;
             return `
                 <div class="bg-white p-6 rounded-xl shadow-md mb-6 page-break-inside-avoid">
@@ -1205,7 +1198,6 @@
                 return null;
             };
 
-            // --- CONFIRMED: This logic correctly gets ALL checked items ---
             const selectedItems = Object.entries(this.state.selections).filter(([_, v]) => v).map(([id]) => {
                 if (id.includes('-other-')) {
                     const [goalId, _, type] = id.split('-');
@@ -1231,7 +1223,6 @@
             const groupedByArena = selectedItems.reduce((acc, { component, type, goal, arena }) => {
                 if (!acc[arena.title]) acc[arena.title] = { color: arena.color, goals: {} };
                 if (!acc[arena.title].goals[goal.id]) acc[arena.title].goals[goal.id] = { title: goal.title, activities: [], tasks: [], output_metrics: [], outcome_metrics: [] };
-                // This check prevents duplicates if an item is somehow processed twice
                 if (!acc[arena.title].goals[goal.id][type].some(i => i.id === component.id)) {
                     acc[arena.title].goals[goal.id][type].push(component);
                 }
