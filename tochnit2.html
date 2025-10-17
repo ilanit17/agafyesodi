@@ -1,462 +1,58 @@
+```html
 <!DOCTYPE html>
 <html lang="he" dir="rtl">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>כלי לניהול שיח לתכנון תוכנית התערבות - הכלה והוגנות</title>
-    
-    <!-- Tailwind CSS for styling -->
+    <title>בניית תוכנית ליווי בית ספרית בתחום הכלה והוגנות</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    
+    <link href="https://fonts.googleapis.com/css2?family=Assistant:wght@300;400;600;700&display=swap" rel="stylesheet">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Assistant:wght@400;500;600;700&display=swap');
+        body { font-family: 'Assistant', sans-serif; }
+        .accordion-content { max-height: 0; overflow: hidden; transition: max-height 0.5s ease-out; }
+        .accordion-content.is-open { max-height: 20000px; }
         
-        body {
-            font-family: 'Assistant', sans-serif;
-        }
+        .multiselect-container { position: relative; display: inline-block; width: 100%; }
+        .multiselect-options { display: none; position: absolute; background-color: white; border: 1px solid #ddd; z-index: 10; width: 100%; max-height: 200px; overflow-y: auto; box-shadow: 0 4px 8px rgba(0,0,0,0.1); border-radius: 0.375rem; }
+        .multiselect-container:hover .multiselect-options { display: block; }
         
-        .hidden {
-            display: none !important;
-        }
+        .metric-input-wrapper { display: inline-flex; align-items: baseline; gap: 0.25rem; }
+        .metric-input { width: 4rem; text-align: center; border: 1px solid #cbd5e1; border-radius: 0.25rem; padding: 0.1rem; }
         
-        @media print {
-            body {
-                background-color: white !important;
-                -webkit-print-color-adjust: exact;
-                print-color-adjust: exact;
-            }
-            .no-print {
-                display: none !important;
-            }
-            .print-container {
-                max-width: 100% !important;
-                margin: 0 !important;
-                padding: 0 !important;
-            }
-            .print-content {
-                box-shadow: none !important;
-                border: none !important;
-                padding: 1rem !important;
-            }
-            .page-break-inside-avoid {
-                page-break-inside: avoid;
-            }
+        /* --- UPDATED: Enhanced styling for selected and recommended items --- */
+        .selection-label {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.75rem;
+            padding: 0.5rem;
+            border-radius: 0.375rem;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            border: 1px solid transparent;
         }
-    </style>
-</head>
-<body class="bg-gray-100">
-
-    <div id="app"></div>
-
-    <script>
-        // --- START: Data Management ---
-
-        const STORAGE_KEY = 'interventionToolState';
-
-        // --- Local Storage Functions ---
-        function saveStateToLocalStorage() {
-            try {
-                const stateToSave = { ...state, summaryData: null };
-                const serializedState = JSON.stringify(stateToSave);
-                localStorage.setItem(STORAGE_KEY, serializedState);
-            } catch (e) {
-                console.error("Could not save state to localStorage", e);
-            }
+        .selection-label:hover {
+             background-color: #f7faf9;
         }
-
-        function loadStateFromLocalStorage() {
-            try {
-                const serializedState = localStorage.getItem(STORAGE_KEY);
-                if (serializedState === null) return undefined;
-                return JSON.parse(serializedState);
-            } catch (e) {
-                console.error("Could not load state from localStorage", e);
-                return undefined;
-            }
-        }
-        
-        function resetState() {
-            if (confirm('האם אתה בטוח שברצונך למחוק את כל הנתונים ולהתחיל מחדש? פעולה זו אינה הפיכה.')) {
-                localStorage.removeItem(STORAGE_KEY);
-                window.location.reload();
-            }
-        }
-
-        // --- File Import/Export Functions ---
-        function exportStateToFile() {
-            const stateToSave = { ...state, summaryData: null };
-            const jsonString = JSON.stringify(stateToSave, null, 2);
-            const blob = new Blob([jsonString], { type: 'application/json' });
-            const url = URL.createObjectURL(blob);
-            const link = document.createElement('a');
-            const fileName = `intervention-data-${state.schoolName || new Date().toISOString().slice(0,10)}.json`;
-            link.href = url;
-            link.download = fileName;
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-            URL.revokeObjectURL(url);
-            alert(`הנתונים נשמרו בהצלחה לקובץ:\n${fileName}`);
-        }
-        
-        // --- UPDATED Export function specifically for the Plan Builder Tool ---
-        function exportSummaryForBuilder() {
-            const recommendedComponentIds = {};
-
-            const idMappings = {
-                'planning_instruction': 'a1g1', 'pedagogical_flexibility': 'a1g6', 'classroom_management': 'a1g9',
-                'assessment_feedback': 'a1g7', 'focused_student_work': 'a1g8', 'data_based_planning': 'a2g1',
-                'interdisciplinary_team': 'a3g1', 'fairness_systemic_view': 'a4g2', 'parent_partnership': 'a4g1',
-                'coordinator_guidance': 'a3g3', 'teacher_knowledge_deepening': 'a3g2', 'teacher_efficacy': 'a3g1', // maps to self-efficacy related items
-                'belonging_involvement': 'a4g1', 'teacher_student_dialogue': 'a1g11', 'learning_spaces': 'a5g1',
-                'techno_pedagogical_tools': 'a5g1',
-                
-                practiceMappings: {
-                    'פרקטיקות המקדמות הוראה מפורשת': ['a1g4'],
-                    'פרקטיקות המקדמות למידה פעילה ומפחיתות מע"מ': ['a1g3'],
-                    'פרקטיקות המקדמות הסרת חסמי למידה ומעורבות': ['a1g2'],
-                    'פרקטיקות לקידום תפקודים ניהוליים': ['a1g5'],
-                    'פרקטיקות המקדמות משוב והערכה מכווני שונות': ['a1g7'],
-                    'פרקטיקות להעמדת ההיכרות ההוליסטית עם התלמיד': ['a4g1', 'a1g11'],
-                    'פרקטיקות לקידום מוטיבציה': ['a1g10'],
-                    'פרקטיקות לקידום שיח פדגוגי': ['a1g11'],
-                    'פרקטיקות לעבודה עם תלמידים מאתגרים': ['a1g9'],
-                    'כלי לתכנון שיעור מבוסס תפיסת UDL': ['a1g1'],
-                    'קהילת היוועצות בית ספרית (חקר הפרקטיקה)': ['a3g1', 'a3g2'],
-                }
-            };
-
-            Object.keys(state.selectedItems).forEach(key => {
-                if (state.selectedItems[key]) {
-                    const [domainId, subtopicId, outcomeIndex] = key.split('_');
-                    if (idMappings[subtopicId]) {
-                        recommendedComponentIds[idMappings[subtopicId]] = true;
-                    }
-                    if (state.selectedPractices[key]) {
-                        Object.keys(state.selectedPractices[key]).forEach(practice => {
-                            if (state.selectedPractices[key][practice] && idMappings.practiceMappings[practice]) {
-                                idMappings.practiceMappings[practice].forEach(goalId => {
-                                    recommendedComponentIds[goalId] = true;
-                                });
-                            }
-                        });
-                    }
-                }
-            });
-
-            // --- FIX: Added guidanceDays to the exported data ---
-            const builderData = {
-                schoolName: state.schoolName,
-                principalName: state.principalName,
-                mentorName: state.mentorName,
-                coordinatorName: state.coordinatorName,
-                guidanceHours: state.guidanceHours,
-                guidanceDays: state.guidanceDays, // This was missing
-                additionalTraining: state.additionalTraining,
-                globalPartners: state.globalPartners,
-                recommendedComponentIds: recommendedComponentIds,
-                selectedItems: state.selectedItems 
-            };
-            
-            const jsonString = JSON.stringify(builderData, null, 2);
-            const blob = new Blob([jsonString], { type: 'application/json' });
-            const url = URL.createObjectURL(blob);
-            const link = document.createElement('a');
-            const fileName = `summary-for-builder-${state.schoolName || new Date().toISOString().slice(0,10)}.json`;
-            link.href = url;
-            link.download = fileName;
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-            URL.revokeObjectURL(url);
-            alert(`סיכום עבור כלי התכנון נשמר בהצלחה לקובץ:\n${fileName}`);
-        }
-
-
-        function importStateFromFile(event) {
-            const file = event.target.files[0];
-            if (!file) return;
-
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                try {
-                    const importedData = JSON.parse(e.target.result);
-                    if (importedData && typeof importedData === 'object' && 'view' in importedData) {
-                        Object.assign(state, importedData);
-                        state.view = 'initial';
-                        render();
-                        alert('הנתונים נטענו בהצלחה מהקובץ!');
-                    } else {
-                        throw new Error('Invalid file format.');
-                    }
-                } catch (error) {
-                    alert('שגיאה: הקובץ שנבחר אינו תקין או פגום.');
-                    console.error("Error parsing imported file:", error);
-                }
-            };
-            reader.readAsText(file);
-            event.target.value = null;
-        }
-
-        // --- END: Data Management ---
-
-
-        // Application State
-        const initialState = {
-            view: 'initial', currentDomain: 0, selectedItems: {}, selectedPractices: {},
-            customPractices: {}, schoolName: '', principalName: '', mentorName: '',
-            coordinatorName: '', guidanceHours: '', guidanceDays: {}, additionalTraining: {},
-            customTraining: '', schoolData: '', challenges: '', additionalResources: '',
-            globalPartners: {}, customGlobalPartner: '', selectedTrainingPractices: {},
-            summaryData: null
-        };
-        
-        const state = loadStateFromLocalStorage() || initialState;
-
-        // Data (unchanged)
-        const partnersList = ['מנהל/ת בית ספר', 'רכזת הכלה', 'מדריכת הכלה', 'רכזת הערכה ומדידה', 'רכזת פדגוגית', 'יועצת בית הספר', 'סגן/ית מנהל/ת בית הספר', 'מחנכת הכיתה', 'פסיכולוגית', 'מורה מקצועית', 'מורת שילוב'];
-        const teacherTrainingPractices = ['ליווי מורות בצוות החינוכי בתכנון השיעור', 'חשיפת והדגמת מתודות בחדר המורים', 'צפייה בשיעורים ומתן משוב', 'יצירת קהילה עם תהליכי רפלקציה', 'מודלינג', 'הליכה לימודית', 'ליווי מנהיגות הביניים בהובלת תהליכים', 'אחר'];
-        const daysOfWeek = ["יום א", "יום ב", "יום ג", "יום ד", "יום ה"];
-        const trainingAreas = ['חינוך לשוני', 'חינוך חברתי', 'עלמא', 'מתמטיקה', 'מחוננים', 'אמירים', 'אחר'];
-        const domains = [ { id: 'arena1', title: 'הל"ה בכיתה ההטרוגנית', subtopics: [ { id: 'planning_instruction', title: 'תכנון הוראה מכוונת שונות וצורך (עיצוב אוניברסלי ללמידה)', expectedOutcomes: [ { text: 'העלאת אחוז התלמידים המעורבים ופעילים בשיעור' }, { text: 'עלייה באחוז המורות המדווחות על שימוש במתודות המזמנות מעורבות מתמשכת בשיעור:', selectablePractices: ['פרקטיקות המקדמות הוראה מפורשת', 'פרקטיקות המקדמות למידה פעילה ומפחיתות מע"מ', 'פרקטיקות המקדמות הסרת חסמי למידה ומעורבות', 'פרקטיקות לקידום תפקודים ניהוליים', 'אחר'] }, { text: 'עלייה באחוז המורות המדווחות על תכנון השיעורים בהתאמה לעקרונות ה-UDL (קישור לכלי תכנון שיעור UDL)' }, { text: 'שיפור בהישגים של תלמידים במיקוד' } ] }, { id: 'pedagogical_flexibility', title: 'גמישות פדגוגית (4 המארגנים)', expectedOutcomes: [ { text: 'עלייה באחוז המורים המדווחים על שימוש רב יותר בעקרונות של גמישות פדגוגית ותכנון יום ושבוע הלמידה:', selectablePractices: ['פרקטיקות המקדמות למידה בהרכבים שונים (ארגון הלומדים)', 'פרקטיקות המקדמות למידה במרחבים שונים (ארגון המרחב)', 'פרקטיקות לארגון זמן הלמידה', 'פרקטיקות לארגון תכני הלמידה', 'אחר'] } ] }, { id: 'classroom_management', title: 'ניהול כיתה', expectedOutcomes: [ { text: 'עלייה באחוז המורים המדווחים על תחושת מסוגלות גבוהה יותר לניהול כיתה הטרוגנית' }, { text: 'ירידה באחוז התלמידים המושעים' }, { text: 'עלייה באחוז המורות המדווחות על שימוש במתודות המזמנות מעורבות מתמשכת בשיעור:', selectablePractices: ['פרקטיקות המקדמות למידה פעילה ומפחיתות מע"מ', 'פרקטיקות המקדמות הסרת חסמי למידה ומעורבות', 'פרקטיקות לקידום תפקודים ניהוליים', 'פרקטיקות המקדמות למידה בהרכבים שונים', 'כלי לתכנון שיעור מבוסס תפיסת UDL', 'פרקטיקות לעבודה עם תלמידים מאתגרים', 'אחר'] } ] }, { id: 'inclusive_practices_application', title: 'יישום פרקטיקות מכלילות', expectedOutcomes: [ { text: 'עלייה במספר המורים המיישמים פרקטיקות מכלילות באופן עקבי:', selectablePractices: ['פרקטיקות המקדמות הוראה מפורשת', 'פרקטיקות המקדמות למידה פעילה ומפחיתות מע"מ', 'פרקטיקות המקדמות הסרת חסמי למידה ומעורבות', 'פרקטיקות המקדמות משוב והערכה מכווני שונות', 'פרקטיקות לקידום תפקודים ניהוליים', 'פרקטיקות להעמדת ההיכרות ההוליסטית עם התלמיד', 'פרקטיקות לקידום מוטיבציה', 'פרקטיקות לקידום שיח פדגוגי', 'אחר'] } ] }, { id: 'assessment_feedback', title: 'משוב והערכה מכווני שונות', expectedOutcomes: [ { text: 'רכיבי התעודה משקפים את תפיסת ההכלה וההוגנות' }, { text: 'עלייה בשימוש במגוון כלי הערכה פנימיים:', practiceListTitle: 'בחירת פרקטיקות של תהליכי הערכה ומשוב:', selectablePractices: ['פרקטיקות של תהליכי הערכה ומשוב מכווני שונות', 'אחר'] }, { text: 'מתקיים שיח ללמידה מנתונים לצורך תכנון תהליכי משוב והערכה מכווני שונות' } ] }, { id: 'focused_student_work', title: 'עבודה עם תלמידים במיקוד', expectedOutcomes: [ { text: 'שיפור באפקטיביות תכניות העבודה עבור תלמידים במיקוד (שאינם זכאי שירותי חינוך מיוחדים)' } ] } ] }, { id: 'arena2', title: 'תרבות ומדיניות הכלה והוגנות בית ספרית', subtopics: [ { id: 'inclusive_vision', title: 'ביסוס תפיסה מכילה והוגנת ותרגומה לתהליכים בית-ספריים', expectedOutcomes: [ { text: 'תכנון המענים בראייה בית ספרית ייעשה בהתאם למודל ה-MTSS' }, { text: 'עלייה בשימוש של צוות המורים במושגים, עקרונות ושיח מעולם ההכלה וההוגנות:', practiceListTitle: 'בחירת מושגים/עקרונות:', selectablePractices: ['הכללה', 'שותפות עם הורים', 'עיצוב אוניברסלי', 'פסיכופדגוגיה', 'יחסי קרבה ואכפתיות', 'תרבות מדיניות ויישום', 'חסמי למידה והשתתפות', 'הורדת זמן מע"מ (צמצום שלב ההקדמה לטובת מקסום זמן הלמידה הפעילה)', 'הכלה פדגוגית', 'תוכנית עבודה מרובדת', 'אחר'] }, { text: 'הצוות מבנה מדיניות משותפת לביסוס תרבות מכילה והוגנת ויישומה (להלן מבחר דוגמאות להטמעה):', practiceListTitle: 'דוגמאות להטמעת מדיניות בית-ספרית:', selectablePractices: ['דיאלוג עם ההורים המושתת על עקרונות מכילים (אסיפות הורים, שיחות, הרצאות, ימי שיא, ישיבות הנהגת הורים)', 'דיאלוג בימי הורים המשקף את תפיסת ההכלה וההוגנות', 'ישיבות פדגוגיות מבוססות נתונים ומכוונות לתלמיד השלם', 'יום למידה מסתיים/מתחיל בשיח מצמיח', 'תקנון ו"האני מאמין" של בית הספר משקפים את תפיסת ההכלה וההוגנות', 'רכיבי התעודה משקפים את תפיסת ההכלה וההוגנות'] } ] }, { id: 'data_based_planning', title: 'תכנית עבודה בית ספרית מבוססת נתונים', expectedOutcomes: [ { text: 'ישיבות פדגוגיות מבוססות נתונים ומכוונות לתלמיד השלם' }, { text: 'הצוות החינוכי ממפה תלמידים באמצעות כלי מיפוי הוליסטי (העוגן) ובונה תכניות עבודה מבוססות נתונים' }, { text: 'תכנון העבודה, קבלת החלטות ובניית תכניות התערבות מבוססים על ניתוח תובנות מנתונים' } ] }, { id: 'interdisciplinary_team', title: 'צוות בין-מקצועי מוביל הכלה והוגנות', expectedOutcomes: [ { text: 'מתקיימת למידת עמיתים במגוון דרכים:', selectablePractices: ['קהילת היוועצות בית ספרית (חקר הפרקטיקה)', 'צפיית עמיתים', 'ישיבות צוותים', 'מליאות מורים', 'מורה חונך מורה', 'סימולציות', 'מרחבי חקר ולמידה למורים', 'אחר'] }, { text: 'מתקיימים שיתופי פעולה בקרב מנהיגות הביניים לקידום יעדי הכלה והוגנות/הוראה בכיתה הטרוגנית' } ] }, { id: 'fairness_systemic_view', title: 'הוגנות כתפיסה מערכתית', expectedOutcomes: [ { text: "עלייה באחוז התלמידים המדווחים על תחושת ביטחון" }, { text: "עלייה באחוז התלמידים המדווחים על תחושת שייכות" }, { text: "עלייה באחוז התלמידים המדווחים על אג'נסי" }, { text: 'בית הספר מיישם תפיסה של הוגנות במרחבים שונים:', practiceListTitle: 'בחירת פרקטיקות ודגשים ליישום באחד או יותר מהעקרונות הבאים:', selectablePractices: ['אכפתיות', 'גמישות', 'נגישות', 'אמון', 'איכות', 'שקיפות', 'מגוון'] }, { text: 'הפחתת השימוש בפרקטיקות מדירות', isSubOutcome: true }, { text: 'ירידה באחוז התלמידים המושעים', isSubOutcome: true }, ] }, { id: 'parent_partnership', title: 'שותפות עם הורים וקהילה מנקודת מבט מכילה והוגנת', expectedOutcomes: [ { text: 'ימי הורים המשקפים הכלה והוגנות' }, { text: 'מתן ייצוג להון התרבותי של קהילת בית-הספר (פדגוגיה של זהויות)'}, { text: 'שותפות חינוכית עם ההורים' } ] } ] }, { id: 'arena3', title: 'תחושת מסוגלות הצוות החינוכי', subtopics: [ { id: 'coordinator_guidance', title: 'ליווי רכזת ההכלה בעבודתה', expectedOutcomes: [ { text: 'עלייה בתחושת המסוגלות של רכזת ההכלה ליישם את תכנית העבודה שלה' }, { text: 'הצלחה ביישום יעדי העבודה של רכזת ההכלה בהתאם למסמך אבני דרך' } ] }, { id: 'teacher_knowledge_deepening', title: 'העמקת הידע המקצועי של המורים', expectedOutcomes: [ { text: 'עלייה בשימוש של צוות המורים במושגים, עקרונות ושיח מעולם ההכלה וההוגנות:', practiceListTitle: 'בחירת מושגים/עקרונות:', selectablePractices: ['הכללה', 'שותפות עם הורים', 'עיצוב אוניברסלי', 'פסיכופדגוגיה', 'יחסי קרבה ואכפתיות', 'תרבות מדיניות ויישום', 'חסמי למידה והשתתפות', 'הורדת זמן מע"מ', 'הכלה פדגוגית', 'תוכנית עבודה מרובדת', 'אחר'] }, { text: 'הצוות לומד ומתפתח מקצועית בתחום ההכלה וההוגנות (יש לבחור יעדים/נושאים מתוך הרשימה הבאה):', practiceListTitle: 'בחירת יעדים/נושאים להתפתחות מקצועית:', selectablePractices: ['ליווי תלמידים עם בעיות התנהגות', 'ליווי תלמידים עם בעיות קשב', 'המחונן בכיתתו', 'ילדים בסיכון', 'הוראה בכיתה הטרוגנית', 'נוירופדגוגיה', 'הערכה מבוססת מגוון', 'אוכלוסיות ייחודיות', 'הוראה מותאמת פרט', 'ויסות עצמי ללמידה', 'מוטיבציה ללמידה', 'בניית תכניות אישיות ו/או כיתתיות', 'תכנון הוראה מבוססת נתונים', 'כלים טכנו-פדגוגיים'] }, { text: 'מתקיים שיח ללמידה מנתונים לצורך תכנון העבודה, קבלת החלטות ובניית תכניות התערבות' }, { text: 'מתקיימת למידת עמיתים במגוון דרכים:', selectablePractices: ['קהילת היוועצות בית ספרית (חקר הפרטקטיקה)', 'צפיית עמיתים', 'ישיבות צוותים', 'מליאות מורים', 'מורה חונך מורה', 'סדנאות פיתוח מקצועי', 'השתלמות מוסדית', 'פורמט דיגיטלי לשיתוף חומרים', 'סימולציות', 'מרחבי חקר ולמידה למורים', 'אחר'] } ] }, { id: 'teacher_efficacy', title: 'חיזוק תחושת המסוגלות של המורה', expectedOutcomes: [ { text: 'עלייה בתחושת המסוגלות של המורים במימדים שונים מקדמי הכלה והוגנות' }, { text: 'עלייה בתחושת המסוגלות של המורים לניהול שיח מצמיח עם התלמידים ותחושת אכפתיות' }, { text: 'עלייה במספר התלמידים המעורבים בשיעור' } ] } ] }, { id: 'arena4', title: 'יחסי קרבה ואכפתיות', subtopics: [ { id: 'belonging_involvement', title: 'שייכות ומעורבות', expectedOutcomes: [ { text: 'עלייה באחוז התלמידים המדווחים על תחושת שייכות' }, { text: 'עלייה באחוז התלמידים המדווחים על תחושת ביטחון בבית הספר' }, { text: 'עלייה בדיווח המורים על היכרות מעמיקה עם תלמידיהם ממגוון נקודות מבט (התלמיד השלם)' } ] }, { id: 'teacher_student_dialogue', title: 'דיאלוג מורה-תלמיד', expectedOutcomes: [ { text: 'עלייה בדיווח המורים על שימוש בכלים פסיכופדגוגיים לחיזוק הקשר בין מורה-תלמיד:', selectablePractices: ['"פסיפס"', 'משוב לקידום פסיכופדגוגיה', 'שאלות מוקירות', 'בניית אמון בין מורה לתלמיד', 'ניהול שיח אישי מצמיח', 'מבוגר משמעותי', 'ציפיות גבוהות', 'אחר'] } ] } ] }, { id: 'arena5', title: 'סביבת למידה מקדמת הכלה והוגנות', subtopics: [ { id: 'learning_spaces', title: 'מרחבי למידה', expectedOutcomes: [ { text: 'עלייה בשימוש במגוון מרחבי למידה:', selectablePractices: ['מגוון מרחבים בכיתה', 'מרחבי למידה חוץ כיתתיים', 'מרחבי למידה חוץ בית ספריים', 'מרחבי למידה ירוקים'] } ] }, { id: 'techno_pedagogical_tools', title: 'כלים טכנו-פדגוגיים', expectedOutcomes: [ { text: 'עלייה בשימוש בכלים דיגיטליים המסייעים בהסרת חסמי למידה ומגבירים מעורבות' } ] } ] } ];
-
-        // Helper functions
-        function navigateTo(view) { state.view = view; saveStateToLocalStorage(); render(); window.scrollTo(0, 0); }
-        function toggleSelection(domainId, subtopicId, outcomeIndex) { const key = `${domainId}_${subtopicId}_${outcomeIndex}`; state.selectedItems[key] = !state.selectedItems[key]; if (!state.selectedItems[key]) { delete state.selectedPractices[key]; delete state.customPractices[key]; } saveStateToLocalStorage(); render(); }
-        function togglePractice(outcomeKey, practice) { if (!state.selectedPractices[outcomeKey]) { state.selectedPractices[outcomeKey] = {}; } state.selectedPractices[outcomeKey][practice] = !state.selectedPractices[outcomeKey][practice]; saveStateToLocalStorage(); render(); }
-        function getSelectedCount() { return Object.values(state.selectedItems).filter(Boolean).length; }
-        function createSummary() { const summary = {}; const selectedGlobalPartnersList = Object.keys(state.globalPartners).filter(p => state.globalPartners[p]); let selectedTrainingList = Object.keys(state.selectedTrainingPractices).filter(p => state.selectedTrainingPractices[p]); const selectedDays = Object.keys(state.guidanceDays).filter(day => state.guidanceDays[day]).join(', '); let selectedTrainingAreas = Object.keys(state.additionalTraining).filter(area => state.additionalTraining[area]); if (state.additionalTraining['אחר'] && state.customTraining) { selectedTrainingAreas = selectedTrainingAreas.filter(area => area !== 'אחר'); selectedTrainingAreas.push(`אחר: ${state.customTraining}`); } if (state.selectedTrainingPractices['אחר'] && state.customPractices['training_other']) { selectedTrainingList = selectedTrainingList.filter(p => p !== 'אחר'); selectedTrainingList.push(`אחר: ${state.customPractices['training_other']}`); } domains.forEach(domain => { domain.subtopics.forEach(subtopic => { subtopic.expectedOutcomes.forEach((outcome, index) => { const key = `${domain.id}_${subtopic.id}_${index}`; if (state.selectedItems[key]) { if (!summary[domain.title]) summary[domain.title] = {}; if (!summary[domain.title][subtopic.title]) summary[domain.title][subtopic.title] = []; let practices = state.selectedPractices[key] ? Object.keys(state.selectedPractices[key]).filter(p => state.selectedPractices[key][p]) : []; if (state.selectedPractices[key]?.['אחר'] && state.customPractices[key]) { practices = practices.filter(p => p !== 'אחר'); practices.push(`אחר: ${state.customPractices[key]}`); } summary[domain.title][subtopic.title].push({ outcome: outcome.text, practices: practices }); } }); }); }); state.summaryData = { summary, partners: selectedGlobalPartnersList, trainingPractices: selectedTrainingList, days: selectedDays, trainingAreas: selectedTrainingAreas.join('; ') }; navigateTo('summary'); }
-
-        // Render functions
-        function renderInitialView() {
-            return `
-                <div class="bg-white rounded-xl shadow-lg p-8 mb-6">
-                    <div class="text-center mb-8">
-                        <h1 class="text-3xl font-bold text-indigo-800 mb-2">כלי לניהול שיח לתכנון תוכנית הדרכה</h1>
-                        <h2 class="text-2xl font-bold text-indigo-800">בתחום ההכלה וההוגנות</h2>
-                    </div>
-                    
-                    <div class="space-y-6">
-                        <div class="p-4 bg-gray-50 border border-gray-200 rounded-lg">
-                            <h3 class="text-lg font-bold text-gray-700 mb-3">ניהול נתונים</h3>
-                            <p class="text-sm text-gray-600 mb-4">המידע נשמר אוטומטית בדפדפן. השתמשו בכפתורים הבאים כדי לשמור גיבוי, להעביר למחשב אחר או לטעון נתונים מקובץ.</p>
-                            <div class="flex flex-wrap gap-4 items-center">
-                                <input type="file" id="fileImporter" class="hidden" accept=".json" onchange="importStateFromFile(event)">
-                                <button onclick="document.getElementById('fileImporter').click()" class="px-5 py-2 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700">טען נתוני שיח...</button>
-                                <button onclick="exportStateToFile()" class="px-5 py-2 bg-gray-600 text-white font-semibold rounded-lg hover:bg-gray-700">שמור נתוני שיח</button>
-                                <button onclick="exportSummaryForBuilder()" class="px-5 py-2 bg-green-600 text-white font-semibold rounded-lg hover:bg-green-700">שמור סיכום לכלי התכנון</button>
-                                <button onclick="resetState()" class="px-5 py-2 bg-red-600 text-white font-semibold rounded-lg hover:bg-red-700">אפס הכל</button>
-                            </div>
-                        </div>
-
-                        <div>
-                            <h3 class="text-xl font-bold text-gray-800 mb-3 border-b pb-2">שלב 1: מידע כללי</h3>
-                            <div class="grid md:grid-cols-2 gap-4 mt-4">
-                                <div><label class="block text-sm font-medium text-gray-700 mb-1">שם בית הספר:</label><input type="text" value="${state.schoolName}" onchange="state.schoolName = this.value; saveStateToLocalStorage(); render()" class="w-full p-2 border border-gray-300 rounded-lg"/></div>
-                                <div><label class="block text-sm font-medium text-gray-700 mb-1">שם המנהל/ת:</label><input type="text" value="${state.principalName}" onchange="state.principalName = this.value; saveStateToLocalStorage(); render()" class="w-full p-2 border border-gray-300 rounded-lg"/></div>
-                                <div><label class="block text-sm font-medium text-gray-700 mb-1">שם מדריכת ההכלה:</label><input type="text" value="${state.mentorName}" onchange="state.mentorName = this.value; saveStateToLocalStorage(); render()" class="w-full p-2 border border-gray-300 rounded-lg"/></div>
-                                <div><label class="block text-sm font-medium text-gray-700 mb-1">שם רכזת ההכלה:</label><input type="text" value="${state.coordinatorName}" onchange="state.coordinatorName = this.value; saveStateToLocalStorage(); render()" class="w-full p-2 border border-gray-300 rounded-lg"/></div>
-                                <div><label class="block text-sm font-medium text-gray-700 mb-1">שעות הדרכה חודשיות:</label><input type="text" value="${state.guidanceHours}" onchange="state.guidanceHours = this.value; saveStateToLocalStorage(); render()" class="w-full p-2 border border-gray-300 rounded-lg"/></div>
-                            </div>
-                            <div class="mt-4"><label class="block text-sm font-medium text-gray-700 mb-2">יום/ימי הדרכה:</label><div class="flex flex-wrap gap-x-4 gap-y-2">${daysOfWeek.map(day => `<label class="flex items-center gap-2 cursor-pointer"><input type="checkbox" ${state.guidanceDays[day] ? 'checked' : ''} onchange="state.guidanceDays['${day}'] = this.checked; saveStateToLocalStorage(); render()" class="rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"/><span class="text-gray-700">${day}</span></label>`).join('')}</div></div>
-                            <div class="mt-4"><label class="block text-sm font-medium text-gray-700 mb-2">תחומי הדרכה נוספים:</label><div class="grid grid-cols-2 md:grid-cols-4 gap-x-4 gap-y-2">${trainingAreas.map(area => `<div><label class="flex items-center gap-2 cursor-pointer"><input type="checkbox" ${state.additionalTraining[area] ? 'checked' : ''} onchange="state.additionalTraining['${area}'] = this.checked; saveStateToLocalStorage(); render()" class="rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"/><span class="text-gray-700">${area}</span></label></div>`).join('')}</div>${state.additionalTraining['אחר'] ? `<div class="mt-2"><input type="text" placeholder="פירוט תחום אחר" value="${state.customTraining}" onchange="state.customTraining = this.value; saveStateToLocalStorage(); render()" class="w-full p-2 text-sm border-gray-300 rounded-lg"/></div>` : ''}</div>
-                        </div>
-
-                        <div>
-                            <h3 class="text-lg font-semibold text-gray-800 mb-2">נתונים בית-ספריים:</h3>
-                            <label class="block text-sm font-medium text-gray-700 mb-1">תיאור העשייה הנוכחית בתחום ההכלה וההוגנות:</label>
-                            <textarea onchange="state.schoolData = this.value; saveStateToLocalStorage(); render()" class="w-full p-2 border border-gray-300 rounded-lg" rows="4">${state.schoolData}</textarea>
-                        </div>
-
-                        <div>
-                            <h3 class="text-lg font-semibold text-gray-800 mb-2">תובנות ואתגרים:</h3>
-                            <label class="block text-sm font-medium text-gray-700 mb-1">מהם האתגרים המרכזיים ולאן שואפים להגיע?</label>
-                            <textarea onchange="state.challenges = this.value; saveStateToLocalStorage(); render()" class="w-full p-2 border border-gray-300 rounded-lg" rows="4">${state.challenges}</textarea>
-                        </div>
-                        
-                        <div class="text-center mt-6">
-                            <button onclick="navigateTo('domains')" class="px-8 py-3 bg-indigo-600 text-white font-semibold rounded-lg hover:bg-indigo-700 text-lg">המשך לשלב 2: בחירת זירות פעולה</button>
-                        </div>
-                    </div>
-                </div>
-            `;
-        }
-
-        function renderDomainsView() { 
-            const currentDomain = domains[state.currentDomain];
-            return `
-                <div class="bg-white rounded-xl shadow-lg p-8 mb-6 relative">
-                    <div class="absolute top-6 left-6 flex gap-2">
-                        <button onclick="exportStateToFile()" class="px-4 py-2 bg-gray-600 text-white font-semibold rounded-lg hover:bg-gray-700 text-sm flex items-center gap-2" title="שמור את כל נתוני השיח הנוכחיים">
-                            <span>שמור נתוני שיח</span>
-                        </button>
-                        <button onclick="exportSummaryForBuilder()" class="px-4 py-2 bg-green-600 text-white font-semibold rounded-lg hover:bg-green-700 text-sm flex items-center gap-2" title="שמור קובץ סיכום מותאם לכלי תכנון העבודה">
-                            <span>שמור סיכום לכלי התכנון</span>
-                        </button>
-                    </div>
-
-                    <h2 class="text-2xl font-bold text-indigo-800 mb-2">שלב 2: בחירת זירות פעולה ותוצרים</h2>
-                    <p class="text-sm text-red-600 font-semibold mb-4">הערה חשובה! הבחירה צריכה להיות מותאמת לאינטנסיביות ההדרכה ולאתגרי בית-הספר.</p>
-                    <div class="flex flex-wrap gap-2">${domains.map((domain, index) => `<button onclick="state.currentDomain = ${index}; render()" class="px-4 py-2 rounded-lg text-sm font-medium transition-colors ${state.currentDomain === index ? 'bg-indigo-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}">${domain.title}</button>`).join('')}</div>
-                    <div class="flex justify-between items-center mt-4">
-                        <div class="text-sm text-gray-600">זירה ${state.currentDomain + 1} מתוך ${domains.length}</div>
-                        <div class="text-sm text-indigo-600 font-medium">נבחרו ${getSelectedCount()} תוצרים</div>
-                    </div>
-                    <div class="w-full bg-gray-200 rounded-full h-2 mt-2"><div class="bg-indigo-600 h-2 rounded-full transition-all duration-300" style="width: ${((state.currentDomain + 1) / domains.length) * 100}%"></div></div>
-                </div>
-                <div class="bg-white rounded-xl shadow-lg p-8">
-                    <div class="mb-6"><h2 class="text-2xl font-bold text-indigo-800 mb-2">${currentDomain.title}</h2></div>
-                    <div class="space-y-6">
-                        ${currentDomain.subtopics.map(subtopic => `
-                            <div class="border border-gray-200 rounded-lg p-6">
-                                <h3 class="text-xl font-semibold text-indigo-700 mb-4">${subtopic.title}</h3>
-                                <div class="space-y-4">
-                                    ${subtopic.expectedOutcomes.map((outcome, index) => {
-                                        const key = `${currentDomain.id}_${subtopic.id}_${index}`;
-                                        const isSelected = state.selectedItems[key];
-                                        const hasSelectablePractices = outcome.selectablePractices && outcome.selectablePractices.length > 0;
-                                        return `
-                                            <div>
-                                                <div onclick="toggleSelection('${currentDomain.id}', '${subtopic.id}', ${index})" class="p-4 rounded-lg border-2 cursor-pointer transition-all ${isSelected ? 'border-indigo-500 bg-indigo-50' : 'border-gray-200 hover:border-indigo-300 hover:bg-gray-50'}">
-                                                    <div class="flex items-start gap-3">
-                                                        <div class="w-5 h-5 rounded-full border-2 mt-1 flex-shrink-0 flex items-center justify-center ${isSelected ? 'bg-indigo-600 border-indigo-600' : 'border-gray-400'}">${isSelected ? '<div class="w-2 h-2 bg-white rounded-full"></div>' : ''}</div>
-                                                        <div class="flex-grow">
-                                                            <span class="${isSelected ? 'text-indigo-800 font-medium' : 'text-gray-700'}">${outcome.text}</span>
-                                                            ${hasSelectablePractices && !isSelected ? '<p class="mt-2 text-sm font-medium text-indigo-600">לחצו לבחירת פרקטיקות ודגשים ליישום:</p>' : ''}
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                ${isSelected && hasSelectablePractices ? `
-                                                    <div class="mr-8 mt-4 space-y-4 bg-gray-50 p-4 rounded-lg">
-                                                        <div>
-                                                            <h4 class="text-md font-semibold text-gray-800 mb-3">${outcome.practiceListTitle || 'בחירת פרקטיקות ודגשים ליישום:'}</h4>
-                                                            <div class="grid grid-cols-1 md:grid-cols-2 gap-x-4 gap-y-2">
-                                                                ${outcome.selectablePractices.map(practice => `
-                                                                    <div>
-                                                                        <label class="flex items-center gap-2 text-sm cursor-pointer">
-                                                                            <input type="checkbox" ${state.selectedPractices[key]?.[practice] ? 'checked' : ''} onchange="togglePractice('${key}', '${practice}')" class="rounded border-gray-300 text-green-600 focus:ring-green-500"/>
-                                                                            <span class="text-gray-700">${practice}</span>
-                                                                        </label>
-                                                                        ${practice === 'אחר' && state.selectedPractices[key]?.['אחר'] ? `
-                                                                            <input type="text" placeholder="פירוט" value="${state.customPractices[key] || ''}" onchange="state.customPractices['${key}'] = this.value; saveStateToLocalStorage(); render()" class="w-full mt-1 p-2 text-sm border-gray-300 rounded"/>
-                                                                        ` : ''}
-                                                                    </div>
-                                                                `).join('')}
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                ` : ''}
-                                            </div>
-                                        `;
-                                    }).join('')}
-                                </div>
-                            </div>
-                        `).join('')}
-                    </div>
-                    <div class="flex justify-between items-center mt-8">
-                        <button onclick="state.currentDomain = Math.max(0, state.currentDomain - 1); render()" ${state.currentDomain === 0 ? 'disabled' : ''} class="px-6 py-3 bg-gray-500 text-white rounded-lg hover:bg-gray-600 disabled:opacity-50">הזירה הקודמת</button>
-                        <button onclick="navigateTo('initial')" class="px-6 py-3 bg-gray-500 text-white rounded-lg hover:bg-gray-600">חזרה למידע הכללי</button>
-                        <button onclick="${state.currentDomain === domains.length - 1 ? 'navigateTo(\'additionalData\')' : 'state.currentDomain++; render()'}" class="px-6 py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700">${state.currentDomain === domains.length - 1 ? 'המשך לנתונים נוספים' : 'הזירה הבאה'}</button>
-                    </div>
-                </div>
-            `;
-        }
-
-        function renderAdditionalDataView() {
-            return `
-                <div class="bg-white rounded-xl shadow-lg p-8 mt-6 relative">
-                    <div class="absolute top-6 left-6 flex gap-2">
-                         <button onclick="exportStateToFile()" class="px-4 py-2 bg-gray-600 text-white font-semibold rounded-lg hover:bg-gray-700 text-sm flex items-center gap-2" title="שמור את כל נתוני השיח הנוכחיים">
-                            <span>שמור נתוני שיח</span>
-                        </button>
-                        <button onclick="exportSummaryForBuilder()" class="px-4 py-2 bg-green-600 text-white font-semibold rounded-lg hover:bg-green-700 text-sm flex items-center gap-2" title="שמור קובץ סיכום מותאם לכלי תכנון העבודה">
-                            <span>שמור סיכום לכלי התכנון</span>
-                        </button>
-                    </div>
-
-                    <h2 class="text-2xl font-bold text-gray-800 mb-4 border-b pb-2">שלב 3: נתונים נוספים</h2>
-                    <div class="space-y-6">
-                        <div>
-                            <label class="block text-lg font-bold text-gray-800 mb-3">מעני/ משאבי הכלה והוגנות נוספים <span class="text-sm font-normal">(הוראה מתקנת, גפ"ן, וכו'):</span></label>
-                            <textarea onchange="state.additionalResources = this.value; saveStateToLocalStorage(); render()" class="w-full p-2 border border-gray-300 rounded-lg" rows="3">${state.additionalResources}</textarea>
-                        </div>
-                        <div class="grid md:grid-cols-2 gap-8">
-                            <div class="p-4 bg-green-50 rounded-lg border border-green-200">
-                                <h3 class="text-lg font-bold text-green-800 mb-3">פרקטיקות הדרכה וליווי של מדריכת ההכלה:</h3>
-                                <div class="space-y-2">
-                                    ${teacherTrainingPractices.map(practice => `
-                                        <div>
-                                            <label class="flex items-center gap-2 text-sm cursor-pointer">
-                                                <input type="checkbox" ${state.selectedTrainingPractices[practice] ? 'checked' : ''} onchange="state.selectedTrainingPractices['${practice}'] = this.checked; saveStateToLocalStorage(); render()" class="rounded border-gray-300 text-green-600 focus:ring-green-500"/>
-                                                <span class="text-gray-700">${practice}</span>
-                                            </label>
-                                            ${practice === 'אחר' && state.selectedTrainingPractices['אחר'] ? `
-                                                <input type="text" placeholder="פירוט" value="${state.customPractices['training_other'] || ''}" onchange="state.customPractices['training_other'] = this.value; saveStateToLocalStorage(); render()" class="w-full mt-1 p-2 text-sm border-gray-300 rounded"/>
-                                            ` : ''}
-                                        </div>
-                                    `).join('')}
-                                </div>
-                            </div>
-                            <div class="p-4 bg-blue-50 rounded-lg border border-blue-200">
-                                <h3 class="text-lg font-bold text-blue-800 mb-3">שותפים לקידום תחום ההכלה וההוגנות:</h3>
-                                <div class="grid grid-cols-1 md:grid-cols-2 gap-2 mb-3">
-                                    ${partnersList.map(partner => `
-                                        <label class="flex items-center gap-2 text-sm cursor-pointer">
-                                            <input type="checkbox" ${state.globalPartners[partner] ? 'checked' : ''} onchange="state.globalPartners['${partner}'] = this.checked; saveStateToLocalStorage(); render()" class="rounded border-gray-300 text-blue-600 focus:ring-blue-500"/>
-                                            <span class="text-gray-700">${partner}</span>
-                                        </label>
-                                    `).join('')}
-                                </div>
-                                <div class="flex gap-2">
-                                    <input type="text" id="customPartnerInput" placeholder="הוסף שותף/פה (אחר)" class="flex-1 p-2 text-sm border border-gray-300 rounded focus:ring-1 focus:ring-blue-500"/>
-                                    <button onclick="const input = document.getElementById('customPartnerInput'); if(input.value.trim()) { state.globalPartners[input.value.trim()] = true; input.value = ''; saveStateToLocalStorage(); render(); }" class="px-3 py-2 bg-blue-600 text-white rounded text-sm hover:bg-blue-700 transition-colors">➕</button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="flex justify-between items-center mt-8">
-                        <button onclick="navigateTo('domains')" class="px-6 py-3 bg-gray-500 text-white rounded-lg hover:bg-gray-600">חזרה לבחירת זירות</button>
-                        <button onclick="createSummary()" class="px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700">🎯 סיום ויצירת סיכום שיח</button>
-                    </div>
-                </div>
-            `;
-        }
-
-        function renderSummaryView() { if (!state.summaryData) return '<div>טוען סיכום...</div>'; const { summary, partners, trainingPractices, days, trainingAreas } = state.summaryData; return ` <div class="min-h-screen bg-gray-50 p-6 print-container"> <div class="max-w-5xl mx-auto"> <div class="bg-white rounded-xl shadow-lg p-8 print-content"> <div class="text-center mb-8"> <h1 class="text-3xl font-bold text-indigo-800 mb-2">סיכום שיח לתכנון תוכנית הדרכה</h1> <h2 class="text-2xl font-bold text-indigo-800">בתחום ההכלה וההוגנות</h2> </div> <div class="mb-8 p-4 bg-gray-50 rounded-lg border border-gray-200 text-right space-y-3 page-break-inside-avoid"> <h3 class="text-xl font-bold text-gray-800">מידע כללי:</h3> <p><span class="font-semibold">שם בית הספר:</span> ${state.schoolName || "____________________"}</p> <p><span class="font-semibold">שם המנהל/ת:</span> ${state.principalName || "____________________"}</p> <p><span class="font-semibold">שם מדריכת ההכלה:</span> ${state.mentorName || "____________________"}</p> <p><span class="font-semibold">שם רכזת ההכלה:</span> ${state.coordinatorName || "____________________"}</p> <p><span class="font-semibold">שעות הדרכה חודשיות:</span> ${state.guidanceHours || "____________________"}</p> <p><span class="font-semibold">יום/ימי הדרכה:</span> ${days || "לא נבחרו ימים"}</p> <p><span class="font-semibold">תחומי הדרכה נוספים:</span> ${trainingAreas || "לא נבחרו תחומים"}</p> </div> <div class="mb-8 p-4 bg-gray-50 rounded-lg border border-gray-200 text-right space-y-3 page-break-inside-avoid"> <h3 class="text-xl font-bold text-gray-800">נתונים בית-ספריים:</h3> <p class="font-semibold">תיאור העשייה הנוכחית:</p> <p class="whitespace-pre-wrap mt-1 text-gray-700 min-h-[50px]">${state.schoolData || ""}</p> </div> <div class="mb-8 p-4 bg-gray-50 rounded-lg border border-gray-200 text-right space-y-3 page-break-inside-avoid"> <h3 class="text-xl font-bold text-gray-800">תובנות ואתגרים:</h3> <p class="font-semibold">לאן שואפים להגיע?</p> <p class="whitespace-pre-wrap mt-1 text-gray-700 min-h-[50px]">${state.challenges || ""}</p> </div> ${Object.keys(summary).length === 0 ? `<div class="text-center py-8"><p class="text-gray-600">לא נבחרו זירות פעולה, תוצרים או פרקטיקות.</p></div>` : Object.entries(summary).map(([domainTitle, subtopics]) => ` <div class="mb-8 page-break-inside-avoid"> <h2 class="text-2xl font-bold text-indigo-700 mb-4 border-b-2 border-indigo-200 pb-2">${domainTitle}</h2> ${Object.entries(subtopics).map(([subtopicTitle, outcomes]) => ` <div class="mb-6 mr-4 page-break-inside-avoid"> <h3 class="text-xl font-semibold text-indigo-600 mb-3">${subtopicTitle}</h3> <ul class="list-disc pr-5 space-y-4"> ${outcomes.map(item => ` <li class="mb-4 p-3 bg-gray-50 rounded-lg"> <p class="font-medium text-gray-800">${item.outcome.replace(":", "")}</p> ${item.practices.length > 0 ? ` <div class="mt-2"> <p class="text-sm font-medium text-green-700">פרקטיקות ודגשים שנבחרו: </p> <p class="text-sm text-gray-700">${item.practices.join('; ')}</p> </div> ` : ''} </li> `).join('')} </ul> </div> `).join('')} </div> `).join('')} <div class="mt-8 p-4 bg-green-50 rounded-lg page-break-inside-avoid"> <h2 class="text-lg font-bold text-green-800 mb-3">פרקטיקות הדרכה וליווי:</h2> <p class="text-green-700">${trainingPractices.join('; ')}</p> </div> <div class="mt-4 p-4 bg-blue-50 rounded-lg page-break-inside-avoid"> <h2 class="text-lg font-bold text-blue-800 mb-3">שותפים לקידום התחום:</h2> <p class="text-blue-700">${partners.join(', ')}</p> </div> <div class="mt-4 p-4 bg-gray-50 rounded-lg page-break-inside-avoid"> <h3 class="text-lg font-bold text-gray-800 mb-3">משאבים נוספים:</h3> <p class="whitespace-pre-wrap mt-1 text-gray-700 min-h-[30px]">${state.additionalResources || ""}</p> </div> <div class="flex gap-4 mt-8 no-print"> <button onclick="navigateTo('additionalData')" class="px-6 py-3 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition-colors">חזרה לעריכה</button> <button onclick="window.print()" class="px-6 py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors">🖨️ הדפסה/שמירה כ-PDF</button> </div> </div> </div> </div> `; }
-        
-        function render() {
-            const app = document.getElementById('app');
-            let content = '';
-            
-            if (state.view === 'summary') {
-                content = renderSummaryView();
-            } else {
-                content = `
-                    <div class="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 p-6 no-print">
-                        <div class="max-w-6xl mx-auto">
-                            ${state.view === 'initial' ? renderInitialView() : ''}
-                            ${state.view === 'domains' ? renderDomainsView() : ''}
-                            ${state.view === 'additionalData' ? renderAdditionalDataView() : ''}
-                        </div>
-                    </div>
-                `;
-            }
-            
-            app.innerHTML = content;
-        }
-
-        render();
-    </script>
-
-</body>
-</html>        .selection-label:has(input:checked) {
-            background-color: #ccfbf1;
+        /* Style for items actively checked */
+        .selection-label:has(input:checked) {
+            background-color: #ccfbf1; /* Light teal */
+            border-color: #5eead4;
         }
         .selection-label:has(input:checked) span {
             font-weight: 600;
-            color: #0f766e;
+            color: #0f766e; /* Dark teal */
         }
-        
+        /* Additional style for items that were recommended from import */
+        .recommended-item {
+            background-color: #fef9c3 !important; /* Light yellow for recommendation */
+            border-color: #fde047 !important;
+        }
+        .recommended-item:has(input:checked) {
+             background-color: #dcfce7 !important; /* Light green if recommended AND checked */
+             border-color: #86efac !important;
+        }
+
+
         .baseline-section {
             background: linear-gradient(to left, #fffbeb, #fef3c7);
         }
@@ -731,11 +327,13 @@
             baselineData: {},
             goalBaselines: {},
             otherInputs: {},
+            // --- UPDATED: Added guidanceDays to general info ---
             generalInfo: {
                 schoolName: '', principalName: '', mentorName: '', coordinatorName: '',
-                guidanceHours: '', additionalTraining: '', globalPartners: ''
+                guidanceHours: '', guidanceDays: '', additionalTraining: '', globalPartners: ''
             },
             recommendedGoalIds: new Set(),
+            recommendedItemIds: new Set(), // --- NEW: To highlight individual items ---
             showImportNotification: false,
             expandedArenas: {},
         },
@@ -1200,6 +798,7 @@
                         
                         this.state.showImportNotification = false;
                         this.state.recommendedGoalIds.clear();
+                        this.state.recommendedItemIds.clear();
 
                         this.state.view = 'table';
                         alert('תוכנית העבודה נטענה בהצלחה.');
@@ -1213,6 +812,7 @@
             input.click();
         },
 
+        // --- UPDATED: Major update to import logic ---
         importSummary() {
             const input = document.createElement('input');
             input.type = 'file';
@@ -1234,67 +834,52 @@
                         this.state.goalBaselines = {};
                         this.state.otherInputs = {};
                         this.state.recommendedGoalIds.clear();
+                        this.state.recommendedItemIds.clear();
 
-                        // --- Update General Info ---
+                        // --- Update General Info, including guidanceDays ---
+                        const guidanceDays = data.guidanceDays ? Object.keys(data.guidanceDays).filter(day => data.guidanceDays[day]).join(', ') : '';
+                        
                         this.state.generalInfo = {
                             schoolName: data.schoolName || '',
                             principalName: data.principalName || '',
                             mentorName: data.mentorName || '',
                             coordinatorName: data.coordinatorName || '',
                             guidanceHours: data.guidanceHours || '',
+                            guidanceDays: guidanceDays, // Added this field
                             additionalTraining: data.additionalTraining ? Object.keys(data.additionalTraining).filter(k => data.additionalTraining[k]).join(', ') : '',
                             globalPartners: data.globalPartners ? Object.keys(data.globalPartners).filter(p => data.globalPartners[p]).join(', ') : ''
                         };
 
-                        // --- NEW LOGIC: Use precise component IDs ---
-                        if (data.recommendedComponentIds) {
-                            const recommendedIds = Object.keys(data.recommendedComponentIds);
-                            
-                            recommendedIds.forEach(id => {
-                                // Find the component in the data structure
-                                for (const arena of Object.values(this.data.arenas)) {
-                                    const goal = arena.goals.find(g => g.id === id);
-                                    if (goal) {
-                                        this.state.recommendedGoalIds.add(id); // Highlight the parent goal container
-                                    } else {
-                                        // Check if it's a sub-component (activity, task, etc.)
-                                        for (const g of arena.goals) {
-                                            const allItems = [
-                                                ...(g.activities || []),
-                                                ...(g.tasks || []),
-                                                ...(g.output_metrics || []),
-                                                ...(g.outcome_metrics || [])
-                                            ];
-                                            if (allItems.some(item => item.id === id)) {
-                                                this.state.selections[id] = true; // Automatically check the specific item
-                                                this.state.recommendedGoalIds.add(g.id); // Also highlight its parent goal
-                                                break; 
-                                            }
+                        const recommendedIds = data.recommendedComponentIds ? Object.keys(data.recommendedComponentIds) : [];
+                        
+                        recommendedIds.forEach(id => {
+                            // Find the component in the data structure to get its parent goal
+                            for (const arena of Object.values(this.data.arenas)) {
+                                const goal = arena.goals.find(g => g.id === id);
+                                if (goal) {
+                                    this.state.recommendedGoalIds.add(id); // Highlight the parent goal container
+                                } else {
+                                    for (const g of arena.goals) {
+                                        const allItems = [
+                                            ...(g.activities || []),
+                                            ...(g.tasks || []),
+                                            ...(g.output_metrics || []),
+                                            ...(g.outcome_metrics || [])
+                                        ];
+                                        if (allItems.some(item => item.id === id)) {
+                                            this.state.selections[id] = true; // Automatically check the specific item
+                                            this.state.recommendedGoalIds.add(g.id); // Also highlight its parent goal
+                                            this.state.recommendedItemIds.add(id); // And highlight the item itself
+                                            break; 
                                         }
                                     }
                                 }
-                            });
-
-                        // --- Fallback to old logic if new structure is not present ---
-                        } else if (data.selectedItems) {
-                             const keyMappings = {
-                                'planning_instruction': 'a1g1', 'classroom_management': 'a1g9', 'assessment_feedback': 'a1g7', 
-                                'data_based_planning': 'a2g1', 'interdisciplinary_team': 'a3g1', 'parent_partnership': 'a4g1', 
-                                'coordinator_guidance': 'a3g3', 'teacher_knowledge_deepening': 'a3g2', 'belonging_involvement': 'a4g2', 
-                                'learning_spaces': 'a5g1'
-                            };
-                            Object.keys(data.selectedItems).forEach(key => {
-                                if (data.selectedItems[key]) {
-                                    for (const mapKey in keyMappings) {
-                                        if (key.includes(mapKey)) this.state.recommendedGoalIds.add(keyMappings[mapKey]);
-                                    }
-                                }
-                            });
-                        }
+                            }
+                        });
 
                         this.state.showImportNotification = true;
                         
-                        alert('סיכום נטען בהצלחה! הפרטים הכלליים והרכיבים המומלצים עודכנו.');
+                        alert('סיכום נטען בהצלחה! הפרטים הכלליים והרכיבים המומלצים עודכנו וסומנו.');
                         this.render();
                     } catch (err) {
                         alert("שגיאה בטעינת הקובץ: " + err.message);
@@ -1305,6 +890,7 @@
             };
             input.click();
         },
+
 
         renderTextWithInputs(text, id) {
             let processedText = text;
@@ -1366,7 +952,8 @@
                 </div>`;
             }
 
-            const { schoolName, principalName, mentorName, coordinatorName, guidanceHours, additionalTraining, globalPartners } = this.state.generalInfo;
+            // --- UPDATED: Destructure guidanceDays as well ---
+            const { schoolName, principalName, mentorName, coordinatorName, guidanceHours, guidanceDays, additionalTraining, globalPartners } = this.state.generalInfo;
             return `
                 <header class="mb-8"><h1 class="text-4xl md:text-5xl font-bold text-teal-800">בניית תוכנית ליווי בית ספרית בתחום הכלה והוגנות</h1></header>
                 ${notification}
@@ -1385,7 +972,9 @@
                          <div><label class="font-bold text-stone-600 block mb-1">שם המדריכה:</label><input type="text" value="${mentorName}" onchange="App.handleGeneralInfoChange('mentorName', this.value)" class="w-full p-2 border rounded"></div>
                          <div><label class="font-bold text-stone-600 block mb-1">שם רכז/ת ההכלה:</label><input type="text" value="${coordinatorName}" onchange="App.handleGeneralInfoChange('coordinatorName', this.value)" class="w-full p-2 border rounded"></div>
                          <div><label class="font-bold text-stone-600 block mb-1">היקף שעות הדרכה:</label><input type="text" value="${guidanceHours}" onchange="App.handleGeneralInfoChange('guidanceHours', this.value)" class="w-full p-2 border rounded"></div>
-                         <div class="col-span-3"><label class="font-bold text-stone-600 block mb-1">שותפים מרכזיים:</label><input type="text" value="${globalPartners}" onchange="App.handleGeneralInfoChange('globalPartners', this.value)" class="w-full p-2 border rounded"></div>
+                         <!-- UPDATED: Added Guidance Days field -->
+                         <div><label class="font-bold text-stone-600 block mb-1">ימי הדרכה:</label><input type="text" value="${guidanceDays}" onchange="App.handleGeneralInfoChange('guidanceDays', this.value)" class="w-full p-2 border rounded"></div>
+                         <div class="col-span-2"><label class="font-bold text-stone-600 block mb-1">שותפים מרכזיים:</label><input type="text" value="${globalPartners}" onchange="App.handleGeneralInfoChange('globalPartners', this.value)" class="w-full p-2 border rounded"></div>
                          <div class="col-span-4"><label class="font-bold text-stone-600 block mb-1">תחומי דעת נוספים בהדרכה:</label><input type="text" value="${additionalTraining}" onchange="App.handleGeneralInfoChange('additionalTraining', this.value)" class="w-full p-2 border rounded"></div>
                      </div>
                  </div>
@@ -1533,7 +1122,7 @@
                                          <h5 class="font-semibold mb-2 border-b pb-1">פעילויות מרכזיות</h5>
                                          <div class="space-y-1">
                                              ${(goal.activities || []).map(item => `
-                                                 <label class="selection-label text-sm">
+                                                 <label class="selection-label text-sm ${this.state.recommendedItemIds.has(item.id) ? 'recommended-item' : ''}">
                                                      <input type="checkbox" 
                                                             onchange="App.handleSelectionChange('${item.id}', this.checked)" 
                                                             ${this.state.selections[item.id] ? 'checked' : ''}>
@@ -1546,21 +1135,21 @@
                                      <div>
                                          <h5 class="font-semibold mb-2 border-b pb-1">משימות למדריכה</h5>
                                          <div class="space-y-1">
-                                             ${(goal.tasks || []).map(item => `<label class="selection-label text-sm"><input type="checkbox" onchange="App.handleSelectionChange('${item.id}', this.checked)" ${this.state.selections[item.id] ? 'checked' : ''}><span class="text-stone-700">${item.text}</span></label>`).join('')}
+                                             ${(goal.tasks || []).map(item => `<label class="selection-label text-sm ${this.state.recommendedItemIds.has(item.id) ? 'recommended-item' : ''}"><input type="checkbox" onchange="App.handleSelectionChange('${item.id}', this.checked)" ${this.state.selections[item.id] ? 'checked' : ''}><span class="text-stone-700">${item.text}</span></label>`).join('')}
                                              ${this.renderOtherOption(goal.id, 'tasks', 'פרט משימה...')}
                                          </div>
                                      </div>
                                      <div>
                                          <h5 class="font-semibold mb-2 border-b pb-1">מדדי תפוקה</h5>
                                          <div class="space-y-1">
-                                            ${(goal.output_metrics || []).map(item => `<label class="selection-label text-sm"><input type="checkbox" onchange="App.handleSelectionChange('${item.id}', this.checked)" ${this.state.selections[item.id] ? 'checked' : ''}><span class="text-stone-700">${this.renderTextWithInputs(item.text, item.id)}</span></label>`).join('')}
+                                            ${(goal.output_metrics || []).map(item => `<label class="selection-label text-sm ${this.state.recommendedItemIds.has(item.id) ? 'recommended-item' : ''}"><input type="checkbox" onchange="App.handleSelectionChange('${item.id}', this.checked)" ${this.state.selections[item.id] ? 'checked' : ''}><span class="text-stone-700">${this.renderTextWithInputs(item.text, item.id)}</span></label>`).join('')}
                                             ${this.renderOtherOption(goal.id, 'output_metrics', 'פרט מדד תפוקה...')}
                                          </div>
                                      </div>
                                      <div>
                                          <h5 class="font-semibold mb-2 border-b pb-1">מדדי תוצאה</h5>
                                          <div class="space-y-1">
-                                            ${(goal.outcome_metrics || []).map(item => `<label class="selection-label text-sm"><input type="checkbox" onchange="App.handleSelectionChange('${item.id}', this.checked)" ${this.state.selections[item.id] ? 'checked' : ''}><span class="text-stone-700">${this.renderTextWithInputs(item.text, item.id)}</span></label>`).join('')}
+                                            ${(goal.outcome_metrics || []).map(item => `<label class="selection-label text-sm ${this.state.recommendedItemIds.has(item.id) ? 'recommended-item' : ''}"><input type="checkbox" onchange="App.handleSelectionChange('${item.id}', this.checked)" ${this.state.selections[item.id] ? 'checked' : ''}><span class="text-stone-700">${this.renderTextWithInputs(item.text, item.id)}</span></label>`).join('')}
                                             ${this.renderOtherOption(goal.id, 'outcome_metrics', 'פרט מדד תוצאה...')}
                                          </div>
                                      </div>
@@ -1578,7 +1167,8 @@
         },
 
        renderPlanHeader() {
-            const { schoolName, principalName, mentorName, coordinatorName, guidanceHours, additionalTraining, globalPartners } = this.state.generalInfo;
+            // --- UPDATED: Destructure and display guidanceDays ---
+            const { schoolName, principalName, mentorName, coordinatorName, guidanceHours, guidanceDays, additionalTraining, globalPartners } = this.state.generalInfo;
             return `
                 <div class="bg-white p-6 rounded-xl shadow-md mb-6 page-break-inside-avoid">
                     <h1 class="text-3xl font-bold text-teal-800 border-b pb-3 mb-4">תוכנית ליווי בית ספרית בתחום הכלה והוגנות</h1>
@@ -1588,7 +1178,8 @@
                         <div><span class="font-bold text-stone-600 block">שם המדריכה:</span> <span class="text-stone-800">${mentorName || 'לא הוזן'}</span></div>
                         <div><span class="font-bold text-stone-600 block">שם רכז/ת ההכלה:</span> <span class="text-stone-800">${coordinatorName || 'לא הוזן'}</span></div>
                         <div><span class="font-bold text-stone-600 block">היקף שעות הדרכה:</span> <span class="text-stone-800">${guidanceHours || 'לא הוזן'}</span></div>
-                        <div class="col-span-3"><span class="font-bold text-stone-600 block">שותפים מרכזיים:</span> <span class="text-stone-800">${globalPartners || 'לא הוזן'}</span></div>
+                        <div><span class="font-bold text-stone-600 block">ימי הדרכה:</span> <span class="text-stone-800">${guidanceDays || 'לא הוזן'}</span></div>
+                        <div class="col-span-2"><span class="font-bold text-stone-600 block">שותפים מרכזיים:</span> <span class="text-stone-800">${globalPartners || 'לא הוזן'}</span></div>
                         <div class="col-span-4"><span class="font-bold text-stone-600 block">תחומי דעת נוספים בהדרכה:</span> <span class="text-stone-800">${additionalTraining || 'לא הוזן'}</span></div>
                     </div>
                 </div>
@@ -1614,6 +1205,7 @@
                 return null;
             };
 
+            // --- CONFIRMED: This logic correctly gets ALL checked items ---
             const selectedItems = Object.entries(this.state.selections).filter(([_, v]) => v).map(([id]) => {
                 if (id.includes('-other-')) {
                     const [goalId, _, type] = id.split('-');
@@ -1621,7 +1213,7 @@
                         const goal = arena.goals.find(g => g.id === goalId);
                         if (goal) {
                             return { 
-                                component: { id, text: this.state.otherInputs[goalId]?.[type] || '' },
+                                component: { id, text: this.state.otherInputs[goalId]?.[type] || 'פריט אחר - לא הוזן תוכן' },
                                 type,
                                 goal,
                                 arena
@@ -1639,6 +1231,7 @@
             const groupedByArena = selectedItems.reduce((acc, { component, type, goal, arena }) => {
                 if (!acc[arena.title]) acc[arena.title] = { color: arena.color, goals: {} };
                 if (!acc[arena.title].goals[goal.id]) acc[arena.title].goals[goal.id] = { title: goal.title, activities: [], tasks: [], output_metrics: [], outcome_metrics: [] };
+                // This check prevents duplicates if an item is somehow processed twice
                 if (!acc[arena.title].goals[goal.id][type].some(i => i.id === component.id)) {
                     acc[arena.title].goals[goal.id][type].push(component);
                 }
@@ -1942,4 +1535,4 @@
     </script>
 </body>
 </html>
-````````````
+``````
