@@ -625,7 +625,6 @@
                         output_metrics: [{id:"a4g2-opm1", text:"X% מהצוות משתמש ב'פרח ההוגנות' באופן שוטף ככלי לתכנון, רפלקציה והובלת שינוי."}, {id:"a4g2-opm2", text:"עקרונות ההוגנות נוכחים ומובילים בתכנון הסביבה החינוכית ובשיח הפדגוגי (ב-X% מתכניות השיעורים)."}, {id:"a4g2-opm3", text:"התקיימו לפחות _X_ מפגשים לצוות על שימוש בפרח ההוגנות ויישום העקרונות שלו בשגרות קיימות."}] ,
                         outcome_metrics: [{id:"a4g2-ocm1", text:"האקוסיסטם הבית-ספרי מבטא באופן שיטתי ועקבי שותפות, רגישות, הכלה, נראות, נגישות, שייכות ומשמעות (מדידה על ידי מחוון מובנה - דירוג ממוצע של 4/5)."}]
                     },
-                    // --- COPIED GOALS START HERE ---
                     {
                         id: "a1g9", title: "היעד: שילוב כלים יישומיים לעבודה עם תלמידים מאתגרים התנהגותית",
                         difficultyLevels: {
@@ -871,7 +870,27 @@
                             globalPartners: data.globalPartners ? Object.keys(data.globalPartners).filter(p => data.globalPartners[p]).join(', ') : ''
                         };
                         
+                        // --- UPDATED: Comprehensive check of both recommended IDs and selected items ---
                         const recommendedIds = new Set(data.recommendedComponentIds ? Object.keys(data.recommendedComponentIds) : []);
+
+                        // Fallback for older file format
+                        if (data.selectedItems) {
+                             const keyMappings = {
+                                'planning_instruction': 'a1g1', 'classroom_management': 'a1g9', 'assessment_feedback': 'a1g7', 
+                                'data_based_planning': 'a2g1', 'interdisciplinary_team': 'a3g1', 'parent_partnership': 'a4g1', 
+                                'coordinator_guidance': 'a3g3', 'teacher_knowledge_deepening': 'a3g2', 'belonging_involvement': 'a4g2', 
+                                'learning_spaces': 'a5g1', 'teacher_student_dialogue': 'a1g11'
+                            };
+                            Object.keys(data.selectedItems).forEach(key => {
+                                if (data.selectedItems[key]) {
+                                    for (const mapKey in keyMappings) {
+                                        if (key.includes(mapKey)) {
+                                            recommendedIds.add(keyMappings[mapKey]);
+                                        }
+                                    }
+                                }
+                            });
+                        }
                         
                         for (const arena of Object.values(this.data.arenas)) {
                             for (const goal of arena.goals) {
