@@ -870,16 +870,29 @@
                             globalPartners: data.globalPartners ? Object.keys(data.globalPartners).filter(p => data.globalPartners[p]).join(', ') : ''
                         };
                         
-                        // --- UPDATED: Comprehensive check of both recommended IDs and selected items ---
                         const recommendedIds = new Set(data.recommendedComponentIds ? Object.keys(data.recommendedComponentIds) : []);
 
-                        // Fallback for older file format
                         if (data.selectedItems) {
+                             // --- FIX: Comprehensive and corrected mapping ---
                              const keyMappings = {
-                                'planning_instruction': 'a1g1', 'classroom_management': 'a1g9', 'assessment_feedback': 'a1g7', 
-                                'data_based_planning': 'a2g1', 'interdisciplinary_team': 'a3g1', 'parent_partnership': 'a4g1', 
-                                'coordinator_guidance': 'a3g3', 'teacher_knowledge_deepening': 'a3g2', 'belonging_involvement': 'a4g2', 
-                                'learning_spaces': 'a5g1', 'teacher_student_dialogue': 'a1g11'
+                                'planning_instruction': 'a1g1',
+                                'pedagogical_flexibility': 'a1g6',
+                                'classroom_management': 'a1g9',
+                                'inclusive_practices_application': 'a1g4',
+                                'assessment_feedback': 'a1g7',
+                                'focused_student_work': 'a1g8',
+                                'inclusive_vision': 'a2g3',
+                                'data_based_planning': 'a2g1',
+                                'interdisciplinary_team': 'a3g1',
+                                'fairness_systemic_view': 'a4g2',
+                                'parent_partnership': 'a4g1',
+                                'coordinator_guidance': 'a3g3',
+                                'teacher_knowledge_deepening': 'a3g2',
+                                'teacher_efficacy': 'a3g1',
+                                'belonging_involvement': 'a4g1',
+                                'teacher_student_dialogue': 'a1g11', // Maps to the one in Arena 1
+                                'learning_spaces': 'a5g1',
+                                'techno_pedagogical_tools': 'a5g1'
                             };
                             Object.keys(data.selectedItems).forEach(key => {
                                 if (data.selectedItems[key]) {
@@ -1587,4 +1600,3 @@
     </script>
 </body>
 </html>
-````````````
