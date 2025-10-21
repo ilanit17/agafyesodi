@@ -1,0 +1,946 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>בונה הכלים החינוכי</title>
+    <script src="https://cdn.jsdelivr.net/npm/lucide-react/dist/umd/lucide-react.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #3b82f6;
+            --primary-hover-color: #2563eb;
+            --secondary-color: #6366f1;
+            --secondary-hover-color: #4f46e5;
+            --background-color: #f8fafc;
+            --card-background-color: #ffffff;
+            --text-color: #334155;
+            --subtle-text-color: #64748b;
+            --border-color: #e2e8f0;
+            --input-border-color: #cbd5e1;
+            --success-color: #10b981;
+            --warning-color: #f59e0b;
+            --danger-color: #ef4444;
+            --font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            font-family: var(--font-family);
+            background-color: var(--background-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+        }
+
+        .tool-builder-container {
+            width: 100%;
+            max-width: 800px;
+            transition: all 0.3s ease-in-out;
+        }
+
+        .card {
+            background-color: var(--card-background-color);
+            border-radius: 1.5rem;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            overflow: hidden;
+            display: none; /* Hidden by default */
+        }
+
+        .card.active {
+            display: block;
+        }
+        
+        .card-header {
+            padding: 2rem;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+        }
+        
+        .card-header h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            margin: 0 0 0.5rem 0;
+        }
+
+        .card-header p {
+            opacity: 0.9;
+            margin: 0;
+        }
+        
+        .progress-bar-container {
+            padding: 1rem 2rem;
+            background-color: #f1f5f9;
+        }
+
+        .progress-bar {
+            width: 100%;
+            background-color: var(--border-color);
+            border-radius: 999px;
+            height: 0.75rem;
+            overflow: hidden;
+        }
+        
+        .progress-bar-inner {
+            height: 100%;
+            border-radius: 999px;
+            background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+            transition: width 0.4s ease-in-out;
+        }
+
+        .card-body {
+            padding: 2.5rem;
+        }
+        
+        .card-body h2 {
+            font-size: 1.75rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .card-body p.subtitle {
+            color: var(--subtle-text-color);
+            margin-top: 0;
+            margin-bottom: 2rem;
+        }
+
+        .card-footer {
+            background-color: #f8fafc;
+            padding: 1.5rem 2.5rem;
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 0.75rem;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            box-shadow: 0 4px 6px rgba(59, 130, 246, 0.2);
+        }
+
+        .btn-primary:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 7px 10px rgba(59, 130, 246, 0.2);
+        }
+
+        .btn-secondary {
+            background-color: var(--card-background-color);
+            color: var(--text-color);
+            border: 1px solid var(--border-color);
+        }
+
+        .btn-secondary:hover:not(:disabled) {
+            background-color: #f1f5f9;
+        }
+        
+        .btn:disabled {
+            background-color: #e2e8f0;
+            color: #94a3b8;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        /* Mode Selection Screen */
+        .mode-selection { text-align: center; }
+        .mode-selection .grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+        .mode-card {
+            background-color: var(--card-background-color);
+            border-radius: 1.5rem;
+            padding: 2rem;
+            text-align: right;
+            border: 1px solid var(--border-color);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .mode-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.07);
+            border-color: var(--primary-color);
+        }
+        .mode-card h2 { margin-top: 0; }
+        .mode-card .icon-wrapper {
+            width: 4rem;
+            height: 4rem;
+            border-radius: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1rem;
+        }
+        .mode-card.fast .icon-wrapper { background: linear-gradient(135deg, #34d399, #3b82f6); }
+        .mode-card.professional .icon-wrapper { background: linear-gradient(135deg, #a78bfa, #ec4899); }
+        .mode-card .icon { color: white; width: 2.5rem; height: 2.5rem; }
+        .mode-card ul { list-style: none; padding: 0; margin: 0; }
+        .mode-card li { display: flex; align-items: flex-start; gap: 0.5rem; margin-bottom: 0.75rem; color: var(--subtle-text-color); }
+        .check-icon { color: var(--success-color); flex-shrink: 0; }
+        
+        /* Form elements */
+        .grid-buttons {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+        }
+        
+        .choice-button {
+            padding: 1.5rem;
+            border: 2px solid var(--border-color);
+            border-radius: 1rem;
+            text-align: right;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            position: relative;
+        }
+        .choice-button:hover {
+            border-color: var(--primary-color);
+            background-color: #f0f9ff;
+        }
+        .choice-button.selected {
+            border-color: var(--primary-color);
+            background-color: #f0f9ff;
+            box-shadow: 0 0 0 2px var(--primary-color);
+        }
+        .choice-button .icon { font-size: 1.75rem; margin-bottom: 0.5rem; }
+        .choice-button .label { font-weight: 600; }
+
+        .checkbox-label {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1.25rem;
+            border: 2px solid var(--border-color);
+            border-radius: 1rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .checkbox-label.selected {
+            border-color: var(--primary-color);
+            background-color: #f0f9ff;
+        }
+        .checkbox-label input[type="checkbox"] {
+            width: 1.5rem;
+            height: 1.5rem;
+            accent-color: var(--primary-color);
+        }
+
+        textarea, input[type="text"] {
+            width: 100%;
+            padding: 1rem;
+            border: 2px solid var(--input-border-color);
+            border-radius: 0.75rem;
+            font-size: 1rem;
+            font-family: var(--font-family);
+            box-sizing: border-box;
+            transition: all 0.2s ease;
+        }
+        textarea:focus, input[type="text"]:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+        }
+
+        .info-box {
+            background-color: #f0f9ff;
+            border: 1px solid #bae6fd;
+            color: #0369a1;
+            padding: 1rem;
+            border-radius: 0.75rem;
+            margin-top: 1.5rem;
+        }
+        
+        /* Final Screen */
+        .final-screen .icon-wrapper {
+            width: 5rem;
+            height: 5rem;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #34d399, #10b981);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1.5rem auto;
+        }
+        .final-screen .icon { color: white; width: 3rem; height: 3rem; }
+        .prompt-container {
+            background-color: #f1f5f9;
+            border-radius: 1rem;
+            padding: 1.5rem;
+            position: relative;
+        }
+        .prompt-text {
+            white-space: pre-wrap;
+            font-family: monospace;
+            background-color: white;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            max-height: 300px;
+            overflow-y: auto;
+            color: var(--text-color);
+        }
+        .copy-btn {
+            position: absolute;
+            top: 2.5rem;
+            left: 2.5rem;
+        }
+        
+        /* Goal list styling */
+        .list-container { margin-bottom: 1rem; }
+        .list-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: #f1f5f9;
+            padding: 0.75rem 1rem;
+            border-radius: 0.5rem;
+            margin-top: 0.5rem;
+        }
+        .delete-btn {
+            background: none;
+            border: none;
+            color: var(--danger-color);
+            cursor: pointer;
+            font-size: 1.5rem;
+            line-height: 1;
+        }
+        .add-item-container { display: flex; gap: 0.5rem; }
+        .add-btn {
+            flex-shrink: 0;
+            width: 3rem;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 0.5rem;
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+        .add-btn:hover { background-color: var(--primary-hover-color); }
+        p.subtle-text { font-size: 0.9rem; color: var(--subtle-text-color); margin-bottom: 1rem; }
+
+        /* Utility classes */
+        .space-y-4 > * + * { margin-top: 1rem; }
+        .hidden { display: none; }
+        .w-full { width: 100%; }
+        .text-center { text-align: center; }
+        .mb-4 { margin-bottom: 1rem; }
+        
+    </style>
+</head>
+<body>
+
+    <div class="tool-builder-container">
+        <!-- Mode Selection Screen -->
+        <div id="mode-selection-screen" class="card active">
+            <div class="card-body mode-selection">
+                <img src="https://ilanit17.github.io/agafyesodi/לוגו%20עכשיו%20יסודי.png" alt="לוגו עכשיו יסודי" style="max-width: 200px; margin-bottom: 1.5rem;">
+                <h1 style="font-size: 2.5rem; font-weight: 700;">תִּכְנוּת בְּקַלּוּת</h1>
+                <p style="font-size: 1.25rem; color: var(--subtle-text-color);">בניית כלים אינטראקטיביים חינוכיים בעזרת AI</p>
+                <div class="grid">
+                    <div class="mode-card fast" onclick="selectMode('fast')">
+                        <div class="icon-wrapper">
+                            <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                        </div>
+                        <h2>מסלול מהיר</h2>
+                        <ul class="space-y-4">
+                            <li><svg class="check-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" style="width: 1.25rem; height: 1.25rem;"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg><span>תהליך פשוט לבנייה מהירה של כלי.</span></li>
+                            <li><svg class="check-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" style="width: 1.25rem; height: 1.25rem;"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg><span>מומלץ למתחילים ולמי שרוצה תוצאה מהירה.</span></li>
+                        </ul>
+                    </div>
+                    <div class="mode-card professional" onclick="selectMode('professional')">
+                        <div class="icon-wrapper">
+                            <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
+                        </div>
+                        <h2>מסלול מקצועי</h2>
+                        <ul class="space-y-4">
+                            <li><svg class="check-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" style="width: 1.25rem; height: 1.25rem; color: #a78bfa;"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg><span>תהליך מובנה ומעמיק לפיתוח כלי מבוסס מחקר.</span></li>
+                            <li><svg class="check-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" style="width: 1.25rem; height: 1.25rem; color: #a78bfa;"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg><span>מומלץ למפתחים מנוסים ולפרויקטים מורכבים.</span></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tool Builder -->
+        <div id="tool-builder" class="card">
+            <div class="card-header">
+                <h1>בונה הכלים החינוכי</h1>
+                <p id="mode-subtitle"></p>
+            </div>
+            
+            <div class="progress-bar-container">
+                 <div class="progress-bar">
+                    <div id="progress-bar-inner" class="progress-bar-inner" style="width: 0%;"></div>
+                </div>
+            </div>
+
+            <div id="card-body" class="card-body">
+                <!-- Steps will be injected here by JS -->
+            </div>
+
+            <div class="card-footer">
+                <button id="prev-btn" class="btn btn-secondary">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" style="width: 1.25rem; height: 1.25rem;"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
+                    הקודם
+                </button>
+                <button id="next-btn" class="btn btn-primary">
+                    הבא
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" style="width: 1.25rem; height: 1.25rem;"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+                </button>
+            </div>
+        </div>
+        
+        <!-- Final Screen -->
+        <div id="final-screen" class="card">
+            <div class="card-body text-center final-screen">
+                <div class="icon-wrapper">
+                     <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                </div>
+                <h2 style="font-size: 2rem;">הכלי שלך מוכן!</h2>
+                <p class="subtitle">העתק את ה-Prompt והדבק אותו ב-Claude או ChatGPT.</p>
+                
+                <div class="prompt-container">
+                     <button id="copy-btn" class="btn btn-primary copy-btn">
+                         <svg id="copy-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" style="width: 1rem; height: 1rem;"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
+                         <svg id="check-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" style="width: 1rem; height: 1rem;" class="hidden"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                         <span id="copy-text">העתק</span>
+                     </button>
+                     <div class="prompt-text" id="prompt-output"></div>
+                </div>
+
+                <div class="info-box" style="text-align: right; margin-top: 2rem;">
+                    <h3 style="margin-top:0;">השלבים הבאים:</h3>
+                    <ol style="padding-right: 20px;">
+                        <li>לחץ על כפתור "העתק" למעלה.</li>
+                        <li>פתח את <a href="https://claude.ai" target="_blank" rel="noopener noreferrer">claude.ai</a> או כל כלי AI אחר.</li>
+                        <li id="upload-reminder" class="hidden"><strong>חשוב:</strong> צרף גם את הקבצים שהעלית לשיחה.</li>
+                        <li>הדבק את ה-Prompt ושלח.</li>
+                        <li>התחל שיחה עם ה-AI ובקש שינויים לפי הצורך.</li>
+                    </ol>
+                </div>
+                
+                <button class="btn btn-primary w-full" style="margin-top: 2rem;" onclick="resetForm()">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" style="width: 1.25rem; height: 1.25rem;"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h5M20 20v-5h-5"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 11a8 8 0 0114.24-4.74l.76 1.74M20 13a8 8 0 01-14.24 4.74l-.76-1.74"></path></svg>
+                    בנה כלי נוסף
+                </button>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        // --- DATA AND CONSTANTS ---
+        const domains = [
+            { value: 'classroom', label: 'ניהול כיתה', icon: '👥' },
+            { value: 'tracking', label: 'מעקב אחר תלמידים', icon: '📊' },
+            { value: 'planning', label: 'תכנון שיעורים', icon: '📝' },
+            { value: 'assessment', label: 'הערכה ומשוב', icon: '✅' },
+            { value: 'communication', label: 'תקשורת עם הורים', icon: '💬' },
+            { value: 'data', label: 'ניתוח נתונים', icon: '📈' },
+            { value: 'other', label: 'אחר', icon: '✨' }
+        ];
+
+        const userTypes = [
+            { value: 'teacher', label: 'רק אני (מורה/מפקח/מדריך)' },
+            { value: 'staff', label: 'צוות בית הספר' },
+            { value: 'students', label: 'התלמידים' },
+            { value: 'parents', label: 'ההורים' }
+        ];
+
+        const outputs = [
+            { value: 'report', label: 'דוח מסכם', icon: '📄' },
+            { value: 'chart', label: 'גרפים ותרשימים', icon: '📊' },
+            { value: 'list', label: 'רשימה/טבלה', icon: '📋' },
+            { value: 'alerts', label: 'התראות', icon: '🔔' },
+            { value: 'form', label: 'טופס למילוי', icon: '📝' },
+            { value: 'dashboard', label: 'לוח בקרה', icon: '🎯' },
+            { value: 'other', label: 'אחר', icon: '✨' }
+        ];
+
+        const toolFormats = [
+            { value: 'interactive', label: 'כלי אינטראקטיבי', icon: '💻' },
+            { value: 'printable', label: 'קובץ להדפסה', icon: '📄' },
+            { value: 'presentation', label: 'מצגת', icon: '📊' },
+            { value: 'other', label: 'אחר', icon: '✨' }
+        ];
+        
+        const toolTypes = [
+            { value: 'lesson', label: 'מערך שיעור', icon: '📚' },
+            { value: 'unit', label: 'יחידת לימוד', icon: '📖' },
+            { value: 'game', label: 'משחק לימודי', icon: '🎮' },
+            { value: 'assessment', label: 'כלי הערכה', icon: '📝' },
+            { value: 'dashboard', label: 'לוח בקרה', icon: '📊' },
+            { value: 'tracker', label: 'כלי מעקב', icon: '📋' },
+            { value: 'other', label: 'אחר', icon: '✨' }
+        ];
+        
+        const examples = {
+            tracking: 'התלמידים שלי לא קוראים בבית באופן עקבי, ואני רוצה לעקוב אחרי התקדמות הקריאה שלהם',
+            classroom: 'קשה לי לנהל את מערכת השיבוצים לקבוצות בכיתה ואני רוצה למצוא דרך יעילה יותר',
+            planning: 'אני מבלה הרבה זמן בבניית מבחנים ורוצה לייעל את התהליך',
+            assessment: 'קשה לי לתת משוב מפורט לכל תלמיד ואני רוצה מערכת שתעזור לי',
+            communication: 'אני רוצה לשמור על קשר טוב עם הורים אבל זה לוקח הרבה זמן',
+            data: 'יש לי המון נתונים על התלמידים אבל קשה לי להבין מהם את התמונה הכללית'
+        };
+
+
+        // --- STATE MANAGEMENT ---
+        let state = {
+            mode: null,
+            step: 0,
+            answers: getInitialAnswers()
+        };
+
+        function getInitialAnswers() {
+            return {
+                domain: '', customDomain: '', theoreticalBasis: 'none', uploadedFiles: [],
+                uploadedFilesContent: [], researchRequest: '', problem: '', users: [],
+                dataInput: '', output: [], customOutput: '', toolFormat: '', customToolFormat: '', 
+                experience: '', technical: '', needSource: '', needData: '', needWhen: '', 
+                needWho: '', affectedGroup: '', rootCause: '', values: '', teacherGoals: [], 
+                studentOutcomes: [], newTeacherGoal: '', newStudentOutcome: '', researchQuestion: '', 
+                toolType: '', customToolType: '', targetAudience: '', pedagogicalPrinciples: [],
+                contentComponents: '', assessmentMethod: '', implementationPlan: ''
+            };
+        }
+
+        // --- UI ELEMENTS ---
+        const modeSelectionScreen = document.getElementById('mode-selection-screen');
+        const toolBuilder = document.getElementById('tool-builder');
+        const finalScreen = document.getElementById('final-screen');
+        const cardBody = document.getElementById('card-body');
+        const prevBtn = document.getElementById('prev-btn');
+        const nextBtn = document.getElementById('next-btn');
+        const progressBar = document.getElementById('progress-bar-inner');
+        const modeSubtitle = document.getElementById('mode-subtitle');
+        const copyBtn = document.getElementById('copy-btn');
+        
+        // --- EVENT LISTENERS ---
+        prevBtn.addEventListener('click', () => changeStep(-1));
+        nextBtn.addEventListener('click', () => changeStep(1));
+        copyBtn.addEventListener('click', handleCopy);
+
+        
+        // --- CORE FUNCTIONS ---
+        function selectMode(mode) {
+            state.mode = mode;
+            modeSelectionScreen.classList.remove('active');
+            toolBuilder.classList.add('active');
+            modeSubtitle.textContent = mode === 'fast' ? 'מסלול מהיר ⚡' : 'מסלול מקצועי 🎓';
+            renderStep();
+        }
+
+        function changeStep(direction) {
+            const totalSteps = getTotalSteps();
+            if (direction === 1 && !isStepValid()) return;
+            
+            state.step += direction;
+
+            if (state.step >= totalSteps) {
+                showFinalScreen();
+            } else {
+                renderStep();
+            }
+        }
+        
+        function renderStep() {
+            const totalSteps = getTotalSteps();
+            const currentSteps = state.mode === 'fast' ? fastModeSteps : professionalModeSteps;
+            const currentStepData = currentSteps[state.step];
+            
+            cardBody.innerHTML = `
+                <h2>${currentStepData.title}</h2>
+                <p class="subtitle">${currentStepData.subtitle}</p>
+                ${currentStepData.content(state.answers)}
+            `;
+            
+            attachEventListeners();
+            
+            prevBtn.disabled = state.step === 0;
+            nextBtn.innerHTML = state.step === totalSteps - 1 ? 'צור Prompt' : `הבא <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" style="width: 1.25rem; height: 1.25rem;"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>`;
+            nextBtn.disabled = !isStepValid();
+            progressBar.style.width = `${((state.step + 1) / totalSteps) * 100}%`;
+        }
+
+        function showFinalScreen() {
+            toolBuilder.classList.remove('active');
+            finalScreen.classList.add('active');
+            document.getElementById('prompt-output').textContent = generatePrompt();
+            
+            const uploadReminder = document.getElementById('upload-reminder');
+            if (state.answers.theoreticalBasis === 'upload' && state.answers.uploadedFiles.length > 0) {
+                uploadReminder.classList.remove('hidden');
+            } else {
+                uploadReminder.classList.add('hidden');
+            }
+        }
+        
+        function resetForm() {
+            state.mode = null;
+            state.step = 0;
+            state.answers = getInitialAnswers();
+            
+            finalScreen.classList.remove('active');
+            toolBuilder.classList.remove('active');
+            modeSelectionScreen.classList.add('active');
+        }
+
+        // --- UPDATE FUNCTIONS ---
+        function updateAndRender(key, value) {
+            state.answers[key] = value;
+            renderStep();
+        }
+
+        function updateAndValidate(key, value) {
+            state.answers[key] = value;
+            nextBtn.disabled = !isStepValid();
+        }
+        
+        // --- STEP DEFINITIONS ---
+        const toolFormatStep = {
+            title: 'בחר את תצורת הכלי',
+            subtitle: 'באיזו צורה תרצה לקבל את התוצר הסופי?',
+            content: (a) => `
+                <div class="grid-buttons">
+                    ${toolFormats.map(f => `<div class="choice-button ${a.toolFormat === f.value ? 'selected' : ''}" onclick="updateAndRender('toolFormat', '${f.value}')"><div class="icon">${f.icon}</div><div class="label">${f.label}</div></div>`).join('')}
+                </div>
+                ${a.toolFormat === 'other' ? `<input type="text" placeholder="פרט/י את התצורה..." value="${a.customToolFormat}" oninput="updateAndValidate('customToolFormat', this.value)" style="margin-top: 1rem;">` : ''}
+            `
+        };
+
+        const fastModeSteps = [
+            {
+                title: 'בחר תחום', subtitle: 'באיזה תחום חינוכי מדובר?',
+                content: (a) => `
+                    <div class="grid-buttons">
+                        ${domains.map(d => `<div class="choice-button ${a.domain === d.value ? 'selected' : ''}" onclick="updateAndRender('domain', '${d.value}')"><div class="icon">${d.icon}</div><div class="label">${d.label}</div></div>`).join('')}
+                    </div>
+                    ${a.domain === 'other' ? `<input type="text" placeholder="פרט/י את התחום..." value="${a.customDomain}" oninput="updateAndValidate('customDomain', this.value)" style="margin-top: 1rem;">` : ''}
+                `
+            },
+            {
+                title: 'רקע תיאורטי ומקצועי', subtitle: 'על איזה בסיס ידע לבנות את הכלי?',
+                content: (a) => `
+                    <div class="space-y-4">
+                        <div class="choice-button ${a.theoreticalBasis === 'upload' ? 'selected' : ''}" onclick="updateAndRender('theoreticalBasis', 'upload')">יש לי מסמכים עם רקע תיאורטי</div>
+                        ${a.theoreticalBasis === 'upload' ? `<div><input type="file" multiple id="fileUpload"><div id="fileList">${a.uploadedFiles.length > 0 ? `<strong>קבצים שהועלו:</strong> ${a.uploadedFiles.join(', ')}` : ''}</div></div>` : ''}
+                        <div class="choice-button ${a.theoreticalBasis === 'research' ? 'selected' : ''}" onclick="updateAndRender('theoreticalBasis', 'research')">בקש מהבינה המלאכותית לחקור</div>
+                        ${a.theoreticalBasis === 'research' ? `<textarea placeholder="על מה לחקור?" oninput="updateAndValidate('researchRequest', this.value)">${a.researchRequest}</textarea>` : ''}
+                        <div class="choice-button ${a.theoreticalBasis === 'none' ? 'selected' : ''}" onclick="updateAndRender('theoreticalBasis', 'none')">בנה ללא רקע תיאורטי מיוחד</div>
+                    </div>`
+            },
+            {
+                title: 'תאר את הבעיה', subtitle: 'מה הצורך או האתגר שאתה רוצה לפתור?',
+                content: (a) => `<textarea placeholder="תאר/י את הבעיה בפירוט..." oninput="updateAndValidate('problem', this.value)">${a.problem}</textarea>
+                                ${a.domain && examples[a.domain] ? `<div class="info-box"><strong>דוגמה:</strong> ${examples[a.domain]}</div>` : ''}`
+            },
+            {
+                title: 'מי ישתמש בכלי?', subtitle: 'בחר את קהל היעד',
+                content: (a) => `<div class="space-y-4">
+                    ${userTypes.map(u => `<label class="checkbox-label ${a.users.includes(u.value) ? 'selected' : ''}"><input type="checkbox" value="${u.value}" ${a.users.includes(u.value) ? 'checked' : ''} onchange="handleCheckboxChange('users', this.value)" style="display:none;"><span>${u.label}</span></label>`).join('')}
+                </div>`
+            },
+            {
+                title: 'איזה מידע תזין?', subtitle: 'אילו נתונים הכלי יצטרך לקבל?',
+                content: (a) => `<textarea placeholder="לדוגמה: שמות תלמידים, ציונים..." oninput="updateAndValidate('dataInput', this.value)">${a.dataInput}</textarea>`
+            },
+            {
+                title: 'מה הפלט הרצוי?', subtitle: 'מה הכלי צריך לייצר?',
+                content: (a) => `
+                    <div class="grid-buttons">
+                        ${outputs.map(o => `<div class="choice-button ${a.output.includes(o.value) ? 'selected' : ''}" onclick="handleMultiChoiceClick('output', '${o.value}')"><div class="icon">${o.icon}</div><div class="label">${o.label}</div></div>`).join('')}
+                    </div>
+                    ${a.output.includes('other') ? `<input type="text" placeholder="פרט/י את סוג הפלט..." value="${a.customOutput}" oninput="updateAndValidate('customOutput', this.value)" style="margin-top: 1rem;">` : ''}
+                `
+            },
+            toolFormatStep,
+            {
+                title: 'איך זה צריך להרגיש?', subtitle: 'תאר את חוויית השימוש הרצויה',
+                content: (a) => `<textarea placeholder="לדוגמה: פשוט ומהיר, עם הוראות ברורות..." oninput="updateAndValidate('experience', this.value)">${a.experience}</textarea>`
+            },
+            {
+                title: 'פרטים טכניים (אופציונלי)', subtitle: 'יש לך דרישות טכניות מיוחדות?',
+                content: (a) => `<textarea placeholder="לדוגמה: צריך לשמור מידע..." oninput="updateAndValidate('technical', this.value)">${a.technical}</textarea>`
+            }
+        ];
+        
+        const professionalModeSteps = [
+            fastModeSteps[0], // Domain
+            {
+                title: 'זיהוי הצורך והאתגר', subtitle: 'תאר את הצורך בצורה מעמיקה',
+                content: a => `<div class="space-y-4">
+                    <textarea placeholder="מקור הצורך או האתגר *" oninput="updateAndValidate('needSource', this.value)">${a.needSource}</textarea>
+                    <input type="text" placeholder="מי נפגש עם הצורך? *" oninput="updateAndValidate('needWho', this.value)" value="${a.needWho}">
+                </div>`
+            },
+            {
+                title: 'מטרות ותוצאות רצויות', subtitle: 'הגדר מטרות מדידות ברמת המורים והתלמידים',
+                content: a => `<div class="space-y-6">
+                    <div>
+                        <h4>מטרות ברמת המורים</h4>
+                        <p class="subtle-text">אילו ידע, מיומנויות או פרקטיקות המורים ירכשו?</p>
+                        <div class="list-container" id="teacher-goals-list">
+                            ${a.teacherGoals.map((goal, index) => `<div class="list-item"><span>${goal}</span><button class="delete-btn" onclick="deleteGoal('teacherGoals', ${index})">&times;</button></div>`).join('')}
+                        </div>
+                        <div class="add-item-container">
+                            <input type="text" id="new-teacher-goal-input" placeholder="הוסף מטרה..." value="${a.newTeacherGoal}" oninput="updateAndValidate('newTeacherGoal', this.value)" onkeypress="if(event.key === 'Enter') addGoal('teacherGoals', 'newTeacherGoal')">
+                            <button class="add-btn" onclick="addGoal('teacherGoals', 'newTeacherGoal')">+</button>
+                        </div>
+                    </div>
+                    <div>
+                        <h4>תוצאות ברמת התלמידים</h4>
+                        <p class="subtle-text">אילו תוצאות רצויות בלמידה, הישגים או מעורבות?</p>
+                        <div class="list-container" id="student-outcomes-list">
+                            ${a.studentOutcomes.map((outcome, index) => `<div class="list-item"><span>${outcome}</span><button class="delete-btn" onclick="deleteGoal('studentOutcomes', ${index})">&times;</button></div>`).join('')}
+                        </div>
+                        <div class="add-item-container">
+                            <input type="text" id="new-student-outcome-input" placeholder="הוסף תוצאה..." value="${a.newStudentOutcome}" oninput="updateAndValidate('newStudentOutcome', this.value)" onkeypress="if(event.key === 'Enter') addGoal('studentOutcomes', 'newStudentOutcome')">
+                            <button class="add-btn" onclick="addGoal('studentOutcomes', 'newStudentOutcome')">+</button>
+                        </div>
+                    </div>
+                </div>`
+            },
+            {
+                title: 'ניסוח שאלת החקר', subtitle: 'נסח שאלה ממוקדת שתנחה את הפיתוח',
+                content: a => `<textarea placeholder="כיצד נוכל..." oninput="updateAndValidate('researchQuestion', this.value)">${a.researchQuestion}</textarea>`
+            },
+            fastModeSteps[1], // Theoretical Basis
+            {
+                title: 'אפיון התוצר ומרכיביו', subtitle: 'הגדר את מאפייני הכלי',
+                content: a => `<div class="space-y-4">
+                     <div class="grid-buttons">
+                        ${toolTypes.map(t => `<div class="choice-button ${a.toolType === t.value ? 'selected' : ''}" onclick="updateAndRender('toolType', '${t.value}')"><div class="icon">${t.icon}</div><div class="label">${t.label}</div></div>`).join('')}
+                    </div>
+                    ${a.toolType === 'other' ? `<input type="text" placeholder="פרט/י את סוג הכלי..." value="${a.customToolType}" oninput="updateAndValidate('customToolType', this.value)" style="margin-top: 1rem;">` : ''}
+                    <input type="text" placeholder="קהל יעד עיקרי *" oninput="updateAndValidate('targetAudience', this.value)" value="${a.targetAudience}">
+                </div>`
+            },
+            toolFormatStep,
+            {
+                title: 'תכנון הטמעה (אופציונלי)', subtitle: 'שיקולים להטמעה והערכה של הכלי',
+                content: a => `<textarea placeholder="כיצד תטמיע את הכלי?" oninput="updateAndValidate('implementationPlan', this.value)">${a.implementationPlan}</textarea>`
+            }
+        ];
+
+        // --- UTILITY & HELPER FUNCTIONS ---
+        function attachEventListeners() {
+            const fileUpload = document.getElementById('fileUpload');
+            if (fileUpload) {
+                fileUpload.addEventListener('change', handleFileUpload);
+            }
+        }
+        
+        function handleCheckboxChange(key, value) {
+            const set = new Set(state.answers[key]);
+            if (set.has(value)) {
+                set.delete(value);
+            } else {
+                set.add(value);
+            }
+            updateAndRender(key, Array.from(set));
+        }
+        
+        function handleMultiChoiceClick(key, value) {
+            const currentValues = state.answers[key];
+            if (currentValues.includes(value)) {
+                updateAndRender(key, currentValues.filter(v => v !== value));
+            } else {
+                updateAndRender(key, [...currentValues, value]);
+            }
+        }
+
+        function addGoal(listKey, inputKey) {
+            const value = state.answers[inputKey]?.trim();
+            if (value) {
+                state.answers[listKey].push(value);
+                state.answers[inputKey] = '';
+                renderStep();
+            }
+        }
+
+        function deleteGoal(listKey, index) {
+            state.answers[listKey].splice(index, 1);
+            renderStep();
+        }
+
+        async function handleFileUpload(e) {
+            const files = Array.from(e.target.files);
+            const fileContents = await Promise.all(
+                files.map(file => new Promise((resolve, reject) => {
+                    const reader = new FileReader();
+                    reader.onload = e => resolve({ name: file.name, content: e.target.result });
+                    reader.onerror = reject;
+                    reader.readAsText(file);
+                }))
+            );
+            
+            state.answers.uploadedFiles = files.map(f => f.name);
+            state.answers.uploadedFilesContent = fileContents;
+            
+            updateAndRender('uploadedFiles', state.answers.uploadedFiles); // Trigger re-render
+        }
+
+        function handleCopy() {
+            navigator.clipboard.writeText(generatePrompt());
+            const copyText = document.getElementById('copy-text');
+            const copyIcon = document.getElementById('copy-icon');
+            const checkIcon = document.getElementById('check-icon');
+            copyText.textContent = 'הועתק!';
+            copyIcon.classList.add('hidden');
+            checkIcon.classList.remove('hidden');
+            setTimeout(() => {
+                copyText.textContent = 'העתק';
+                copyIcon.classList.remove('hidden');
+                checkIcon.classList.add('hidden');
+            }, 2000);
+        }
+
+        function getTotalSteps() {
+            return state.mode === 'fast' ? fastModeSteps.length : professionalModeSteps.length;
+        }
+
+        function isStepValid() {
+            const a = state.answers;
+            if (state.mode === 'fast') {
+                switch(state.step) {
+                    case 0: return a.domain && (a.domain !== 'other' || a.customDomain);
+                    case 1: 
+                        if (a.theoreticalBasis === 'none') return true;
+                        if (a.theoreticalBasis === 'upload') return a.uploadedFiles.length > 0;
+                        if (a.theoreticalBasis === 'research') return a.researchRequest.length > 20;
+                        return false;
+                    case 2: return a.problem.length > 10;
+                    case 3: return a.users.length > 0;
+                    case 4: return a.dataInput.length > 5;
+                    case 5: return a.output.length > 0;
+                    case 6: return a.toolFormat && (a.toolFormat !== 'other' || a.customToolFormat);
+                    case 7: return a.experience.length > 10;
+                    default: return true;
+                }
+            } else {
+                switch(state.step) {
+                    case 0: return a.domain && (a.domain !== 'other' || a.customDomain);
+                    case 1: return a.needSource.length > 10 && a.needWho.length > 5;
+                    case 2: return a.teacherGoals.length > 0 && a.studentOutcomes.length > 0;
+                    case 3: return a.researchQuestion.length > 20;
+                    case 4:
+                        if (a.theoreticalBasis === 'none') return true;
+                        if (a.theoreticalBasis === 'upload') return a.uploadedFiles.length > 0;
+                        if (a.theoreticalBasis === 'research') return a.researchRequest.length > 20;
+                        return false;
+                    case 5: return a.toolType && (a.toolType !== 'other' || a.customToolType) && a.targetAudience.length > 5;
+                    case 6: return a.toolFormat && (a.toolFormat !== 'other' || a.customToolFormat);
+                    default: return true;
+                }
+            }
+        }
+        
+        function generatePrompt() {
+            const a = state.answers;
+            const domainText = a.domain === 'other' ? a.customDomain : domains.find(d => d.value === a.domain)?.label;
+            const toolFormatText = a.toolFormat === 'other' ? a.customToolFormat : toolFormats.find(f => f.value === a.toolFormat)?.label;
+            
+            let theoreticalSection = '';
+            if (a.theoreticalBasis === 'upload' && a.uploadedFilesContent.length > 0) {
+                theoreticalSection = `\n**רקע תיאורטי ומקצועי:**\nהכלי צריך להיבנות על בסיס הידע המקצועי והתיאורטי המצורף להלן.\n\n${a.uploadedFilesContent.map(file => `--- תוכן מקובץ: ${file.name} ---\n${file.content}\n`).join('\n')}\nחשוב מאוד שהכלי ישקף את העקרונות, המודלים והגישות המקצועיות המתוארים במסמכים אלה.\n`;
+            } else if (a.theoreticalBasis === 'research') {
+                theoreticalSection = `\n**בקשה למחקר:**\nלפני בניית הכלי, אנא בצע מחקר מעמיק בנושא הבא:\n${a.researchRequest}\n\nחפש מקורות אקדמיים, מחקרים עדכניים, best practices ומודלים תיאורטייים רלוונטיים. בנה את הכלי על בסיס הממצאים והידע המקצועי שמצאת.\n`;
+            }
+
+            if (state.mode === 'fast') {
+                const outputText = a.output.map(o => o === 'other' ? a.customOutput : outputs.find(out => out.value === o)?.label).join(', ');
+                const usersText = a.users.map(u => userTypes.find(ut => ut.value === u)?.label).join(', ');
+
+                return `אני מחנך/ת ואני זקוק/ה לעזרה בבניית כלי דיגיטלי לצורך חינוכי.
+
+**תחום:** ${domainText}
+${theoreticalSection}
+**הבעיה/צורך:**
+${a.problem}
+
+**משתמשים:**
+הכלי ישמש את: ${usersText}
+
+**נתונים שאזין:**
+${a.dataInput}
+
+**תוצרים רצויים:**
+הכלי צריך לייצר: ${outputText}
+
+**תצורת הכלי:**
+${toolFormatText}
+
+**חוויית משתמש:**
+${a.experience}
+
+**רקע טכני:**
+${a.technical || 'אין לי רקע טכנולוגי מיוחד, אני זקוק/ה לפתרון פשוט ונגיש.'}
+
+---
+
+בבקשה תעזור לי לבנות כלי שעונה על הצורך הזה. הכלי צריך להיות:
+- פשוט לשימוש
+- בעברית
+- עם ממשק משתמש ידידותי
+- פונקציונלי ומוכן לשימוש
+
+אנא תתחיל בהצעה לארכיטקטורה כללית של הכלי, ואז נבנה אותו שלב אחר שלב.`;
+            } else {
+                const toolTypeText = a.toolType === 'other' ? a.customToolType : toolTypes.find(t => t.value === a.toolType)?.label;
+                
+                return `אני מחנך/ת ואני זקוק/ה לעזרה בבניית כלי דיגיטלי מבוסס תהליך פיתוח מקצועי.
+
+**1. זיהוי הצורך והאתגר:**
+תחום: ${domainText}
+מקור הצורך: ${a.needSource}
+מי נפגש עם הצורך: ${a.needWho}
+
+**2. מטרות ותוצאות רצויות:**
+מטרות ברמת המורים:
+${a.teacherGoals.map((g, i) => `${i + 1}. ${g}`).join('\n')}
+
+תוצאות ברמת התלמידים:
+${a.studentOutcomes.map((o, i) => `${i + 1}. ${o}`).join('\n')}
+
+**3. שאלת החקר:**
+${a.researchQuestion}
+
+**4. רקע תיאורטי:**
+${theoreticalSection || 'אנא התבסס על best practices מוכרים בתחום.'}
+
+**5. אפיון התוצר:**
+סוג הכלי: ${toolTypeText}
+קהל יעד: ${a.targetAudience}
+תצורת הכלי: ${toolFormatText}
+
+${a.implementationPlan ? `**6. שיקולי הטמעה:**\n${a.implementationPlan}\n` : ''}
+---
+
+בבקשה תעזור לי לבנות כלי מקצועי שעונה על כל הדרישות לעיל.
+אנא תתחיל בהצעה מפורטת לארכיטקטורה של הכלי, ואז נבנה אותו שלב אחר שלב.`;
+            }
+        }
+    </script>
+</body>
+</html>
