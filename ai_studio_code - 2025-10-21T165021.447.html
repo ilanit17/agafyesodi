@@ -515,7 +515,7 @@
         function getInitialAnswers() {
             return {
                 domain: '', customDomain: '', theoreticalBasis: 'none', uploadedFiles: [],
-                uploadedFilesContent: [], researchRequest: '', problem: '', users: [],
+                researchRequest: '', problem: '', users: [],
                 dataInput: '', output: [], customOutput: '', toolFormat: '', customToolFormat: '', 
                 experience: '', technical: '', needSource: '', needData: '', needWhen: '', 
                 needWho: '', affectedGroup: '', rootCause: '', values: '', teacherGoals: [], 
@@ -784,21 +784,10 @@
             renderStep();
         }
 
-        async function handleFileUpload(e) {
+        function handleFileUpload(e) {
             const files = Array.from(e.target.files);
-            const fileContents = await Promise.all(
-                files.map(file => new Promise((resolve, reject) => {
-                    const reader = new FileReader();
-                    reader.onload = e => resolve({ name: file.name, content: e.target.result });
-                    reader.onerror = reject;
-                    reader.readAsText(file);
-                }))
-            );
-            
             state.answers.uploadedFiles = files.map(f => f.name);
-            state.answers.uploadedFilesContent = fileContents;
-            
-            updateAndRender('uploadedFiles', state.answers.uploadedFiles); // Trigger re-render
+            updateAndRender('uploadedFiles', state.answers.uploadedFiles); // Trigger re-render to show file names
         }
 
         function handleCopy() {
@@ -856,14 +845,18 @@
             }
         }
         
+        // --- FIXED PROMPT GENERATION ---
         function generatePrompt() {
             const a = state.answers;
             const domainText = a.domain === 'other' ? a.customDomain : domains.find(d => d.value === a.domain)?.label;
             const toolFormatText = a.toolFormat === 'other' ? a.customToolFormat : toolFormats.find(f => f.value === a.toolFormat)?.label;
             
             let theoreticalSection = '';
-            if (a.theoreticalBasis === 'upload' && a.uploadedFilesContent.length > 0) {
-                theoreticalSection = `\n**רקע תיאורטי ומקצועי:**\nהכלי צריך להיבנות על בסיס הידע המקצועי והתיאורטי המצורף להלן.\n\n${a.uploadedFilesContent.map(file => `--- תוכן מקובץ: ${file.name} ---\n${file.content}\n`).join('\n')}\nחשוב מאוד שהכלי ישקף את העקרונות, המודלים והגישות המקצועיות המתוארים במסמכים אלה.\n`;
+            // *** START OF FIX ***
+            if (a.theoreticalBasis === 'upload' && a.uploadedFiles.length > 0) {
+                const fileNames = a.uploadedFiles.join(', ');
+                theoreticalSection = `\n**רקע תיאורטי ומקצועי:**\nהכלי צריך להיבנות על בסיס הידע מהקבצים שצירפתי: ${fileNames}.\n\nאנא נתח את המסמכים הללו לעומק ובסס את הכלי על העקרונות, המודלים והגישות המקצועיות המתוארים בהם.\n`;
+            // *** END OF FIX ***
             } else if (a.theoreticalBasis === 'research') {
                 theoreticalSection = `\n**בקשה למחקר:**\nלפני בניית הכלי, אנא בצע מחקר מעמיק בנושא הבא:\n${a.researchRequest}\n\nחפש מקורות אקדמיים, מחקרים עדכניים, best practices ומודלים תיאורטייים רלוונטיים. בנה את הכלי על בסיס הממצאים והידע המקצועי שמצאת.\n`;
             }
