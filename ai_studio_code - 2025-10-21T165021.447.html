@@ -354,7 +354,8 @@
         <!-- Mode Selection Screen -->
         <div id="mode-selection-screen" class="card active">
             <div class="card-body mode-selection">
-                <img src="https://ilanit17.github.io/agafyesodi/לוגו%20עכשיו%20יסודי.png" alt="לוגו עכשיו יסודי" style="max-width: 200px; margin-bottom: 1.5rem;">
+                <!-- *** LOGO SRC IS FIXED HERE *** -->
+                <img src="https://ilanit17.github.io/agafyesodi/לוגו%20יסודי%20עכשווי.png" alt="לוגו יסודי עכשווי" style="max-width: 200px; margin-bottom: 1.5rem;">
                 <h1 style="font-size: 2.5rem; font-weight: 700;">תִּכְנוּת בְּקַלּוּת</h1>
                 <p style="font-size: 1.25rem; color: var(--subtle-text-color);">בניית כלים אינטראקטיביים חינוכיים בעזרת AI</p>
                 <div class="grid">
@@ -845,18 +846,17 @@
             }
         }
         
-        // --- FIXED PROMPT GENERATION ---
+        // --- PROMPT GENERATION WITH FIX ---
         function generatePrompt() {
             const a = state.answers;
             const domainText = a.domain === 'other' ? a.customDomain : domains.find(d => d.value === a.domain)?.label;
             const toolFormatText = a.toolFormat === 'other' ? a.customToolFormat : toolFormats.find(f => f.value === a.toolFormat)?.label;
             
             let theoreticalSection = '';
-            // *** START OF FIX ***
+            // *** FIX IS APPLIED HERE ***
             if (a.theoreticalBasis === 'upload' && a.uploadedFiles.length > 0) {
                 const fileNames = a.uploadedFiles.join(', ');
                 theoreticalSection = `\n**רקע תיאורטי ומקצועי:**\nהכלי צריך להיבנות על בסיס הידע מהקבצים שצירפתי: ${fileNames}.\n\nאנא נתח את המסמכים הללו לעומק ובסס את הכלי על העקרונות, המודלים והגישות המקצועיות המתוארים בהם.\n`;
-            // *** END OF FIX ***
             } else if (a.theoreticalBasis === 'research') {
                 theoreticalSection = `\n**בקשה למחקר:**\nלפני בניית הכלי, אנא בצע מחקר מעמיק בנושא הבא:\n${a.researchRequest}\n\nחפש מקורות אקדמיים, מחקרים עדכניים, best practices ומודלים תיאורטייים רלוונטיים. בנה את הכלי על בסיס הממצאים והידע המקצועי שמצאת.\n`;
             }
