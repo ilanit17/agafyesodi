@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="he">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>מטריצת הממדים האינטראקטיבית</title>
+    <!-- טעינת Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- טעינת פונט Rubik מ-Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Rubik', sans-serif;
+            background-color: #f8fafc; /* Slate 50 */
+        }
+        .response-column {
+            transition: all 0.3s ease-in-out;
+        }
+    </style>
+</head>
+<body class="p-4 md:p-8">
+    <div class="max-w-7xl mx-auto">
+        <header class="text-center mb-10">
+            <h1 class="text-4xl md:text-5xl font-black mb-4 bg-clip-text text-transparent bg-gradient-to-r from-indigo-600 to-cyan-500">
+                מטריצת הממדים האינטראקטיבית
+            </h1>
+            <div class="intro bg-indigo-50 text-indigo-800 p-4 rounded-lg max-w-4xl mx-auto border-r-4 border-indigo-400">
+                <p class="font-semibold text-lg mb-2">כיצד הכלי עובד?</p>
+                <p>עבור כל ממד, דיינו בקבוצה: לאור ה<span class="font-bold">מאפיינים</span> המוצגים, מהן לדעתכם ה<span class="font-bold">השלכות והמענים</span> הנדרשים? בסיום הדיון, לחצו על כפתור "חשוף מענים לדיון" כדי לראות את ההצעות מהמסמך המקורי ולהשוות לתובנות שלכם.</p>
+            </div>
+        </header>
+
+        <!-- ממד 1 -->
+        <section class="dimension-section mb-12" data-dimension="1">
+            <div class="flex justify-between items-center mb-4 flex-wrap gap-4">
+                <h2 class="text-3xl font-bold text-white bg-gradient-to-r from-blue-600 to-blue-500 py-2 px-4 rounded-lg shadow-md">ממד 1: מציאות משתנה ומגמות עתיד</h2>
+                <button class="reveal-btn bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-full shadow-lg transition-transform hover:scale-105 flex items-center gap-2" data-target="1">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zM7 8a1 1 0 012 0v4a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v4a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" /></svg>
+                    <span>חשוף מענים לדיון</span>
+                </button>
+            </div>
+            <div class="overflow-x-auto">
+                <table class="w-full bg-white shadow-xl rounded-2xl overflow-hidden">
+                    <thead class="bg-blue-500 text-white">
+                        <tr>
+                            <th class="p-4 text-right">רכיב בית הספר</th>
+                            <th class="p-4 text-right">מאפיינים רלוונטיים</th>
+                            <th class="response-column p-4 text-right">השלכות והצורך במענה</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-gray-200">
+                        <!-- תוכן הטבלה יוכנס כאן באמצעות JS -->
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- ממד 2 -->
+        <section class="dimension-section mb-12" data-dimension="2">
+             <div class="flex justify-between items-center mb-4 flex-wrap gap-4">
+                <h2 class="text-3xl font-bold text-white bg-gradient-to-r from-green-600 to-green-500 py-2 px-4 rounded-lg shadow-md">ממד 2: מאפייני גיל היסודי</h2>
+                <button class="reveal-btn bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded-full shadow-lg transition-transform hover:scale-105 flex items-center gap-2" data-target="2">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zM7 8a1 1 0 012 0v4a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v4a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" /></svg>
+                    <span>חשוף מענים לדיון</span>
+                </button>
+            </div>
+            <div class="overflow-x-auto">
+                <table class="w-full bg-white shadow-xl rounded-2xl overflow-hidden">
+                     <thead class="bg-green-500 text-white">
+                        <tr>
+                            <th class="p-4 text-right">רכיב בית הספר</th>
+                            <th class="p-4 text-right">מאפיינים רלוונטיים</th>
+                            <th class="response-column p-4 text-right">השלכות והצורך במענה</th>
+                        </tr>
+                    </thead>
+                     <tbody class="divide-y divide-gray-200"></tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- ממד 3 -->
+        <section class="dimension-section mb-12" data-dimension="3">
+             <div class="flex justify-between items-center mb-4 flex-wrap gap-4">
+                <h2 class="text-3xl font-bold text-white bg-gradient-to-r from-orange-600 to-orange-500 py-2 px-4 rounded-lg shadow-md">ממד 3: דור הלומדים - אלפא ובטא</h2>
+                <button class="reveal-btn bg-orange-500 hover:bg-orange-600 text-white font-bold py-2 px-4 rounded-full shadow-lg transition-transform hover:scale-105 flex items-center gap-2" data-target="3">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zM7 8a1 1 0 012 0v4a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v4a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" /></svg>
+                    <span>חשוף מענים לדיון</span>
+                </button>
+            </div>
+             <div class="overflow-x-auto">
+                <table class="w-full bg-white shadow-xl rounded-2xl overflow-hidden">
+                     <thead class="bg-orange-500 text-white">
+                        <tr>
+                            <th class="p-4 text-right">רכיב בית הספר</th>
+                            <th class="p-4 text-right">מאפיינים רלוונטיים</th>
+                            <th class="response-column p-4 text-right">השלכות והצורך במענה</th>
+                        </tr>
+                    </thead>
+                     <tbody class="divide-y divide-gray-200"></tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- ממד 4 -->
+        <section class="dimension-section" data-dimension="4">
+             <div class="flex justify-between items-center mb-4 flex-wrap gap-4">
+                <h2 class="text-3xl font-bold text-white bg-gradient-to-r from-purple-600 to-purple-500 py-2 px-4 rounded-lg shadow-md">ממד 4: מאפייני הקהילה והסביבה</h2>
+                <button class="reveal-btn bg-purple-500 hover:bg-purple-600 text-white font-bold py-2 px-4 rounded-full shadow-lg transition-transform hover:scale-105 flex items-center gap-2" data-target="4">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zM7 8a1 1 0 012 0v4a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v4a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" /></svg>
+                    <span>חשוף מענים לדיון</span>
+                </button>
+            </div>
+             <div class="overflow-x-auto">
+                <table class="w-full bg-white shadow-xl rounded-2xl overflow-hidden">
+                     <thead class="bg-purple-500 text-white">
+                        <tr>
+                            <th class="p-4 text-right">רכיב בית הספר</th>
+                            <th class="p-4 text-right">מאפיינים רלוונטיים</th>
+                            <th class="response-column p-4 text-right">השלכות והצורך במענה</th>
+                        </tr>
+                    </thead>
+                     <tbody class="divide-y divide-gray-200"></tbody>
+                </table>
+            </div>
+        </section>
+
+    </div>
+
+    <script>
+        const matrixData = {
+            1: [
+                { component: 'סביבת למידה פיזית', characteristics: ['תנודתיות וקצב שינויים מהיר', 'היפר-חיבוריות', 'טשטוש גבולות בין פיזי לדיגיטלי', 'טכנולוגיות מתקדמות'], response: ['גמישות ומודולריות לשינויים מהירים', 'שילוב טכנולוגיות מתקדמות', 'חיבור בין הפיזי לדיגיטלי', 'מרחבים מותאמים למגוון התנסויות'] },
+                { component: 'תכנים ותכנית לימודים', characteristics: ['התיישנות מהירה של ידע', 'בינה מלאכותית', 'שינויים בעולם התעסוקה', 'מורכבות ובין-תחומיות'], response: ['רלוונטיות ועדכניות מתמדת', 'דגש על מיומנויות VUCA', 'אוריינות טכנולוגית ודיגיטלית', 'תכנים בין-תחומיים'] },
+                { component: 'דרכי הערכה', characteristics: ['אי-ודאות לגבי כישורי העתיד', 'שינויים בתפיסת מומחיות וידע', 'נגישות למידע', 'טכנולוגיות מדידה מתקדמות'], response: ['הערכת מיומנויות ולא רק ידע', 'הערכה מתמשכת ודינמית', 'דגש על יכולת יישום בעולם אמיתי', 'שימוש בכלים טכנולוגיים לניטור התקדמות'] },
+                { component: 'מערכת שעות וזמן', characteristics: ['האצת קצב השינוי', 'למידה בכל זמן ומקום', 'גמישות בדפוסי עבודה', 'פרדיגמת למידה לאורך החיים'], response: ['גמישות בארגון הזמן', 'התאמה לתהליכי למידה משתנים', 'שבירת מסגרות זמן קבועות', 'למידה א-סינכרונית'] },
+                { component: 'מערכות יחסים ואקלים', characteristics: ['קיטוב חברתי גובר', 'חיבוריות דיגיטלית', 'עמימות וחוסר ודאות', 'אתגרי בריאות נפשית'], response: ['קהילת למידה תומכת בעולם של שינוי', 'אקלים המעודד לקיחת סיכונים וחדשנות', 'דגש על חוסן אישי וקבוצתי', 'גיוון והכלה'] },
+                { component: 'תפקיד המורה', characteristics: ['שינויים בתפקיד "בעל הידע"', 'אוטומציה וAI בהוראה', 'מורכבות והיברידיות', 'הצורך בהתעדכנות מתמדת'], response: ['מתווך ומאמן ולא רק מקור ידע', 'ניווט באי-ודאות', 'פיתוח מתמיד של מיומנויות חדשות', 'יצירת משמעות בעולם משתנה'] }
+            ],
+            2: [
+                { component: 'סביבת למידה פיזית', characteristics: ['טווחי קשב מוגבלים ומשתנים', 'צורך בתנועה ופעילות גופנית', 'פיתוח מוטורי מתפתח', 'צורך בביטחון ויציבות'], response: ['התאמה לטווח קשב משתנה', 'מרחבים לפעילות פיזית ותנועה', 'אזורים לעבודה פרטנית וקבוצתית', 'סביבה בטוחה ומזמינה'] },
+                { component: 'תכנים ותכנית לימודים', characteristics: ['מעבר מחשיבה קונקרטית למופשטת', 'התפתחות שפתית וקוגניטיבית', 'סקרנות טבעית וחקרנות', 'התפתחות בהדרגה'], response: ['מותאמת להתפתחות קוגניטיבית', 'משלבת משחק ויצירה בגיל צעיר', 'מורכבת יותר בגיל בוגר', 'מדורגת ומותאמת התפתחותית'] },
+                { component: 'דרכי הערכה', characteristics: ['יכולת הבעה מתפתחת', 'רגישות לביקורת ולכישלון', 'צורך במשוב מיידי', 'התפתחות מודעות עצמית'], response: ['מותאמות ליכולת הביטוי בכל גיל', 'משוב מותאם התפתחותית', 'דרכים מגוונות להדגמת הבנה', 'שילוב הערכה עצמית מדורגת'] },
+                { component: 'מערכת שעות וזמן', characteristics: ['טווחי ריכוז משתנים (6-24 דקות)', 'צורך בשגרה ויציבות', 'התעייפות מהירה יותר', 'מעברים מאתגרים'], implications: ['מותאמת לטווחי ריכוז משתנים', 'איזון בין מובנות לגמישות', 'שילוב תנועה ומנוחה', 'יחידות זמן קצרות יותר לצעירים'], response: ['מותאמת לטווחי ריכוז משתנים', 'איזון בין מובנות לגמישות', 'שילוב תנועה ומנוחה', 'יחידות זמן קצרות יותר לגיל צעיר'] },
+                { component: 'מערכות יחסים ואקלים', characteristics: ['תלות במבוגר משמעותי', 'התפתחות חברתית הדרגתית', 'רגישות לשייכות ודחייה', 'מעבר ממשחק מקביל לחברויות מורכבות'], response: ['ביטחון רגשי כבסיס ללמידה', 'מענה לצורך בהשתייכות', 'התאמה לדינמיקה חברתית משתנה', 'התמודדות עם קונפליקטים התפתחותיים'] },
+                { component: 'תפקיד המורה', characteristics: ['צורך בדמות יציבה ומעניקת ביטחון', 'תלות גבוהה במבוגר בגיל צעיר', 'צורך בהדרכה והכוונה', 'השפעה מעצבת על הדימוי העצמי'], response: ['דמות משמעותית ומעוגנת', 'מכוונות לצרכים התפתחותיים', 'מתן תמיכה והכוונה לפי הגיל', 'מודעות לאתגרים ייחודיים'] }
+            ],
+             3: [
+                { component: 'סביבת למידה פיזית', characteristics: ['ילידים דיגיטליים','העדפה לאינטראקטיביות','אוריינות חזותית גבוהה','טשטוש בין פיזי לווירטואלי'], response: ['שילוב אלמנטים דיגיטליים ואינטראקטיביים','מרחבים היברידיים (פיזי-וירטואלי)','גירויים חזותיים עשירים','תשתית טכנולוגית מתקדמת'] },
+                { component: 'תכנים ותכנית לימודים', characteristics: ['חשיפה מוקדמת ל-AI','צריכת מידע ויזואלי ומולטימדיה','מודעות גלובלית וחברתית','שאיפה ליצירה'], response: ['רלוונטיות לעולמם הדיגיטלי','שילוב יצירה דיגיטלית ופיזית','דגש על אוריינות מדיה ו-AI','תכנים אינטראקטיביים ויזמיים'] },
+                { component: 'דרכי הערכה', characteristics: ['ציפייה למשוב מיידי','התנסות במשחוק דיגיטלי','רצון לאוטונומיה ובחירה','ביטוי ידע בדרכים מגוונות'], response: ['הערכה מיידית ומתמשכת','משחוק והערכה דיגיטלית','אפשרויות בחירה ואוטונומיה','הערכת יצירתיות ויזמות'] },
+                { component: 'מערכת שעות וזמן', characteristics: ['תרבות 24/7','קשב מפוצל ומולטי-טאסקינג','ציפייה לגמישות והתאמה אישית','תפיסת זמן מיידית'], response: ['גמישות והתאמה אישית','למידה א-סינכרונית','מקצבים מותאמים לדפוסי קשב','הכלה של למידה 24/7'] },
+                { component: 'מערכות יחסים ואקלים', characteristics: ['זהות דיגיטלית ופיזית מקבילה','אינטראקציה חברתית היברידית','אתגרי בריאות נפשית דיגיטליים','ציפייה לשיתוף ושקיפות'], response: ['שילוב תקשורת פיזית ודיגיטלית','רגישות לאקלים מקוון','תמיכה בזהות דיגיטלית בריאה','בטיחות במרחב הדיגיטלי'] },
+                { component: 'תפקיד המורה', characteristics: ['פער באוריינות דיגיטלית','זמינות מידע עצומה','אתגר לסמכות מסורתית','צורך במודל לשימוש מאוזן'], response: ['מנחה וחונך בעולם רווי מידע','מעצב חוויות למידה אינטראקטיביות','מודל לשימוש מאוזן בטכנולוגיה','שותף ליצירת ידע'] }
+            ],
+            4: [
+                { component: 'סביבת למידה פיזית', characteristics: ['מגוון דמוגרפי ותרבותי','הבדלים גיאוגרפיים (עיר/כפר)','פערים סוציו-אקונומיים','משאבים קהילתיים מגוונים'], response: ['חיבור למרחב הקהילתי','ייצוג התרבות והמורשת המקומית','נגישות לקהילה','התאמה לתנאים מקומיים'] },
+                { component: 'תכנים ותכנית לימודים', characteristics: ['מגוון ערכים ותרבויות','אתגרים וצרכים מקומיים','מורשת וידע מקומי','הקשרים גלובליים ומקומיים'], response: ['רלוונטיות לקהילה ולסביבתה','שילוב ידע מקומי וגלובלי','מענה למגוון תרבותי','חיבור לאתגרים קהילתיים'] },
+                { component: 'דרכי הערכה', characteristics: ['תפיסות שונות של הצלחה','הבדלים תרבותיים בהערכה','מגוון ציפיות מצד הורים','ערכים קהילתיים מגוונים'], response: ['רגישות תרבותית בהערכה','מעורבות הקהילה בהערכה','הערכת תרומה ומעורבות קהילתית','שקיפות כלפי הקהילה'] },
+                { component: 'מערכת שעות וזמן', characteristics: ['דפוסי חיים משפחתיים מגוונים','לוח שנה קהילתי','מסורות ומחזוריות קהילתית','זמינות הורים ומשאבים'], response: ['התחשבות בדפוסי חיים קהילתיים','גמישות לאירועים קהילתיים','שילוב למידה בזמנים קהילתיים','יצירת מסורות משותפת'] },
+                { component: 'מערכות יחסים ואקלים', characteristics: ['מבנים משפחתיים מגוונים','רקמה חברתית קהילתית','יחסי כוח וסטטוס בקהילה','שותפויות פוטנציאליות בקהילה'], response: ['שותפות אמיתית עם הורים וקהילה','כבוד למגוון תרבויות וערכים','תחושת שייכות למעגלים רחבים','מרחב בטוח למגוון זהויות'] },
+                { component: 'תפקיד המורה', characteristics: ['ציפיות מגוונות מתפקיד המורה','איזון בין ציפיות סותרות','אקוסיסטם חינוכי רחב','רגישויות תרבותיות בקהילה'], response: ['מתווך בין בית הספר לקהילה','ניווט במגוון ציפיות תרבותיות','יצירת רשת תמיכה קהילתית','רגישות תרבותית ומעורבות'] }
+            ]
+        };
+
+        function buildTable(dimensionId) {
+            const tableBody = document.querySelector(`[data-dimension="${dimensionId}"] tbody`);
+            const data = matrixData[dimensionId];
+            let html = '';
+            data.forEach(row => {
+                html += `
+                    <tr class="hover:bg-slate-50">
+                        <td class="p-4 text-slate-800 font-bold w-1/4"><strong>${row.component}</strong></td>
+                        <td class="p-4 text-slate-600 w-2/5">
+                            <ul class="list-disc list-inside space-y-1">
+                                ${row.characteristics.map(item => `<li>${item}</li>`).join('')}
+                            </ul>
+                        </td>
+                        <td class="response-column p-4 text-slate-600 w-2/5">
+                             <ul class="list-disc list-inside space-y-1">
+                                ${row.response.map(item => `<li>${item}</li>`).join('')}
+                            </ul>
+                        </td>
+                    </tr>
+                `;
+            });
+            tableBody.innerHTML = html;
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            // Build all tables
+            Object.keys(matrixData).forEach(id => buildTable(id));
+
+            // Hide all response columns initially
+            document.querySelectorAll('.response-column').forEach(col => {
+                col.style.display = 'none';
+            });
+
+            // Set up button event listeners
+            const revealButtons = document.querySelectorAll('.reveal-btn');
+            revealButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    const targetId = button.dataset.target;
+                    const section = document.querySelector(`[data-dimension="${targetId}"]`);
+                    const columnsToToggle = section.querySelectorAll('.response-column');
+                    
+                    const isHidden = columnsToToggle[0].style.display === 'none';
+
+                    columnsToToggle.forEach(col => {
+                        col.style.display = isHidden ? '' : 'none';
+                    });
+                    
+                    const buttonText = button.querySelector('span');
+                    buttonText.textContent = isHidden ? 'הסתר מענים' : 'חשוף מענים לדיון';
+                });
+            });
+        });
+    </script>
+</body>
+</html>
