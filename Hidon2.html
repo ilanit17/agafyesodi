@@ -1,1 +1,181 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>רשימת ערכים והגדרות</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #fff;
+            color: #000;
+            margin: 0;
+            padding: 20px;
+            line-height: 1.3; /* צמצום מרווח בין שורות */
+        }
 
+        .page-container {
+            max-width: 21cm;
+            margin: 0 auto;
+            background: white;
+        }
+
+        h1 {
+            text-align: center;
+            font-size: 1.8em;
+            margin-bottom: 20px;
+            text-decoration: underline;
+            color: #000;
+        }
+
+        /* רשת צפופה לשני טורים */
+        .values-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr; /* חלוקה ל-2 עמודות */
+            column-gap: 30px; /* מרווח בין עמודות */
+            row-gap: 15px;    /* מרווח בין שורות */
+        }
+
+        .value-item {
+            page-break-inside: avoid; /* מונע חיתוך ערך בין עמודים */
+            border-bottom: 1px dotted #ccc; /* קו עדין להפרדה */
+            padding-bottom: 5px;
+        }
+
+        .value-name {
+            font-weight: bold;
+            font-size: 1.1em;
+            display: block;
+            margin-bottom: 3px;
+            color: #2e7d32; /* ירוק כהה עדין לכותרת */
+        }
+
+        .value-def {
+            font-size: 0.95em;
+            text-align: justify;
+            color: #333;
+        }
+
+        /* כפתור הדפסה - מוסתר בהדפסה */
+        .no-print {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        
+        button {
+            padding: 10px 20px;
+            background: #333;
+            color: white;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+
+        /* הגדרות מדויקות להדפסה על עמוד אחד */
+        @media print {
+            @page {
+                margin: 10mm; /* שוליים צרים */
+                size: A4;
+            }
+            body { margin: 0; padding: 0; }
+            .no-print { display: none; }
+            .page-container { width: 100%; max-width: none; }
+            .value-name { color: black; text-decoration: underline; } /* שחור להדפסה */
+            .values-grid { row-gap: 10px; }
+            h1 { margin-bottom: 15px; margin-top: 0; font-size: 1.5em; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="no-print">
+    <button onclick="window.print()">שמור כ-PDF / הדפס (עמוד אחד)</button>
+</div>
+
+<div class="page-container">
+    <h1>מאגר ערכים והגדרות</h1>
+
+    <div class="values-grid">
+        
+        <!-- רשימה מקורית -->
+        <div class="value-item">
+            <span class="value-name">אכפתיות</span>
+            <span class="value-def">דאגה או מעורבות שהאדם מגלה ביחס לסביבתו, למצבה או למתרחש בה. אזרחות טובה, הרגש של מי שאכפת לו.</span>
+        </div>
+
+        <div class="value-item">
+            <span class="value-name">אנושיות</span>
+            <span class="value-def">רחמנות, אהדה, התחשבות, יחס טוב וחם לזולת.</span>
+        </div>
+
+        <div class="value-item">
+            <span class="value-name">הקרבה</span>
+            <span class="value-def">ויתור על דבר יקר וחשוב מאוד למען מטרה מסוימת.</span>
+        </div>
+
+        <div class="value-item">
+            <span class="value-name">מסירות</span>
+            <span class="value-def">נאמנות למשהו או למישהו ומוכנות לפעול ולהתאמץ למענו.</span>
+        </div>
+
+        <div class="value-item">
+            <span class="value-name">כבוד</span>
+            <span class="value-def">רגש של הערכה או הערצה ויחס של אדיבות כלפי אדם.</span>
+        </div>
+
+        <div class="value-item">
+            <span class="value-name">קבלת השונה</span>
+            <span class="value-def">קבלת תכונה או מצב של משהו שונה, נבדל ממני.</span>
+        </div>
+
+        <div class="value-item">
+            <span class="value-name">התחשבות</span>
+            <span class="value-def">רגישות לרגשותיו של הזולת ולצרכיו.</span>
+        </div>
+
+        <div class="value-item">
+            <span class="value-name">הערכה</span>
+            <span class="value-def">הכרה בערכו של דבר, בטיבו ובאיכותו. האופן בו אדם מעריך את זולתו, הדעה שיש לאדם על האחר.</span>
+        </div>
+
+        <div class="value-item">
+            <span class="value-name">מצוינות</span>
+            <span class="value-def">הצטיינות כתכונה אופיינית, כערך או כאידיאל לשאוף אליו.</span>
+        </div>
+
+        <div class="value-item">
+            <span class="value-name">שאפתנות</span>
+            <span class="value-def">שאיפה עזה ועקשנות להישגים רבים וגדולים, תשוקה עזה להצליח.</span>
+        </div>
+
+        <div class="value-item">
+            <span class="value-name">הישגיות</span>
+            <span class="value-def">שאפתנות, רצון עז להצליח ולהגיע להישגים מדידים.</span>
+        </div>
+
+        <!-- תוספות רלוונטיות לדילמה -->
+        <div class="value-item">
+            <span class="value-name">אמת / יושרה</span>
+            <span class="value-def">אמירת הדברים כהווייתם, הימנעות משקר, עמידה מאחורי המילה שלי ונאמנות לצו המצפון.</span>
+        </div>
+
+        <div class="value-item">
+            <span class="value-name">שייכות / קונפורמיות</span>
+            <span class="value-def">הרצון להיות חלק מהקבוצה, להיות "כמו כולם", לא לבלוט כחריג ולהתאים את עצמי לנורמות.</span>
+        </div>
+
+        <div class="value-item">
+            <span class="value-name">ביטחון אישי / כלכלי</span>
+            <span class="value-def">הצורך הבסיסי לשמור על הקיום, הפרנסה, מקום העבודה והמעמד האישי מפני פגיעה.</span>
+        </div>
+
+        <div class="value-item">
+            <span class="value-name">אחריות</span>
+            <span class="value-def">נכונות לשאת בתוצאות המעשים וההחלטות, ומילוי חובות התפקיד בצורה הטובה ביותר.</span>
+        </div>
+
+    </div>
+</div>
+
+</body>
+</html>
