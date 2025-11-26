@@ -1,0 +1,664 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>חידון: למה שנסבול בגללו?</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            /* שינוי פלטת הצבעים לרגועה יותר */
+            --primary-color: #5784ba;   /* כחול פלדה רגוע */
+            --secondary-color: #76c7c0; /* טורקיז עדין */
+            --success-color: #4ade80;   /* ירוק רך */
+            --error-color: #f87171;     /* אדום רך */
+            
+            /* רקע "עננים" רגוע במקום הסגול החזק */
+            --bg-gradient: linear-gradient(135deg, #e0eafc 0%, #cfdef3 100%);
+            
+            --card-bg: rgba(255, 255, 255, 0.9);
+            --text-color: #334155;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Rubik', sans-serif;
+            background: var(--bg-gradient);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            color: var(--text-color);
+        }
+
+        .container {
+            width: 100%;
+            max-width: 800px;
+            background: var(--card-bg);
+            border-radius: 24px;
+            padding: 40px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1); /* צל רך יותר */
+            position: relative;
+            overflow: hidden;
+            border: 1px solid rgba(255,255,255,0.6);
+        }
+
+        h1 {
+            text-align: center;
+            color: #2c3e50;
+            margin-bottom: 10px;
+            font-size: 2.2em;
+            font-weight: 700;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #64748b;
+            margin-bottom: 30px;
+            font-size: 1.1em;
+        }
+
+        /* Progress Bar */
+        .progress-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            font-size: 0.9rem;
+            color: #64748b;
+            font-weight: 500;
+        }
+
+        .progress-container {
+            height: 10px;
+            background: #e2e8f0;
+            border-radius: 5px;
+            margin-bottom: 30px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+            width: 0%;
+            transition: width 0.4s ease;
+            border-radius: 5px;
+        }
+
+        /* Question Card */
+        .question-card {
+            animation: fadeIn 0.6s ease;
+        }
+
+        .question-category {
+            display: inline-block;
+            padding: 6px 14px;
+            border-radius: 50px;
+            font-size: 0.85em;
+            font-weight: 700;
+            margin-bottom: 15px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        /* צבעי קטגוריות פסטליים יותר */
+        .category-social { background: #e0f2fe; color: #0369a1; }
+        .category-ai { background: #f3e8ff; color: #7e22ce; }
+        .category-mixed { background: #fce7f3; color: #be185d; }
+
+        .question-text {
+            font-size: 1.4em;
+            color: #1e293b;
+            margin-bottom: 25px;
+            line-height: 1.4;
+            font-weight: 500;
+        }
+
+        /* Options */
+        .options {
+            display: grid;
+            gap: 12px;
+        }
+
+        .option {
+            background: white;
+            border: 2px solid #e2e8f0;
+            border-radius: 16px;
+            padding: 16px 20px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 1.05em;
+            position: relative;
+            color: #475569;
+        }
+
+        .option:hover {
+            border-color: var(--primary-color);
+            background: #f8fafc;
+            transform: translateY(-2px);
+        }
+
+        .option.correct {
+            background: #dcfce7;
+            border-color: var(--success-color);
+            color: #14532d;
+        }
+
+        .option.incorrect {
+            background: #fee2e2;
+            border-color: var(--error-color);
+            color: #7f1d1d;
+        }
+
+        .option.disabled {
+            pointer-events: none;
+            opacity: 0.8;
+        }
+
+        /* Feedback */
+        .feedback {
+            margin-top: 20px;
+            padding: 20px;
+            border-radius: 12px;
+            font-size: 1em;
+            line-height: 1.5;
+            display: none;
+            animation: slideUp 0.3s ease;
+        }
+
+        .feedback.correct {
+            background: #f0fdf4;
+            color: #15803d;
+            border-right: 4px solid var(--success-color);
+        }
+
+        .feedback.incorrect {
+            background: #fef2f2;
+            color: #b91c1c;
+            border-right: 4px solid var(--error-color);
+        }
+
+        /* Next Button */
+        .next-button {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            border: none;
+            padding: 16px 32px;
+            border-radius: 12px;
+            font-size: 1.1em;
+            cursor: pointer;
+            display: none;
+            margin: 25px auto 0;
+            font-weight: bold;
+            transition: transform 0.2s, box-shadow 0.2s;
+            box-shadow: 0 4px 15px rgba(87, 132, 186, 0.2);
+            width: 100%;
+        }
+
+        .next-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(87, 132, 186, 0.3);
+            opacity: 0.95;
+        }
+
+        /* Results */
+        .results {
+            display: none;
+            text-align: center;
+        }
+
+        .results-score-circle {
+            width: 150px;
+            height: 150px;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 3em;
+            font-weight: bold;
+            margin: 0 auto 20px;
+            box-shadow: 0 10px 25px rgba(87, 132, 186, 0.25);
+        }
+
+        .results-message {
+            font-size: 1.4em;
+            color: #334155;
+            margin-bottom: 30px;
+        }
+
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .summary-card {
+            background: #f8fafc;
+            padding: 15px;
+            border-radius: 12px;
+            text-align: center;
+            border: 1px solid #e2e8f0;
+        }
+
+        .summary-card strong {
+            display: block;
+            color: #64748b;
+            margin-bottom: 5px;
+            font-size: 0.9em;
+        }
+
+        .summary-card span {
+            font-size: 1.2em;
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+
+        .restart-button {
+            background: white;
+            color: var(--primary-color);
+            border: 2px solid var(--primary-color);
+            padding: 12px 30px;
+            border-radius: 10px;
+            font-size: 1.1em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .restart-button:hover {
+            background: #f1f5f9;
+        }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        
+        @media (max-width: 600px) {
+            .container { padding: 20px; }
+            h1 { font-size: 1.8em; }
+            .question-text { font-size: 1.2em; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div id="quiz-view">
+            <h1>🎯 חידון: למה שנסבול בגללו?</h1>
+            <p class="subtitle">שילוב למידה חברתית-רגשית וכשירות בינה מלאכותית</p>
+
+            <div class="progress-header">
+                <span id="question-indicator">שאלה 1 מתוך 17</span>
+                <span id="score-indicator">ניקוד: 0</span>
+            </div>
+            <div class="progress-container">
+                <div class="progress-fill" id="progressFill"></div>
+            </div>
+
+            <div id="quizContainer"></div>
+            <button class="next-button" id="nextButton">שאלה הבאה ←</button>
+        </div>
+
+        <div class="results" id="results">
+            <h2>סיכום התוצאות</h2>
+            <div class="results-score-circle" id="finalScoreDisplay"></div>
+            <div class="results-message" id="resultsMessage"></div>
+            
+            <div class="summary-grid">
+                <div class="summary-card">
+                    <strong>חברתי-רגשי</strong>
+                    <span id="socialScore"></span>
+                </div>
+                <div class="summary-card">
+                    <strong>בינה מלאכותית</strong>
+                    <span id="aiScore"></span>
+                </div>
+                <div class="summary-card">
+                    <strong>שאלות משולבות</strong>
+                    <span id="mixedScore"></span>
+                </div>
+            </div>
+
+            <button class="restart-button" onclick="location.reload()">🔄 התחל מחדש</button>
+        </div>
+    </div>
+
+    <script>
+        const questions = [
+            {
+                category: "social",
+                question: "מדוע יוגב עזב את ארוחת הבוקר?",
+                options: [
+                    "כי לא היה רעב",
+                    "כי יוני הביא במבה",
+                    "כי הרגיש נפגע מהתייחסות החברים לאלרגיה שלו",
+                    "כי רצה ללכת לספרייה"
+                ],
+                correct: 2,
+                explanation: "יוגב הרגיש נפגע מהתייחסות החברים שאמרו 'למה שנסבול בגללו', והרגיש שהוא נטל על הכיתה."
+            },
+            {
+                category: "ai",
+                question: "מה הבוט Q לא הצליח להבין בתחילה?",
+                options: [
+                    "את הרגשות של יוגב והבעות הפנים שלו",
+                    "את העובדות של הסיפור",
+                    "מי הביא במבה",
+                    "מה זה אלרגיה"
+                ],
+                correct: 0,
+                explanation: "הבוט התקשה להבין את ההיבט הרגשי - איך יוגב הרגיש פגוע. זו אחת ממגבלות הבינה המלאכותית."
+            },
+            {
+                category: "social",
+                question: "איזו מיומנות חברתית-רגשית חשובה במיוחד בסיפור?",
+                options: [
+                    "תכנון וארגון - יכולת לקבוע מטרות ולתכנן פעילויות",
+                    "אמפתיה והבנת האחר - יכולת לראות את העולם מנקודת המבט של אחרים",
+                    "ויסות עצמי - יכולת לנהל רגשות ותגובות במצבים מאתגרים",
+                    "יצירתיות - יכולת למצוא פתרונות חדשים ומקוריים"
+                ],
+                correct: 1,
+                explanation: "אמפתיה - היכולת לראות את העולם מנקודת המבט של יוגב ולהבין איך הוא מרגיש, היא המיומנות המרכזית."
+            },
+            {
+                category: "social",
+                question: "סיטואציה: בהפסקה שמעת ילד אומר לחבר שלך 'אתה תמיד טועה במבחנים'. איך כדאי להגיב?",
+                options: [
+                    "להתעלם ולא להתערב",
+                    "לצעוק על הילד שאמר את זה",
+                    "להתקרב לחבר שלך ולשאול אותו איך הוא מרגיש, ולהציע לדבר עם המורה יחד",
+                    "לספר לכולם מה שקרה"
+                ],
+                correct: 2,
+                explanation: "תמיכה אמיתית פירושה להיות שם בשביל החבר, להקשיב לו, ולעזור לו למצוא פתרון בריא למצב."
+            },
+            {
+                category: "ai",
+                question: "מהו 'פרומפט'?",
+                options: [
+                    "שגיאה בבינה מלאכותית",
+                    "תוכנה חדשה",
+                    "סוג של בוט",
+                    "הנחיה שאנחנו נותנים לבוט כדי לקבל תשובה טובה"
+                ],
+                correct: 3,
+                explanation: "פרומפט הוא ההנחיה או הבקשה שאנחנו כותבים לבוט, וככל שהיא ברורה יותר - התשובה תהיה טובה יותר."
+            },
+            {
+                category: "social",
+                question: "סיטואציה: תכננתם יום הולדת לחברה בכיתה. גיליתם שיש ילד שאלרגי לשוקולד. מה עושים?",
+                options: [
+                    "מביאים שוקולד רק לילדים שלא אלרגיים",
+                    "אומרים לילד האלרגי שלא יבוא למסיבה",
+                    "בוחרים חטיפים אחרים שכולם יכולים לאכול, או מביאים אופציה ללא שוקולד",
+                    "מביאים שוקולד ושמים אותו רחוק מהילד האלרגי"
+                ],
+                correct: 2,
+                explanation: "התחשבות אמיתית פירושה למצוא פתרון שכולם יכולים להשתתף בו. כולם ראויים להרגיש חלק מהחגיגה!"
+            },
+            {
+                category: "mixed",
+                question: "למה חשוב ללמד את הבוט על הרגשות בסיפור?",
+                options: [
+                    "כי הבוט לא אוהב סיפורים",
+                    "כי בוטים לא מבינים רגשות מעצמם והם צריכים מידע ברור",
+                    "כי הבוט מתבלבל",
+                    "כי הבוט לא יודע לקרוא"
+                ],
+                correct: 1,
+                explanation: "בוטים לא 'מרגישים' ולא תמיד מזהים רגשות. לכן אנחנו צריכים להסביר להם בבירור מה קרה ברמה הרגשית."
+            },
+            {
+                category: "ai",
+                question: "רוצים לבקש מהבוט עזרה בפתרון סכסוך בין חברים. איזה פרומפט הכי טוב?",
+                options: [
+                    "'עזור לי'",
+                    "'יש בעיה בכיתה'",
+                    "'שני חברים שלי, דני ותומר, רבו על מי ישחק עם הכדור בהפסקה. דני כועס ותומר עצוב. תציע 3 פתרונות איך הם יכולים להגיע להסכמה.'",
+                    "'מה עושים כשחברים רבים?'"
+                ],
+                correct: 2,
+                explanation: "פרומפט טוב כולל: הקשר (מי רב ועל מה), תיאור רגשי (איך כל אחד מרגיש), ומשימה ברורה (כמה פתרונות אנו רוצים)."
+            },
+            {
+                category: "social",
+                question: "מה המשמעות של 'התחשבות בזולת'?",
+                options: [
+                    "לא לחשוב על עצמי בכלל",
+                    "לעשות תמיד מה שאחרים רוצים",
+                    "למצוא איזון בין הצרכים שלי לצרכים של אחרים",
+                    "לתת לאחרים להחליט בשבילי"
+                ],
+                correct: 2,
+                explanation: "התחשבות היא מציאת איזון - גם הצרכים שלי וגם של האחר חשובים, ואנחנו מחפשים פתרון שמתחשב בכולם."
+            },
+            {
+                category: "ai",
+                question: "מה צריך לכלול בפרומפט טוב?",
+                options: [
+                    "מילים מסובכות",
+                    "רק את המסקנה",
+                    "רק את השאלה",
+                    "הקשר, משימה ברורה, ותיאור התוצר הרצוי"
+                ],
+                correct: 3,
+                explanation: "פרומפט טוב כולל רקע (הקשר), הסבר מה אנחנו רוצים (משימה), ואיך אנחנו רוצים את התשובה (תיאור תוצר)."
+            },
+            {
+                category: "social",
+                question: "סיטואציה: בשיעור התעמלות אתם בוחרים קבוצות. נשאר ילד אחד שאף אחד לא בחר בו. מה עושים?",
+                options: [
+                    "ממשיכים במשחק, זו אחריות המורה",
+                    "מזמינים אותו לקבוצה שלכם ושואלים איזה תפקיד הוא אוהב",
+                    "אומרים למורה בסוף השיעור",
+                    "מרגישים רע אבל לא עושים כלום"
+                ],
+                correct: 1,
+                explanation: "פעולה אקטיבית של הכלה - להזמין ולשאול - מראה מודעות חברתית והתנהלות חברתית חיובית."
+            },
+            {
+                category: "mixed",
+                question: "איך הבוט Q עזר בפתרון הבעיה החברתית?",
+                options: [
+                    "הוא הבין הכל בעצמו",
+                    "הוא עזר לנו לחשוב על פתרונות אחרי שהסברנו לו את המצב הרגשי",
+                    "הוא לא עזר בכלל",
+                    "הוא פתר את הבעיה לבד"
+                ],
+                correct: 1,
+                explanation: "הבוט לא פתר לבד - אנחנו הסברנו לו את הרגשות, ואז הוא עזר לנו לחשוב על פתרונות אפשריים."
+            },
+            {
+                category: "ai",
+                question: "איך בודקים אם הבוט נתן תשובה טובה?",
+                options: [
+                    "שואלים את המורה",
+                    "לא בודקים",
+                    "קוראים בעיון ושואלים: האם זה מדויק? האם זה עונה על השאלה? האם זה הגיוני?",
+                    "מאמינים לו תמיד"
+                ],
+                correct: 2,
+                explanation: "תמיד צריך להפעיל חשיבה ביקורתית! בוטים טועים לפעמים, ואנחנו צריכים לבדוק אם התשובה מדויקת והגיונית."
+            },
+            {
+                category: "social",
+                question: "סיטואציה: חברה שלך שיתפה אותך בסוד אישי. ילד אחר שואל אותך מה שמעת. מה עושים?",
+                options: [
+                    "מספרים כי הוא שאל יפה",
+                    "אומרים 'זה סוד, אני לא יכול לספר' ושומרים על האמון של החברה",
+                    "מספרים רק חלק מהסוד",
+                    "מבקשים מהחברה אישור לספר"
+                ],
+                correct: 1,
+                explanation: "שמירה על אמון היא ערך חשוב ביחסים. כשמישהו סומך עלינו עם סוד, אנחנו צריכים לכבד את זה."
+            },
+            {
+                category: "mixed",
+                question: "מה למדנו מהשילוב בין הסיפור של יוגב לבין העבודה עם הבוט?",
+                options: [
+                    "שבוטים יכולים להבין רגשות",
+                    "שלא צריך בוטים",
+                    "שבוטים חכמים יותר מבני אדם",
+                    "שטכנולוגיה יכולה לעזור לנו לפתור בעיות, אבל אנחנו צריכים להוסיף את ההבנה האנושית"
+                ],
+                correct: 3,
+                explanation: "הלמידה המרכזית: טכנולוגיה היא כלי עוצמתי, אבל היא צריכה אותנו - את האמפתיה, ההבנה והחשיבה האנושית שלנו."
+            },
+            {
+                category: "ai",
+                question: "רוצים לבקש מהבוט עזרה לכתוב ברכה ליום הולדת לחבר. איזה פרומפט הכי מועיל?",
+                options: [
+                    "'כתוב ברכה'",
+                    "'תכתוב ברכה ליום הולדת לחבר שלי אלון, שאוהב כדורגל ושחקן במכבי חיפה. הוא בן 10 והוא חבר מצחיק ואהוב. אני רוצה ברכה חמה ואישית עם הומור.'",
+                    "'איך כותבים ברכה?'",
+                    "'יום הולדת לחבר'"
+                ],
+                correct: 1,
+                explanation: "פרומפט מפורט עם שם, תחביבים, גיל, תכונות אופי ובקשה ברורה יעזור לבוט ליצור ברכה מותאמת!"
+            },
+            {
+                category: "social",
+                question: "איך אפשר לתמוך בחבר שמרגיש כמו יוגב?",
+                options: [
+                    "להתעלם",
+                    "להקשיב לו, להראות שאכפת לנו, ולהציע פתרונות שיגרמו לו להרגיש חלק מהכיתה",
+                    "לספר לכולם",
+                    "להגיד לו שהוא מגזים"
+                ],
+                correct: 1,
+                explanation: "תמיכה אמיתית כוללת הקשבה, אמפתיה, והצעת פתרונות שעוזרים לחבר להרגיש מוערך וחלק מהקבוצה."
+            }
+        ];
+
+        let currentQuestion = 0;
+        let score = 0;
+        let categoryScores = { social: {correct: 0, total: 0}, ai: {correct: 0, total: 0}, mixed: {correct: 0, total: 0} };
+        let answered = false;
+
+        function updateProgress() {
+            const progress = ((currentQuestion) / questions.length) * 100;
+            document.getElementById('progressFill').style.width = progress + '%';
+            document.getElementById('question-indicator').textContent = `שאלה ${currentQuestion + 1} מתוך ${questions.length}`;
+            document.getElementById('score-indicator').textContent = `ניקוד: ${score}`;
+        }
+
+        function getCategoryInfo(category) {
+            const info = {
+                'social': { name: 'חינוך חברתי-רגשי', class: 'category-social' },
+                'ai': { name: 'בינה מלאכותית', class: 'category-ai' },
+                'mixed': { name: 'שילוב', class: 'category-mixed' }
+            };
+            return info[category];
+        }
+
+        function displayQuestion() {
+            if (currentQuestion >= questions.length) {
+                showResults();
+                return;
+            }
+
+            const q = questions[currentQuestion];
+            const container = document.getElementById('quizContainer');
+            answered = false;
+
+            const catInfo = getCategoryInfo(q.category);
+            
+            container.innerHTML = `
+                <div class="question-card">
+                    <span class="question-category ${catInfo.class}">${catInfo.name}</span>
+                    <div class="question-text">${q.question}</div>
+                    <div class="options">
+                        ${q.options.map((opt, index) => `
+                            <div class="option" onclick="selectAnswer(${index}, this)">
+                                ${opt}
+                            </div>
+                        `).join('')}
+                    </div>
+                    <div class="feedback" id="feedback"></div>
+                </div>
+            `;
+
+            document.getElementById('nextButton').style.display = 'none';
+            updateProgress();
+        }
+
+        function selectAnswer(selected, element) {
+            if (answered) return;
+            
+            answered = true;
+            const q = questions[currentQuestion];
+            const options = document.querySelectorAll('.option');
+            const feedback = document.getElementById('feedback');
+            
+            categoryScores[q.category].total++;
+            
+            options.forEach(opt => opt.classList.add('disabled'));
+
+            if (selected === q.correct) {
+                score++;
+                categoryScores[q.category].correct++;
+                element.classList.add('correct');
+                feedback.className = 'feedback correct';
+                feedback.innerHTML = `<strong>✨ תשובה נכונה!</strong><br>${q.explanation}`;
+            } else {
+                element.classList.add('incorrect');
+                options[q.correct].classList.add('correct'); // Show correct answer
+                feedback.className = 'feedback incorrect';
+                feedback.innerHTML = `<strong>❌ לא נכון.</strong><br>${q.explanation}`;
+            }
+            
+            feedback.style.display = 'block';
+            document.getElementById('nextButton').style.display = 'block';
+            
+            // עדכון ניקוד בזמן אמת בתצוגה למעלה
+            document.getElementById('score-indicator').textContent = `ניקוד: ${score}`;
+        }
+
+        function showResults() {
+            document.getElementById('quiz-view').style.display = 'none';
+            const results = document.getElementById('results');
+            const percentage = Math.round((score / questions.length) * 100);
+            
+            let message;
+            if (percentage >= 90) {
+                message = 'מצוין! הבנת מצוין את הלמידה החברתית וכשירות הבינה המלאכותית!';
+            } else if (percentage >= 70) {
+                message = 'יפה מאוד! יש לך הבנה טובה של הנושאים.';
+            } else if (percentage >= 50) {
+                message = 'יפה! אתה בדרך הנכונה, המשך לתרגל.';
+            } else {
+                message = 'כדאי לחזור על החומר ולנסות שוב!';
+            }
+
+            document.getElementById('finalScoreDisplay').textContent = `${percentage}%`;
+            document.getElementById('resultsMessage').textContent = message;
+
+            document.getElementById('socialScore').textContent = 
+                `${categoryScores.social.correct}/${categoryScores.social.total}`;
+            document.getElementById('aiScore').textContent = 
+                `${categoryScores.ai.correct}/${categoryScores.ai.total}`;
+            document.getElementById('mixedScore').textContent = 
+                `${categoryScores.mixed.correct}/${categoryScores.mixed.total}`;
+
+            results.style.display = 'block';
+        }
+
+        document.getElementById('nextButton').addEventListener('click', () => {
+            currentQuestion++;
+            displayQuestion();
+        });
+
+        // Start the quiz
+        displayQuestion();
+    </script>
+</body>
+</html>
