@@ -58,10 +58,9 @@
         }
 
         .logo-img {
-            /* הגדרות גודל ללוגו החדש */
             max-width: 100%;
             height: auto;
-            max-height: 120px; /* גובה מקסימלי כדי שלא ישתלט על המסך */
+            max-height: 120px;
             object-fit: contain;
             transition: transform 0.3s ease;
         }
@@ -73,7 +72,7 @@
         /* Header */
         .header {
             text-align: center;
-            margin-bottom: 50px;
+            margin-bottom: 30px;
         }
 
         .header h1 {
@@ -90,6 +89,28 @@
             font-size: 1.2em;
             color: var(--text-muted);
             font-weight: 300;
+            margin-bottom: 20px;
+        }
+
+        /* Buttons */
+        .action-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: var(--accent-gradient);
+            color: white;
+            text-decoration: none;
+            font-weight: 700;
+            padding: 12px 24px;
+            border-radius: 50px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 10px rgba(59, 130, 246, 0.3);
+            font-size: 1.1em;
+        }
+
+        .action-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 15px rgba(59, 130, 246, 0.4);
         }
 
         /* Intro Box */
@@ -427,6 +448,13 @@
         <div class="header">
             <h1>🌟 מסלול למידה משולב 🌟</h1>
             <p>למה שנסבול בגללו? - "לראות את האחר" - שילוב חינוך חברתי-רגשי וכשירות בינה מלאכותית</p>
+            
+            <!-- Presentation Link Button -->
+            <div style="margin-top: 20px;">
+                <a href="https://drive.google.com/file/d/19o2bLDhTIj6rGREFkiD3M_SSeQDFOa9w/view?usp=sharing" target="_blank" class="action-btn">
+                    📽️ למצגת המלווה את המסלול
+                </a>
+            </div>
         </div>
 
         <!-- Introduction Section -->
@@ -663,6 +691,13 @@
                         <div class="activity-item">• שאלות על כתיבת פרומפטים ועבודה עם AI</div>
                         <div class="activity-item">• משוב מיידי ולמידה מהטעויות</div>
                         <div class="activity-item">• סיכום ביצועים לפי קטגוריות</div>
+                    </div>
+                    
+                    <!-- Quiz Link Button -->
+                    <div style="text-align: center; margin-top: 25px;">
+                        <a href="https://ilanit17.github.io/agafyesodi/hidon.html" target="_blank" class="action-btn">
+                            🎮 למעבר לחידון
+                        </a>
                     </div>
                 </div>
             </div>
