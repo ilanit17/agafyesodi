@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>גלוית מסלולי Q2</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;700;900&display=swap');
+
+        :root {
+            --primary-color: #4facfe;
+            --secondary-color: #00f2fe;
+            --playground-color: #ff9a9e;
+            --playground-grad: #fecfef;
+            --text-color: #333;
+            --bg-color: #f0f2f5;
+        }
+
+        body {
+            font-family: 'Heebo', sans-serif;
+            background-color: var(--bg-color);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .postcard {
+            background: white;
+            width: 1000px;
+            max-width: 100%;
+            border-radius: 20px;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.15);
+            overflow: hidden;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            grid-template-rows: auto 1fr auto;
+            position: relative;
+        }
+
+        /* Header */
+        .header {
+            grid-column: 1 / -1;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            text-align: center;
+            position: relative;
+        }
+
+        .header h1 {
+            margin: 0;
+            font-size: 2.5rem;
+            font-weight: 900;
+            letter-spacing: 1px;
+        }
+
+        .header p {
+            margin: 5px 0 0;
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        /* Tracks Container */
+        .track {
+            padding: 30px;
+            display: flex;
+            flex-direction: column;
+            border-right: 1px dashed #ddd;
+        }
+
+        .track:last-child {
+            border-right: none;
+        }
+
+        .track-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .fast-track-title { color: #0061ff; }
+        .playground-title { color: #ff6b6b; }
+
+        .tag {
+            font-size: 0.8rem;
+            padding: 4px 8px;
+            border-radius: 12px;
+            color: white;
+            font-weight: bold;
+            margin-right: auto;
+        }
+        
+        .tag-fast { background: #0061ff; }
+        .tag-play { background: #ff6b6b; }
+
+        .info-block {
+            margin-bottom: 20px;
+        }
+
+        .info-block h3 {
+            font-size: 1.1rem;
+            margin-bottom: 8px;
+            border-bottom: 2px solid #eee;
+            padding-bottom: 5px;
+        }
+
+        ul {
+            margin: 0;
+            padding-right: 20px;
+            line-height: 1.5;
+            font-size: 0.95rem;
+            color: #555;
+        }
+
+        li {
+            margin-bottom: 6px;
+        }
+
+        /* Playground specific grid */
+        .challenges-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .challenge-card {
+            background: #fff0f0;
+            padding: 10px;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            border: 1px solid #ffdede;
+        }
+
+        .challenge-card.must {
+            grid-column: 1 / -1;
+            background: #fff5e6;
+            border-color: #ffe0b2;
+            font-weight: bold;
+        }
+
+        /* Footer / Teacher Section */
+        .footer {
+            grid-column: 1 / -1;
+            background: #f9f9f9;
+            padding: 20px;
+            border-top: 4px solid #333;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.9rem;
+        }
+
+        .teacher-role {
+            flex: 2;
+        }
+
+        .certification {
+            flex: 1;
+            text-align: left;
+            font-weight: bold;
+            color: #27ae60;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            gap: 10px;
+        }
+
+        .stamp {
+            border: 3px solid #27ae60;
+            color: #27ae60;
+            padding: 5px 15px;
+            border-radius: 5px;
+            transform: rotate(-5deg);
+            display: inline-block;
+            font-size: 1.2rem;
+            font-weight: 900;
+            opacity: 0.8;
+        }
+
+        @media (max-width: 768px) {
+            .postcard {
+                grid-template-columns: 1fr;
+            }
+            .track {
+                border-right: none;
+                border-bottom: 1px dashed #ddd;
+            }
+            .footer {
+                flex-direction: column;
+                gap: 15px;
+                text-align: center;
+            }
+            .certification {
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="postcard">
+        <!-- Header -->
+        <div class="header">
+            <h1>מסע אל הבינה: לומדים עם Q2</h1>
+            <p>שני מסלולי למידה חדשניים לרכישת כשירות בינה מלאכותית</p>
+        </div>
+
+        <!-- Left Column: Fast Track -->
+        <div class="track">
+            <div class="track-title fast-track-title">
+                🚀 המסלול המהיר
+                <span class="tag tag-fast">30 דקות | עצמאי</span>
+            </div>
+            
+            <div class="info-block">
+                <h3>🎯 המטרה</h3>
+                <p>חקר עצמאי של נושא אישי תוך שימוש בבינה מלאכותית, זיהוי הטיות ופיתוח חשיבה ביקורתית.</p>
+            </div>
+
+            <div class="info-block">
+                <h3>👣 מהלך האתגר</h3>
+                <ul>
+                    <li><strong>בחירה:</strong> זיהוי AI ביום-יום ובחירת נושא עניין.</li>
+                    <li><strong>חקר:</strong> ניסוח שאלות וכתיבת פרומפטים מדויקים.</li>
+                    <li><strong>ביקורתיות:</strong> זיהוי מידע מוטה והפעלת שיקול דעת.</li>
+                    <li><strong>פתרון בעיות:</strong> (לחט"ב ותיכון) הצעת פתרונות לבעיה חברתית.</li>
+                    <li><strong>רפלקציה:</strong> הפקת לקחים ודילמות אתיות.</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Right Column: Playground -->
+        <div class="track">
+            <div class="track-title playground-title">
+                🎡 מגרש המשחקים
+                <span class="tag tag-play">מודולרי | חוויתי</span>
+            </div>
+
+            <div class="info-block">
+                <h3>🧩 מבנה המסלול</h3>
+                <p>אתגר חובה + בחירה באתגר אחד מתוך שלושה.</p>
+                
+                <div class="challenges-grid">
+                    <div class="challenge-card must">
+                        🛑 אתגר חובה: האם הבינה צודקת?<br>
+                        <span style="font-weight:normal">פיתוח ספקנות בריאה, אימות והצלבת מידע.</span>
+                    </div>
+                    
+                    <div class="challenge-card">
+                        🧠 <strong>ללמוד משהו חדש</strong><br>
+                        למידה מסתעפת ואישית בעזרת הבוט.
+                    </div>
+                    
+                    <div class="challenge-card">
+                        🎨 <strong>תמונה שווה אלף מילים</strong><br>
+                        (יסודי) יצירת תמונות (עד 3), דיוק פרומפט ויזואלי ואתיקה.
+                    </div>
+                    
+                    <div class="challenge-card">
+                        ✍️ <strong>לכתוב טוב יותר</strong><br>
+                        (יסודי) שיפור ניסוחים, זיקוק מסרים וכתיבה יצירתית.
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer: Teacher's Role -->
+        <div class="footer">
+            <div class="teacher-role">
+                <strong>👩‍🏫 תפקיד המורה:</strong><br>
+                לפני: וידוא ציוד (אוזניות, מחשב) והזדהות אחידה.<br>
+                במהלך: המורה אינו מעורב פעיל! התלמיד עובד עצמאית. המורה משמש כעוגן למתקשים.<br>
+                הגישה ל-Q2 דרך בית הספר הווירטואלי.
+            </div>
+            <div class="certification">
+                <div>
+                    בסיום הפעילות:<br>
+                    דיווח אוטומטי ב-LMS
+                </div>
+                <div class="stamp">הוסמך!</div>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>
