@@ -1,0 +1,1260 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>הוגנות בחינוך - כלי עבודה מלא</title>
+    <style>
+        :root {
+            /* Watercolor & Refined Palette */
+            --primary: #5D8AA8; /* Air Force Blue - Soft but strong */
+            --secondary: #8FBC8F; /* Dark Sea Green - Natural */
+            --accent: #E6B89C; /* Soft Peach/Clay */
+            --bg-body: #F9FAFB; /* Very neutral off-white */
+            --surface: #FFFFFF; 
+            --text-dark: #37474F; /* Blue Grey text instead of harsh black */
+            --text-light: #78909C;
+            --border-light: #ECEFF1;
+            
+            /* Specific Principle Colors (CSS Variables for general UI use) */
+            --color-care: #D48FA4;
+            --color-trust: #B39DDB;
+            --color-diversity: #9FA8DA;
+            --color-access: #90CAF9;
+            --color-trans: #81D4FA;
+            --color-qual: #80CBC4;
+            --color-flex: #A5D6A7;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: var(--bg-body);
+            min-height: 100vh;
+            padding: 30px;
+            direction: rtl;
+            color: var(--text-dark);
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            background: var(--surface);
+            border-radius: 16px;
+            box-shadow: 0 10px 40px rgba(93, 138, 168, 0.08); /* Soft colored shadow */
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            min-height: 85vh;
+            border: 1px solid rgba(0,0,0,0.02);
+        }
+        
+        .header {
+            background: white;
+            color: var(--text-dark);
+            padding: 45px 30px 30px 30px;
+            text-align: center;
+            border-bottom: 1px solid var(--border-light);
+            background-image: radial-gradient(circle at 10% 20%, rgba(212, 143, 164, 0.05) 0%, rgba(93, 138, 168, 0.05) 90%);
+        }
+        
+        .header h1 { 
+            font-size: 2.1em; 
+            margin-bottom: 12px; 
+            color: var(--primary);
+            font-weight: 700;
+            letter-spacing: -0.5px;
+        }
+        
+        .header p { color: var(--text-light); font-size: 1.15em; font-weight: 400; }
+        
+        /* Tabs */
+        .tabs {
+            display: flex;
+            background: white;
+            border-bottom: 1px solid var(--border-light);
+            position: sticky; top: 0; z-index: 100;
+            padding: 0 20px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.02);
+        }
+        
+        .tab {
+            flex: 1; 
+            padding: 22px; 
+            text-align: center; 
+            cursor: pointer;
+            font-weight: 600; 
+            color: #90A4AE; 
+            transition: all 0.4s ease;
+            border-bottom: 3px solid transparent;
+            font-size: 1.05em;
+        }
+        
+        .tab:hover { color: var(--primary); background: #F4F7F9; }
+        .tab.active { color: var(--primary); border-bottom-color: var(--primary); background: white; }
+        
+        .content { padding: 40px; display: none; animation: fadeIn 0.6s cubic-bezier(0.22, 1, 0.36, 1); }
+        .content.active { display: block; }
+        
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* Accordion Styles */
+        .accordion-item {
+            border: 1px solid var(--border-light);
+            border-radius: 12px;
+            margin-bottom: 20px;
+            overflow: hidden;
+            background: white;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.02);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .accordion-item:hover {
+            box-shadow: 0 8px 25px rgba(0,0,0,0.04);
+            transform: translateY(-2px);
+        }
+
+        .accordion-header {
+            padding: 20px 25px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: 600;
+            font-size: 1.25em;
+            color: white; 
+            letter-spacing: 0.5px;
+        }
+        
+        .accordion-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.5s ease-out;
+            background: #fff;
+        }
+
+        .accordion-item.open .accordion-content {
+            max-height: 8000px;
+            border-top: 1px solid var(--border-light);
+        }
+
+        .accordion-arrow { transition: transform 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55); opacity: 0.8; font-size: 0.85em; }
+        .accordion-item.open .accordion-arrow { transform: rotate(180deg); }
+
+        /* Learning Content Specifics */
+        .learning-inner { padding: 35px; }
+        .principle-def { 
+            font-style: italic; margin-bottom: 30px; font-size: 1.15em; color: var(--primary); 
+            background: #F8FBFD; padding: 25px; border-radius: 8px; border-right: 4px solid #CFD8DC;
+        }
+
+        .arena-section { 
+            margin-bottom: 35px; 
+            background: #ffffff; 
+            padding: 5px 0;
+        }
+        .arena-title { 
+            color: #546E7A; 
+            font-weight: 700; 
+            margin-bottom: 15px; 
+            font-size: 1.15em;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: #ECEFF1;
+            padding: 8px 16px;
+            border-radius: 20px;
+            display: inline-block;
+        }
+        .questions-list { list-style: none; padding-right: 15px; }
+        .questions-list li { 
+            position: relative; padding-right: 25px; margin-bottom: 14px; 
+            color: #546E7A; font-size: 1.05em;
+        }
+        .questions-list li::before { 
+            content: ""; 
+            width: 6px; height: 6px; 
+            background: var(--secondary); 
+            border-radius: 50%; 
+            position: absolute; right: 0; top: 11px; 
+        }
+
+        /* Practices Styles */
+        .practices-intro {
+            text-align: center; margin-bottom: 40px;
+            background: #F4F6F8;
+            padding: 30px; border-radius: 12px; color: #546E7A;
+            border: 1px solid white;
+        }
+        .practices-intro h3 { color: var(--primary); margin-bottom: 12px; font-size: 1.3em; }
+
+        .practice-card {
+            margin: 20px;
+            border: 1px solid var(--border-light);
+            border-radius: 12px;
+            overflow: hidden;
+            background: #fff;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .practice-header {
+            padding: 22px 25px;
+            background: #ffffff;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: background 0.2s;
+        }
+        
+        .practice-header:hover { background: #FAFAFA; }
+
+        .practice-info { flex: 1; padding-left: 20px; }
+        .practice-title { font-weight: 700; font-size: 1.15em; color: var(--text-dark); margin-bottom: 6px; }
+        .practice-desc { color: #78909C; font-size: 0.95em; }
+        
+        /* Explicit Visual Cue - Refined */
+        .practice-expand-hint {
+            display: inline-block;
+            font-size: 0.75em;
+            color: #78909C;
+            background: #ECEFF1;
+            padding: 4px 12px;
+            border-radius: 20px;
+            margin-top: 8px;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+
+        .toggle-icon {
+            width: 32px; height: 32px;
+            border-radius: 50%;
+            background: #F5F5F5;
+            display: flex; align-items: center; justify-content: center;
+            color: #90A4AE;
+            margin-right: 15px;
+            font-size: 0.85em;
+            transition: all 0.3s ease;
+        }
+
+        .practice-card.open .toggle-icon { transform: rotate(180deg); background: var(--primary); color: white; }
+
+        .checkbox-wrapper {
+            width: 28px; height: 28px;
+            border: 2px solid #CFD8DC; border-radius: 8px;
+            display: flex; align-items: center; justify-content: center;
+            background: white; margin-left: 20px; transition: all 0.2s;
+            flex-shrink: 0;
+        }
+
+        .practice-card.selected .checkbox-wrapper { background: var(--secondary); border-color: var(--secondary); color: white; }
+        .practice-card.selected .checkbox-wrapper::after { content: '✓'; font-weight: 700; font-size: 16px; }
+        .practice-card.selected { border: 1px solid var(--secondary); box-shadow: 0 8px 25px rgba(143, 188, 143, 0.2); }
+        .practice-card.selected .practice-header { background: #F1F8E9; }
+
+        .practice-body {
+            padding: 30px;
+            display: none;
+            border-top: 1px solid var(--border-light);
+            background: #FCFCFC;
+        }
+        
+        .practice-card.open .practice-body { display: block; animation: fadeSlide 0.4s ease; }
+        @keyframes fadeSlide { from { opacity: 0; transform: translateY(-5px); } to { opacity: 1; transform: translateY(0); } }
+
+        .how-to-list { margin-top: 20px; list-style: none; padding-right: 0; }
+        .how-to-list li { 
+            background: white; margin-bottom: 10px; padding: 16px 20px; 
+            border-radius: 8px; border-right: 4px solid #CFD8DC;
+            font-size: 1em; color: #546E7A;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.015);
+        }
+        
+        .user-example { border-right-color: var(--secondary) !important; background: #F9FBE7 !important; color: #33691E !important; }
+
+        .add-box { display: flex; gap: 15px; margin-top: 25px; }
+        .add-input { 
+            flex: 1; padding: 14px; border: 1px solid #E0E0E0; border-radius: 8px; 
+            outline: none; transition: border 0.3s; font-size: 0.95em; background: white;
+        }
+        .add-input:focus { border-color: var(--primary); }
+        .add-btn { 
+            background: var(--primary); color: white; border: none; 
+            padding: 0 25px; border-radius: 8px; cursor: pointer; 
+            font-weight: 600; transition: background 0.2s; font-size: 0.95em;
+        }
+        .add-btn:hover { background: #4a708b; }
+
+        /* Action Plan Print */
+        .plan-container { 
+            border: 1px solid #f0f0f0; padding: 60px; background: white; 
+            min-height: 600px; border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.02);
+        }
+        .plan-item { margin-bottom: 40px; padding-bottom: 30px; border-bottom: 1px solid #f0f0f0; }
+        .plan-item h3 { font-size: 1.3em; color: #455A64; margin-bottom: 10px; }
+        .plan-actions li { font-size: 1.05em; color: #546E7A; margin-top: 8px; position: relative; padding-right: 20px; }
+        .plan-actions li::before { content: "•"; color: #B0BEC5; font-size: 1.2em; position: absolute; right: 0; top: -3px; }
+
+        .btn-print { 
+            background: var(--primary); color: white; border: none; 
+            padding: 16px 45px; font-size: 1.1em; border-radius: 50px; 
+            cursor: pointer; display: block; margin: 40px auto; 
+            box-shadow: 0 10px 20px rgba(93, 138, 168, 0.2);
+            transition: transform 0.2s, box-shadow 0.2s;
+            font-weight: 600;
+        }
+        .btn-print:hover { transform: translateY(-2px); box-shadow: 0 15px 30px rgba(93, 138, 168, 0.3); }
+
+        /* Glossary */
+        .glossary-card {
+            background: white; padding: 25px; border-radius: 12px; 
+            border: 1px solid #f5f5f5; 
+            box-shadow: 0 4px 15px rgba(0,0,0,0.02); 
+            transition: transform 0.2s;
+        }
+        .glossary-card:hover { transform: translateY(-3px); }
+
+        @media print {
+            .tabs, .btn-print, .add-box { display: none !important; }
+            .container { box-shadow: none; max-width: 100%; border: none; border-radius: 0; }
+            .content { display: none !important; padding: 0; }
+            #plan { display: block !important; padding: 0; }
+            .plan-container { border: none; padding: 0; box-shadow: none; }
+            body { background: white; padding: 0; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="header">
+        <h1>🌱 הוגנות בחינוך: למידה, בחירה ויישום</h1>
+        <p>מערכת עבודה לצוותי חינוך על בסיס פרח ההוגנות ומפת הפרקטיקות</p>
+    </div>
+
+    <div class="tabs">
+        <div class="tab active" onclick="switchTab('learning')">📚 מרכז למידה</div>
+        <div class="tab" onclick="switchTab('practices')">✅ בחירת פרקטיקות</div>
+        <div class="tab" onclick="switchTab('plan')">📋 התוכנית שלנו</div>
+        <div class="tab" onclick="switchTab('glossary')">📖 מילון מושגים</div>
+    </div>
+
+    <!-- 1. Learning Section -->
+    <div id="learning" class="content active">
+        <p style="text-align: center; margin-bottom: 30px; color: #78909C; font-size: 1.1em;">
+            לחצו על כל עיקרון כדי לראות את פירוט הזירות וההיגדים המלאים.
+        </p>
+        <div id="learningContainer"></div>
+    </div>
+
+    <!-- 2. Practices Section -->
+    <div id="practices" class="content">
+        <div class="practices-intro">
+            <h3>בנק הפרקטיקות והיישומים</h3>
+            <p>
+                לחצו על שם העיקרון כדי לראות את הפרקטיקות.<br>
+                <strong>לחצו על כרטיס הפרקטיקה</strong> כדי לראות דרכי יישום ולהוסיף רעיונות משלכם.<br>
+                סמנו ב-V את הפרקטיקות שברצונכם להוסיף לתוכנית העבודה.
+            </p>
+        </div>
+        <div id="practicesContainer"></div>
+    </div>
+
+    <!-- 3. Plan Section -->
+    <div id="plan" class="content">
+        <div class="plan-container">
+            <div style="text-align: center; border-bottom: 2px solid #F5F5F5; padding-bottom: 30px; margin-bottom: 40px;">
+                <h2 style="color: var(--primary); margin-bottom: 10px;">תוכנית עבודה לקידום הוגנות</h2>
+                <p style="color: #90A4AE; font-size: 1.1em;">הפרקטיקות ודרכי היישום שנבחרו על ידי הצוות</p>
+                <p id="currentDate" style="color: #B0BEC5; margin-top: 10px; font-size: 0.9em;"></p>
+            </div>
+            <div id="planList">
+                <p style="text-align: center; color: #CFD8DC; font-size: 1.2em; font-weight:300;">עדיין לא נבחרו פרקטיקות. עברו ללשונית "בחירת פרקטיקות".</p>
+            </div>
+        </div>
+        <button class="btn-print" onclick="window.print()">🖨️ הדפס תוכנית</button>
+    </div>
+
+    <!-- 4. Glossary -->
+    <div id="glossary" class="content">
+        <div id="glossaryContainer" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 25px;"></div>
+    </div>
+</div>
+
+<script>
+    // --- FULL DATA (Watercolor Palette) ---
+    
+    const fullData = {
+        'אכפתיות': {
+            color: '#D88398', icon: '💗', // Muted Rose (Watercolor)
+            def: 'יכולת להביע אמפתיה, להקשיב ולהכיל',
+            arenas: {
+                'הוראה-למידה-הערכה': [
+                    'נעשים חיבורים לעולם הרגשי של התלמידים והתלמידות באופן מתוכנן',
+                    'מתקיימות סדירויות לביסוס ההיכרות והקשר האישי עם כל תלמיד/ה',
+                    'הצוות מגלה אמפתיה והקשבה פעילה לתלמידים בקשיים',
+                    'קיימת התייחסות למעגלי הזהות והשייכות של התלמידים',
+                    'מתקיימת יצירת משמעות ורלוונטיות בתכני הלמידה',
+                    'קיימות אפשרויות בחירה לתלמידים בדרכי הלמידה',
+                    'מתקיים שיח דיאלוגי פתוח בין המורה לתלמידים'
+                ],
+                'סביבות למידה': [
+                    'המרחבים מעודדים מפגשים בין תלמידים שונים',
+                    'קיים מקום לציוד אישי של כל תלמיד/ה',
+                    'הסביבה הפיזית מותאמת לצרכים רגשיים של התלמידים',
+                    'קיימים מרחבים המאפשרים שיחות אישיות'
+                ],
+                'מערכות יחסים': [
+                    'מתקיימים מאמצים לבניית יחסים המושתתים על שיח דיאלוגי ופתיחות',
+                    'קיימת אכפתיות ויחסי קרבה בין הצוות לתלמידים ומשפחותיהם',
+                    'מתקיימות פעולות ליצירת היכרות מעמיקה בין התלמידים',
+                    'קיימת היכרות מעמיקה ומתמשכת עם כל תלמיד/ה ומשפחתו/ה',
+                    'מתקיים ביטוי והבעה עצמית של התלמידים בדרכים מגוונות',
+                    'קיימות דרכי קשר מגוונות עם המשפחות'
+                ]
+            },
+            practices: [
+                {
+                    name: 'היכרות מעמיקה ומתמשכת',
+                    desc: 'יצירת תהליכים שיטתיים להיכרות עם כל תלמיד/ה - העדפות, חוזקות, אתגרים, חלומות ומעגלי הזהות שלהם.',
+                    howTo: [
+                        'קיום שיחות אישיות קצרות עם כל תלמיד/ה אחת לשבועיים',
+                        'שימוש בשאלונים או כרטיסי היכרות בתחילת השנה',
+                        'תיעוד מידע חשוב על התלמידים ועדכונו לאורך השנה',
+                        'שיתוף המידע עם צוות המורים (בהתאם לפרטיות)'
+                    ]
+                },
+                {
+                    name: 'אכפתיות ויחסי קרבה',
+                    desc: 'בניית יחסי אמון וקרבה המאופיינים בקבלה, היכרות מעמיקה וחוסר שיפוטיות.',
+                    howTo: [
+                        'ברכת כל תלמיד/ה בשמו/ה בכניסה לכיתה',
+                        'התעניינות אמיתית באירועים משמעותיים בחיי התלמידים',
+                        'שיח אישי בשאלות: "איך את/ה מרגיש/ה? למה את/ה זקוק/ה?"',
+                        'יצירת טקסים והזדמנויות לחגיגת הצלחות אישיות'
+                    ]
+                },
+                {
+                    name: 'ביטוי והבעה עצמית',
+                    desc: 'מתן מקום ואפשרויות מגוונות לתלמידים להביע את עצמם - רגשות, מחשבות ורעיונות.',
+                    howTo: [
+                        'גיוון בדרכי ההבעה: שיח, כתיבה, ציור, משחק, מוזיקה',
+                        'יצירת "פינת הבעה" או "קיר רגשות" בכיתה',
+                        'עבודה בקבוצות קטנות לשיח בטוח',
+                        'מתן זמן ומרחב לשיתוף מרצון (ללא כפייה)'
+                    ]
+                },
+                {
+                    name: 'יצירת משמעות ורלוונטיות',
+                    desc: 'חיבור תכני הלמידה לעולמם של התלמידים ויצירת תחושה שהנלמד משמעותי ורלוונטי.',
+                    howTo: [
+                        'שימוש בדוגמאות מחיי היומיום של התלמידים',
+                        'חיבור הנלמד לאירועים אקטואליים',
+                        'מתן אפשרות לתלמידים לבחור נושאי העמקה',
+                        'יצירת פרויקטים המחוברים לקהילה ולחיים האמיתיים'
+                    ]
+                },
+                {
+                    name: 'שיח דיאלוגי',
+                    desc: 'קיום שיחות דו-כיווניות פתוחות שבהן כל הצדדים מקשיבים ומגיבים בכבוד.',
+                    howTo: [
+                        'תרגול הקשבה פעילה - שיקוף, פרפרזה, שאלות הבהרה',
+                        'יצירת "מעגלי שיח" קבועים בכיתה',
+                        'מודלינג של שיח מכבד ופתוח',
+                        'מתן זמן לתלמידים לחשוב לפני שמגיבים'
+                    ]
+                },
+                {
+                    name: 'מרחבים מעודדים מפגשים',
+                    desc: 'עיצוב הסביבה הפיזית באופן שמעודד מפגשים ושיחות בין תלמידים שונים.',
+                    howTo: [
+                        'יצירת פינות ישיבה נוחות לשיחות קטנות',
+                        'סידור שולחנות באופן שמאפשר עבודה משותפת',
+                        'יצירת "פינת מפגש" בכיתה או במסדרון',
+                        'החלפת מקומות ישיבה לעיתים לעידוד היכרויות חדשות'
+                    ]
+                }
+            ]
+        },
+        'אמון': {
+            color: '#958BB6', icon: '🤲', // Muted Violet/Lavender (Watercolor)
+            def: 'תחושה שניתן לסמוך על עצמי, על אחרים ועל הסביבה',
+            arenas: {
+                'הוראה-למידה-הערכה': [
+                    'מתקיים שיח משתף ומתייעץ שאינו שיפוטי כלפי טעויות',
+                    'קיים מרחב בטוח לתלמידים לטעות וללמוד מטעויות',
+                    'התלמידים מרגישים בטוחים להביע דעה גם אם היא שונה',
+                    'קיימת בהירות, ארגון וסדר בשגרת הלמידה',
+                    'מתאפשר מרחב לטעות ללא חשש משיפוט'
+                ],
+                'סביבות למידה': [
+                    'הסביבה הפיזית יוצרת תחושת ביטחון ושייכות',
+                    'קיימים מרחבים שקטים לתלמידים הזקוקים להם',
+                    'המרחב מותאם לצרכי הצוות החינוכי',
+                    'קיים מקום בטוח לכל תלמיד/ה'
+                ],
+                'מערכות יחסים': [
+                    'כללי המשחק מובנים וברורים לכל קהילת בית הספר',
+                    'קיימת עקביות בין מה שנאמר לבין מה שנעשה',
+                    'התלמידים יכולים לפנות לצוות החינוכי בכל נושא',
+                    'קיימת יכולת לניהול קונפליקטים בצורה בונה',
+                    'מתקיים ויסות עצמי של רגשות והתנהגויות'
+                ]
+            },
+            practices: [
+                {
+                    name: 'מקום בטוח',
+                    desc: 'יצירת סביבה שבה התלמידים מרגישים מוגנים - פיזית, רגשית וחברתית.',
+                    howTo: [
+                        'הגדרת כללים ברורים נגד פגיעה והשפלה',
+                        'יצירת שגרה יומית של פעולות מקדמות ביטחון',
+                        'שיח פתוח על מה גורם לתלמידים להרגיש בטוחים',
+                        'זיהוי ומענה מהיר למצבים של חוסר ביטחון'
+                    ]
+                },
+                {
+                    name: 'מרחב לטעות',
+                    desc: 'יצירת אקלים שבו טעויות נתפסות כהזדמנות ללמידה ולא ככישלון.',
+                    howTo: [
+                        'שימוש במשפטים מעצימים: "טעות היא הזדמנות ללמוד"',
+                        'שיתוף בטעויות אישיות ומה למדתם מהן',
+                        'מתן משוב ממוקד בתהליך ולא רק בתוצאה',
+                        'חגיגת "הטעות של השבוע" ומה למדנו ממנה'
+                    ]
+                },
+                {
+                    name: '"כללי משחק" מובנים',
+                    desc: 'הגדרה ברורה של הכללים, הנורמות והציפיות - מה מותר, מה אסור, ומה מצופה.',
+                    howTo: [
+                        'בניית כללי הכיתה יחד עם התלמידים',
+                        'תליית הכללים במקום בולט והתייחסות אליהם',
+                        'עקביות ביישום הכללים לכל התלמידים',
+                        'דיון תקופתי על הכללים ועדכונם בהתאם לצורך'
+                    ]
+                },
+                {
+                    name: 'בהירות, ארגון וסדר',
+                    desc: 'יצירת שגרת יום-יום קבועה וידועה מראש שמייצרת תחושת ביטחון.',
+                    howTo: [
+                        'הצגת מערכת השיעור/השבוע במקום נגיש',
+                        'פתיחת כל שיעור בהצגת המטרות והפעילויות',
+                        'עדכון מראש על שינויים בשגרה',
+                        'שימוש בטקסים קבועים (פתיחה, סיום, מעברים)'
+                    ]
+                },
+                {
+                    name: 'ויסות עצמי',
+                    desc: 'פיתוח יכולת התלמידים לנהל רגשות, מחשבות והתנהגויות בצורה מותאמת.',
+                    howTo: [
+                        'לימוד טכניקות הרגעה (נשימות, ספירה, מקום שקט)',
+                        'יצירת "פינת הרגעה" בכיתה',
+                        'שימוש ב"מד רגשות" לזיהוי ותקשור רגשות',
+                        'מודלינג של ויסות עצמי בזמן אמת'
+                    ]
+                },
+                {
+                    name: 'ניהול קונפליקטים',
+                    desc: 'פיתוח יכולת להתמודד עם חילוקי דעות ומתחים בצורה בונה ומכבדת.',
+                    howTo: [
+                        'לימוד שלבים לפתרון קונפליקטים',
+                        'תרגול באמצעות משחקי תפקידים',
+                        'מינוי "מגשרים" מבין התלמידים',
+                        'קיום מעגלי שיח לאחר קונפליקטים משמעותיים'
+                    ]
+                }
+            ]
+        },
+        'מגוון': {
+            color: '#7E97AD', icon: '🌈', // Greyish Blue (Watercolor)
+            def: 'הכרה והערכה לקול הייחודי, הכישרון והזהות של כל אחד',
+            arenas: {
+                'הוראה-למידה-הערכה': [
+                    'ניתן מקום למגוון העמדות ונקודות המבט בשיעורים',
+                    'קיים ביטוי לזהויות השונות של התלמידים בתכני הלימוד',
+                    'מתקיימים מאמצים כדי שכל התלמידים יוכלו לבטא את קולם הייחודי',
+                    'מונכחת שפה שוויונית מגדרית בהוראה',
+                    'ניתן מקום לקולות שבדרך כלל נשמעים פחות',
+                    'קיים ביטוי לחוזקות, כישורים ושאיפות של כל תלמיד/ה',
+                    'מתאפשר פיתוח הזהות הייחודית של כל תלמיד/ה'
+                ],
+                'סביבות למידה': [
+                    'הקירות מציגים מגוון זהויות ותרבויות',
+                    'המרחב מעודד שוויון מגדרי',
+                    'קיים ייצוג למגוון הקבוצות בקהילת בית הספר בסביבה הפיזית'
+                ],
+                'מערכות יחסים': [
+                    'יש הזדמנויות לביטוי המגוון הזהותי והתרבותי של המשפחות',
+                    'קיימת רגישות והנכחה לתרבות ומגדר במערכות היחסים',
+                    'מתקיימת מודעות והכרת העצמי והאחר'
+                ]
+            },
+            practices: [
+                {
+                    name: 'ביטוי לזהויות השונות',
+                    desc: 'מתן מקום לתלמידים לבטא ולחגוג את הזהויות השונות שלהם - תרבותיות, דתיות, משפחתיות.',
+                    howTo: [
+                        'שילוב תכנים ממגוון תרבויות בלמידה',
+                        'חגיגת חגים ואירועים ממסורות שונות',
+                        'הזמנת הורים לשתף על מסורות משפחתיות',
+                        'יצירת פרויקטים על "מי אני" ו"מאיפה אני בא/ה"'
+                    ]
+                },
+                {
+                    name: 'ביטוי לחוזקות, כישורים ושאיפות',
+                    desc: 'זיהוי והדגשת החוזקות הייחודיות של כל תלמיד/ה ומתן במה לביטוין.',
+                    howTo: [
+                        'מיפוי חוזקות של כל תלמיד/ה בתחילת השנה',
+                        'יצירת הזדמנויות לתלמידים "ללמד" אחרים את מה שהם טובים בו',
+                        'שימוש במגוון דרכי הערכה המאפשרות ביטוי לחוזקות שונות',
+                        '"לוח כוכבים" המציג הצלחות ותרומות מגוונות'
+                    ]
+                },
+                {
+                    name: 'הנכחת שפה שוויונית מגדרית',
+                    desc: 'שימוש עקבי בשפה שפונה לכל המגדרים ומכבדת את כולם.',
+                    howTo: [
+                        'פנייה ב"תלמידים ותלמידות" או בלשון רבים',
+                        'בחירת ספרות וחומרי לימוד עם גיבורות וגיבורים',
+                        'הימנעות מסטריאוטיפים מגדריים בדוגמאות',
+                        'עידוד כל התלמידים להשתתף בכל הפעילויות'
+                    ]
+                },
+                {
+                    name: 'פיתוח הזהות הייחודית',
+                    desc: 'תמיכה בתלמידים בתהליך הכרת עצמם ופיתוח זהותם האישית.',
+                    howTo: [
+                        'שיחות על שאלות של זהות ושייכות',
+                        'כתיבת יומנים או סיפורים אישיים',
+                        'יצירת "תיק עבודות אישי" המתעד התפתחות',
+                        'עידוד חשיבה על ערכים אישיים ומה חשוב לי'
+                    ]
+                },
+                {
+                    name: 'קירות מציגים מגוון זהויות',
+                    desc: 'עיצוב הסביבה הפיזית באופן שמייצג את המגוון בקהילת בית הספר.',
+                    howTo: [
+                        'תליית עבודות של כל התלמידים, לא רק "המוצלחות"',
+                        'הצגת תמונות ודגלים ממגוון תרבויות',
+                        'יצירת "קיר משפחות" עם תמונות מכל הבתים',
+                        'שילוב שפות שונות בשילוט ובתצוגות'
+                    ]
+                },
+                {
+                    name: 'מודעות והכרת העצמי והאחר',
+                    desc: 'פיתוח יכולת התלמידים להכיר את עצמם ואת האחר, ולהעריך את השונות.',
+                    howTo: [
+                        'פעילויות היכרות המדגישות גם דמיון וגם שוני',
+                        'קריאה ודיון בסיפורים על אנשים שונים',
+                        'משחקי תפקידים ל"הליכה בנעליים של אחר"',
+                        'שיח על סטריאוטיפים ודעות קדומות'
+                    ]
+                }
+            ]
+        },
+        'נגישות': {
+            color: '#7FB3D5', icon: '🚪', // Stonewash Blue (Watercolor)
+            def: 'יצירת אפשרות לכולם לממש את זכותם ללמידה איכותית',
+            arenas: {
+                'הוראה-למידה-הערכה': [
+                    'נערך מיפוי שיטתי של חסמים המגבילים השתתפות של תלמידים',
+                    'ננקטות פעולות להסרת חסמים ולהבטחת השתתפות מלאה',
+                    'הצוות נמנע מתיוג של תלמידים ומשפחותיהם',
+                    'ננקטות פעולות המקדמות מעורבות התלמידים בהובלת פעילויות',
+                    'קיימת התאמה של תכנים לצרכים מגוונים',
+                    'מתקיימת השתתפות והשמעת קול של כל התלמידים'
+                ],
+                'סביבות למידה': [
+                    'הציוד והמשאבים נגישים לכל התלמידים',
+                    'המרחבים מותאמים לצרכים שונים (פיזיים, חושיים)',
+                    'הטכנולוגיה מותאמת לצרכים מגוונים',
+                    'ציוד זמין לכולם ללא תלות ברקע כלכלי'
+                ],
+                'מערכות יחסים': [
+                    'דרכי הקשר עם המשפחות מגוונות ומותאמות',
+                    'קיימת נגישות להורים להיות חשופים לתהליכים הבית-ספריים',
+                    'לכל משפחה יש מקום להביע את עמדתה',
+                    'מתאפשר סנגור עצמי של התלמידים על צרכיהם'
+                ]
+            },
+            practices: [
+                {
+                    name: 'מיפוי שיטתי של חסמים',
+                    desc: 'זיהוי מאורגן של כל המכשולים שמונעים מתלמידים להשתתף באופן מלא.',
+                    howTo: [
+                        'ניתוח נתוני השתתפות ונוכחות לזיהוי דפוסים',
+                        'שיחות עם תלמידים ומשפחות על קשיים',
+                        'בדיקת נגישות פיזית וטכנולוגית',
+                        'מיפוי חסמים כלכליים, שפתיים, תרבותיים'
+                    ]
+                },
+                {
+                    name: 'התאמה של תכנים',
+                    desc: 'התאמת חומרי הלימוד והמשימות לצרכים מגוונים של תלמידים.',
+                    howTo: [
+                        'הכנת חומרים ברמות קושי שונות',
+                        'תרגום/הסבר למי שצריך בשפות נוספות',
+                        'שימוש בחומרים ויזואליים, שמיעתיים ומישושיים',
+                        'מתן זמן נוסף או הפחתת כמות למי שנדרש'
+                    ]
+                },
+                {
+                    name: 'השתתפות והשמעת קול',
+                    desc: 'הבטחה שלכל תלמיד/ה יש הזדמנות להשתתף ולהשמיע את קולו/ה.',
+                    howTo: [
+                        'שימוש בטכניקות שמבטיחות השתתפות כולם (Think-Pair-Share)',
+                        'מתן זמן חשיבה לפני תשובות',
+                        'אפשרויות מגוונות להשתתפות (בעל פה, בכתב, בציור)',
+                        'מעקב על מי משתתף ועידוד אקטיבי של השקטים'
+                    ]
+                },
+                {
+                    name: 'סנגור עצמי',
+                    desc: 'פיתוח יכולת התלמידים לדבר בשם עצמם ולבקש את מה שהם צריכים.',
+                    howTo: [
+                        'לימוד משפטים לבקשת עזרה',
+                        'תרגול בקשת התאמות והסברת צרכים',
+                        'עידוד שאילת שאלות בשיעור',
+                        'יצירת "תיבת בקשות" אנונימית'
+                    ]
+                },
+                {
+                    name: 'ציוד לכולם',
+                    desc: 'הבטחה שלכל תלמיד/ה יש גישה לציוד ולמשאבים הנדרשים ללמידה.',
+                    howTo: [
+                        'יצירת "מאגר ציוד משותף" בכיתה',
+                        'הבטחת גישה למחשבים ולאינטרנט לכולם',
+                        'סיוע דיסקרטי למשפחות שמתקשות',
+                        'השאלת ציוד וספרים לבית'
+                    ]
+                },
+                {
+                    name: 'דרכי קשר מגוונות',
+                    desc: 'יצירת מגוון ערוצים לתקשורת עם משפחות בהתאם ליכולותיהן והעדפותיהן.',
+                    howTo: [
+                        'שימוש במגוון כלים: וואטסאפ, טלפון, מייל, פגישות',
+                        'תרגום הודעות לשפות רלוונטיות',
+                        'גמישות בזמני פגישות (בוקר/ערב)',
+                        'מפגשים בבית המשפחה או בקהילה כשנדרש'
+                    ]
+                }
+            ]
+        },
+        'שקיפות': {
+            color: '#5DADE2', icon: '🔍', // Soft Blue (Watercolor)
+            def: 'ידע ונתונים רלוונטיים נמצאים בידי כל מי שצריך לקבל החלטות',
+            arenas: {
+                'הוראה-למידה-הערכה': [
+                    'מטרות הפעילות וההיגיון שבהן מוצגים בצורה שקופה וברורה לתלמידים',
+                    'מהלך הפעילות ידוע ומאפשר לתלמידים שותפות בקבלת החלטות',
+                    'הקצאת המשאבים לפעילויות ידועה לתלמידים ולמשפחות',
+                    'קיימת בהירות, ארגון וסדר לגבי הציפיות מהתלמידים'
+                ],
+                'סביבות למידה': [
+                    'קיימת שקיפות לגבי כללי השימוש במרחבים השונים',
+                    'המידע על אפשרויות הלמידה השונות זמין לכולם'
+                ],
+                'מערכות יחסים': [
+                    'ההחלטות שמתקבלות וההיגיון שבהן מוצגים בצורה שקופה',
+                    'תהליכי התכנון והקצאת המשאבים ידועים ומאפשרים שותפות',
+                    'הציפיות מכל השותפים מוצגות בצורה ברורה',
+                    'קיימת שותפות בקבלת החלטות עם תלמידים ומשפחות'
+                ]
+            },
+            practices: [
+                {
+                    name: 'בהירות מטרות ותהליכים',
+                    desc: 'הצגה ברורה של מטרות הלמידה, הפעילויות וההיגיון שמאחוריהן.',
+                    howTo: [
+                        'פתיחת כל שיעור בהצגת המטרה',
+                        'הסבר "למה אנחנו לומדים את זה"',
+                        'הצגת רוברבריקות/קריטריונים להערכה מראש',
+                        'סיכום בסוף השיעור - מה למדנו'
+                    ]
+                },
+                {
+                    name: 'שותפות בקבלת החלטות',
+                    desc: 'שיתוף תלמידים ומשפחות בתהליכי קבלת החלטות הנוגעים אליהם.',
+                    howTo: [
+                        'התייעצות עם התלמידים על נושאים רלוונטיים',
+                        'מועצת תלמידים פעילה ומשמעותית',
+                        'שיתוף הורים בתכנון פעילויות',
+                        'הסבר ההיגיון מאחורי החלטות גם כשלא מתייעצים'
+                    ]
+                },
+                {
+                    name: 'שקיפות כללי השימוש במרחבים',
+                    desc: 'הגדרה ברורה של כללי השימוש במרחבים השונים בבית הספר.',
+                    howTo: [
+                        'שילוט ברור במרחבים השונים',
+                        'הסבר הכללים לתלמידים חדשים',
+                        'עדכון על שינויים בכללים',
+                        'שיתוף תלמידים בקביעת הכללים'
+                    ]
+                },
+                {
+                    name: 'הצגת ציפיות ברורות',
+                    desc: 'הגדרה ברורה של מה מצופה מכל אחד מהשותפים - תלמידים, מורים, הורים.',
+                    howTo: [
+                        'מסמך "אמנת כיתה" ברור ומוסכם',
+                        'שיחות תחילת שנה עם הורים על ציפיות הדדיות',
+                        'תזכורות תקופתיות על הציפיות',
+                        'עדכון ושינוי ציפיות כשנדרש'
+                    ]
+                }
+            ]
+        },
+        'איכות': {
+            color: '#73B0B6', icon: '⭐', // Tealish Grey (Watercolor)
+            def: 'עבודה מבוססת נתונים ומכוונת לתוצאות בעלות ערך',
+            arenas: {
+                'הוראה-למידה-הערכה': [
+                    'הפעילות מבוססת על גישות חדשניות המציבות רף גבוה',
+                    'ניתן לתלמידים משוב שמקדם אותם לעבר היעדים שהגדירו',
+                    'ההוראה מבוססת על נתונים והערכה מעצבת',
+                    'קיימת מוכוונות לצמיחה והתפתחות מתמדת',
+                    'מתקיימת למידה מרווחת ומעמיקה',
+                    'קיימת הכוונה עצמית של התלמידים בתהליך הלמידה'
+                ],
+                'סביבות למידה': [
+                    'המרחבים אסתטיים ונקיים',
+                    'סביבות הלמידה מודולריות ומאפשרות גמישות',
+                    'הסביבה מעודדת פעלנות ויוזמה'
+                ],
+                'מערכות יחסים': [
+                    'מתקיימים מאמצים לטיפוח עבודת צוות ולקיחת אחריות משותפת',
+                    'קיימת מוכוונות לצמיחה והתפתחות של כל השותפים',
+                    'מתקיימת רפלקציה ושיפור מתמיד של מערכות היחסים',
+                    'קיים גיבוש חברתי ותחושת שייכות בקהילה'
+                ]
+            },
+            practices: [
+                {
+                    name: 'הוראה מבוססת נתונים',
+                    desc: 'התאמת ההוראה על בסיס מידע שנאסף על התלמידים - הישגים, צרכים, התקדמות.',
+                    howTo: [
+                        'איסוף שיטתי של נתונים על למידת התלמידים',
+                        'ניתוח תקופתי של הנתונים והסקת מסקנות',
+                        'התאמת ההוראה בהתאם לממצאים',
+                        'שיתוף התלמידים בנתונים שלהם'
+                    ]
+                },
+                {
+                    name: 'משוב מקדם',
+                    desc: 'מתן משוב ספציפי ובונה שמסייע לתלמידים להתקדם לעבר היעדים.',
+                    howTo: [
+                        'משוב ספציפי ולא כללי ("שיפרת את... " ולא רק "יפה")',
+                        'משוב ממוקד בתהליך ולא רק בתוצאה',
+                        'מתן משוב בזמן אמת, לא רק בסוף',
+                        'הזמנת התלמידים להגיב על המשוב'
+                    ]
+                },
+                {
+                    name: 'תודעת צמיחה ומוכוונות לצמיחה',
+                    desc: 'טיפוח אמונה שניתן להשתנות, להתפתח וללמוד באמצעות מאמץ ועבודה.',
+                    howTo: [
+                        'שימוש במשפטים מצמיחים: "עדיין לא..." במקום "לא יכול"',
+                        'דגש על מאמץ ותהליך ולא רק על תוצאה',
+                        'שיתוף בסיפורי התמודדות והצלחה',
+                        'חגיגת התקדמות ולא רק הישגים סופיים'
+                    ]
+                },
+                {
+                    name: 'למידה מרווחת והכוונה עצמית',
+                    desc: 'פריסת הלמידה לאורך זמן ופיתוח יכולת התלמידים לנהל את הלמידה שלהם.',
+                    howTo: [
+                        'חזרה מרווחת על חומר שנלמד',
+                        'לימוד טכניקות למידה אפקטיביות',
+                        'עידוד הצבת מטרות אישיות',
+                        'מעקב עצמי אחר התקדמות'
+                    ]
+                },
+                {
+                    name: 'סביבות מעודדות פעלנות ויוזמה',
+                    desc: 'עיצוב סביבות שמזמינות את התלמידים ליזום, לחקור ולקחת אחריות.',
+                    howTo: [
+                        'יצירת "פינות חקר" עם חומרים מזמינים',
+                        'הנגשת משאבים לפרויקטים עצמאיים',
+                        'תצוגת יוזמות ופרויקטים של תלמידים',
+                        'עידוד שאלות ו"מה אם..."'
+                    ]
+                },
+                {
+                    name: 'גיבוש חברתי ועבודת צוות',
+                    desc: 'טיפוח תחושת שייכות, לכידות ויכולת לעבוד יחד.',
+                    howTo: [
+                        'פעילויות לבניית צוות בתחילת השנה',
+                        'עבודה קבוצתית עם חלוקת תפקידים',
+                        'טקסים משותפים (שיר כיתה, סיסמה)',
+                        'פתרון בעיות משותף'
+                    ]
+                }
+            ]
+        },
+        'גמישות': {
+            color: '#8FC1A9', icon: '🌱', // Sage (Watercolor)
+            def: 'מיצוי פוטנציאל והתאמה לצרכים משתנים',
+            arenas: {
+                'הוראה-למידה-הערכה': [
+                    'ניתנת לתלמידים בחירה באופן ההשתתפות המתאים להם',
+                    'התלמידים מוזמנים ליזום ולקדם שינויים בפעילות',
+                    'נעשות התאמות המתחשבות בצרכים של תלמידים שונים',
+                    'קיימות אפשרויות שונות להוראה וללמידה',
+                    'קיימות אפשרויות שונות להערכה',
+                    'מתקיימת תודעת צמיחה ולמידה מטעויות'
+                ],
+                'סביבות למידה': [
+                    'המרחבים מאפשרים התאמה לפעילויות שונות',
+                    'קיימת אפשרות לשנות את סידור המרחב בהתאם לצורך',
+                    'סביבות הלמידה מודולריות וניתנות לשינוי'
+                ],
+                'מערכות יחסים': [
+                    'קיימת גמישות בדרכי הקשר עם משפחות שונות',
+                    'יש מקום להתאמות אישיות במערכות היחסים',
+                    'הצוות מגלה גמישות בהתמודדות עם מצבים משתנים'
+                ]
+            },
+            practices: [
+                {
+                    name: 'אפשרויות בחירה',
+                    desc: 'מתן אפשרויות מגוונות לתלמידים לבחור באופן ההשתתפות, הלמידה וההבעה.',
+                    howTo: [
+                        'בחירה בהרכב הלמידה - יחיד/זוג/קבוצה',
+                        'בחירה בדרך הלמידה - קריאה/צפייה/האזנה',
+                        'בחירה באופן ההבעה - כתיבה/דיבור/יצירה',
+                        'בחירה בנושאי העמקה'
+                    ]
+                },
+                {
+                    name: 'אפשרויות שונות להערכה',
+                    desc: 'מגוון דרכים להוכחת הבנה והישגים, לא רק מבחנים מסורתיים.',
+                    howTo: [
+                        'תיקי עבודות (פורטפוליו)',
+                        'מצגות והרצאות',
+                        'פרויקטים ומוצרים',
+                        'הערכת עמיתים והערכה עצמית'
+                    ]
+                },
+                {
+                    name: 'סביבות למידה מודולריות',
+                    desc: 'מרחבי למידה גמישים שניתן לשנות ולהתאים לפעילויות ולצרכים שונים.',
+                    howTo: [
+                        'ריהוט נייד שניתן לסידור מחדש',
+                        'פינות שונות לסוגי פעילות שונים',
+                        'שימוש במסדרונות ובחצר ללמידה',
+                        'שינוי הסידור בהתאם לפעילות'
+                    ]
+                },
+                {
+                    name: 'התאמות אישיות',
+                    desc: 'גמישות בדרישות ובציפיות בהתאם לצרכים האישיים של תלמידים.',
+                    howTo: [
+                        'מתן זמן נוסף למי שצריך',
+                        'התאמת כמות המשימות',
+                        'שינוי רמת הקושי',
+                        'תמיכה נוספת או אתגר מועשר'
+                    ]
+                },
+                {
+                    name: 'גמישות בדרכי קשר עם משפחות',
+                    desc: 'התאמת אופן התקשורת והקשר עם כל משפחה לפי צרכיה והעדפותיה.',
+                    howTo: [
+                        'שאילת העדפות תקשורת בתחילת השנה',
+                        'גמישות בזמני פגישות',
+                        'מגוון ערוצי תקשורת',
+                        'התאמה לצרכים מיוחדים (שפה, נגישות)'
+                    ]
+                },
+                {
+                    name: 'התמודדות עם מצבים משתנים',
+                    desc: 'יכולת הצוות להגיב בגמישות לשינויים, אתגרים ומצבים בלתי צפויים.',
+                    howTo: [
+                        'תכנון חלופות מראש',
+                        'שיח פתוח על שינויים והסתגלות',
+                        'למידה מהתנסויות והתאמה',
+                        'שמירה על עקרונות תוך גמישות בדרכים'
+                    ]
+                }
+            ]
+        }
+    };
+
+    const glossaryTerms = {
+        'שיח דיאלוגי': 'שיחה דו-כיוונית פתוחה, שבה כל הצדדים מקשיבים זה לזה, מגיבים בכבוד ומוכנים לשנות את דעתם',
+        'מעגלי הזהות והשייכות': 'הקבוצות השונות שהתלמיד/ה מזדהה איתן ושייך/ת אליהן - משפחה, עדה, דת, תחביבים, שכונה וכו\'',
+        'הערכה מעצבת': 'הערכה מתמשכת שמטרתה לקדם את הלמידה ולתת משוב שמסייע לתלמיד להשתפר',
+        'שפה שוויונית מגדרית': 'שימוש בשפה שפונה לכל המגדרים באופן שווה ומכבד',
+        'סביבות למידה מודולריות': 'מרחבי למידה גמישים שניתן לשנות ולהתאים בקלות',
+        'תיוג': 'הצמדת "תווית" קבועה לתלמיד/ה על בסיס מאפיין אחד',
+        'כללי המשחק': 'הכללים, הנורמות וההסכמות המשותפות שמנחים את ההתנהלות בבית הספר',
+        'מוכוונות לצמיחה': 'גישה שמאמינה שיכולות ניתנות לפיתוח ושטעויות הן הזדמנות ללמידה',
+        'תודעת צמיחה': 'אמונה שניתן להשתנות, להתפתח וללמוד באמצעות מסירות ועבודה',
+        'פעלנות ויוזמה': 'היכולת והרצון לקחת אחריות, ליזום פעולות ולהשפיע על הסביבה',
+        'רפלקציה': 'חשיבה מעמיקה והתבוננות עצמית על מעשים ותהליכים',
+        'סדירויות': 'פעולות ושגרות קבועות שחוזרות על עצמן באופן מתוכנן',
+        'אמפתיה': 'היכולת להבין ולהרגיש את רגשותיו של האחר',
+        'אייג\'נסי': 'השתתפות פעילה ויוזמת - הרצון והיכולת להשפיע על עצמי ועל הסביבה',
+        'קו-אייג\'נסי': 'פעלנות משותפת - יכולת של קבוצה לפעול יחד להשגת מטרות משותפות'
+    };
+
+    // Store user selections: key = "Principle-PracticeIndex", val = {name, userExamples[]}
+    const userSelections = {};
+
+    function init() {
+        renderLearning();
+        renderPractices();
+        renderGlossary();
+        document.getElementById('currentDate').textContent = new Date().toLocaleDateString('he-IL');
+    }
+
+    // --- Render Learning Section (Accordion) ---
+    function renderLearning() {
+        const container = document.getElementById('learningContainer');
+        let html = '';
+
+        for (const [principle, data] of Object.entries(fullData)) {
+            html += `
+            <div class="accordion-item">
+                <div class="accordion-header" style="background: ${data.color}" onclick="toggleAccordion(this)">
+                    <span>${data.icon} ${principle}</span>
+                    <span class="accordion-arrow">▼</span>
+                </div>
+                <div class="accordion-content">
+                    <div class="learning-inner">
+                        <p class="principle-def">${data.def}</p>
+                        ${renderArenas(data.arenas)}
+                    </div>
+                </div>
+            </div>`;
+        }
+        container.innerHTML = html;
+    }
+
+    function renderArenas(arenas) {
+        let html = '';
+        for (const [arenaName, questions] of Object.entries(arenas)) {
+            html += `
+            <div class="arena-section">
+                <div class="arena-title">${arenaName}</div>
+                <ul class="questions-list">
+                    ${questions.map(q => `<li>${q}</li>`).join('')}
+                </ul>
+            </div>`;
+        }
+        return html;
+    }
+
+    // --- Render Practices Section (Accordion + Selection) ---
+    function renderPractices() {
+        const container = document.getElementById('practicesContainer');
+        let html = '';
+
+        for (const [principle, data] of Object.entries(fullData)) {
+            // Principle Level Accordion
+            html += `
+            <div class="accordion-item">
+                <div class="accordion-header" style="background: ${data.color}" onclick="toggleAccordion(this)">
+                    <span>${data.icon} ${principle}</span>
+                    <span class="accordion-arrow">▼</span>
+                </div>
+                <div class="accordion-content">
+                    <div style="padding: 15px; background: #fff;">`;
+            
+            // Practice Cards inside Principle
+            data.practices.forEach((prac, idx) => {
+                const uid = `${principle}-${idx}`;
+                html += `
+                <div class="practice-card" id="card-${uid}">
+                    <div class="practice-header" onclick="togglePracticeDetail('${uid}')">
+                        <div class="toggle-icon">▼</div>
+                        <div class="practice-info">
+                            <h3 class="practice-title">${prac.name}</h3>
+                            <div class="practice-desc">${prac.desc}</div>
+                            <div class="practice-expand-hint">לחצו לפירוט ויישום 💡</div>
+                        </div>
+                        <div class="checkbox-wrapper" id="check-${uid}" onclick="toggleSelection(event, '${uid}', '${principle}', '${data.color}')"></div>
+                    </div>
+                    <div class="practice-body">
+                        <h4 style="color:${data.color}; font-size:1.15em; margin-bottom:12px;">💡 איך מיישמים?</h4>
+                        <ul class="how-to-list" id="list-${uid}">
+                            ${prac.howTo.map(item => `<li>${item}</li>`).join('')}
+                        </ul>
+                        
+                        <div class="add-box">
+                            <input type="text" class="add-input" id="input-${uid}" placeholder="הוסיפו רעיון ליישום משלך..." onkeypress="handleEnter(event, '${uid}')">
+                            <button class="add-btn" onclick="addUserExample('${uid}')">הוסף</button>
+                        </div>
+                    </div>
+                </div>`;
+            });
+
+            html += `</div></div></div>`;
+        }
+        container.innerHTML = html;
+    }
+
+    // --- Interaction Logic ---
+
+    function toggleAccordion(element) {
+        const item = element.parentElement;
+        item.classList.toggle('open');
+    }
+
+    function togglePracticeDetail(uid) {
+        const card = document.getElementById(`card-${uid}`);
+        card.classList.toggle('open');
+    }
+
+    function toggleSelection(e, uid, principle, color) {
+        e.stopPropagation(); // Prevent toggling details
+        const card = document.getElementById(`card-${uid}`);
+        
+        if (userSelections[uid]) {
+            // Deselect
+            delete userSelections[uid];
+            card.classList.remove('selected');
+        } else {
+            // Select
+            // Find data to store
+            let foundPractice = null;
+            // Need to find the practice object again
+            for (const [p, d] of Object.entries(fullData)) {
+                if (p === principle) {
+                    const idx = parseInt(uid.split('-')[1]);
+                    foundPractice = d.practices[idx];
+                    break;
+                }
+            }
+            
+            userSelections[uid] = {
+                principle: principle,
+                color: color,
+                name: foundPractice.name,
+                desc: foundPractice.desc,
+                originalExamples: foundPractice.howTo,
+                userExamples: []
+            };
+            card.classList.add('selected');
+        }
+        updatePlan();
+    }
+
+    function addUserExample(uid) {
+        const input = document.getElementById(`input-${uid}`);
+        const text = input.value.trim();
+        if (!text) return;
+
+        // Add to UI
+        const list = document.getElementById(`list-${uid}`);
+        const li = document.createElement('li');
+        li.textContent = text + " (אישי)";
+        li.className = 'user-example';
+        list.appendChild(li);
+
+        // If selected, add to data
+        if (userSelections[uid]) {
+            userSelections[uid].userExamples.push(text);
+            updatePlan();
+        } else {
+            // Auto-select if adding example? Optional. Let's just visually select it.
+            // Need to trigger selection logic to save the object first
+            const card = document.getElementById(`card-${uid}`);
+            // Find principle and color from card parent or look up (lazy way: look up)
+            let principle, color;
+            // Iterate to find by uid again is safest
+            for(const [p, d] of Object.entries(fullData)) {
+                d.practices.forEach((pr, ix) => {
+                    if(`${p}-${ix}` === uid) {
+                        principle = p;
+                        color = d.color;
+                    }
+                });
+            }
+            
+            toggleSelection({stopPropagation:()=>{}}, uid, principle, color); 
+            // Now push example
+            userSelections[uid].userExamples.push(text);
+            updatePlan();
+        }
+        
+        input.value = '';
+    }
+
+    function handleEnter(e, uid) {
+        if(e.key === 'Enter') addUserExample(uid);
+    }
+
+    // --- Plan Generation ---
+    function updatePlan() {
+        const container = document.getElementById('planList');
+        const keys = Object.keys(userSelections);
+        
+        if (keys.length === 0) {
+            container.innerHTML = '<p style="text-align: center; color: #CFD8DC; font-size: 1.2em; font-weight:300;">עדיין לא נבחרו פרקטיקות. עברו ללשונית "בחירת פרקטיקות".</p>';
+            return;
+        }
+
+        let html = '';
+        // Group by Principle
+        const principlesOrder = Object.keys(fullData);
+        
+        principlesOrder.forEach(p => {
+            const relevantKeys = keys.filter(k => userSelections[k].principle === p);
+            if(relevantKeys.length > 0) {
+                const color = fullData[p].color;
+                relevantKeys.forEach(key => {
+                    const item = userSelections[key];
+                    const allEx = [...item.originalExamples, ...item.userExamples];
+                    
+                    html += `
+                    <div class="plan-item" style="border-right: 5px solid ${color}; padding-right: 20px;">
+                        <h3 style="color:${color}; margin-bottom:8px;">${item.principle}: ${item.name}</h3>
+                        <p style="margin-bottom:15px; color:#546E7A;">${item.desc}</p>
+                        <div style="background:#FAFAFA; padding:20px; border-radius:10px;">
+                            <strong style="color:#455A64; font-size:1.1em;">דרכי יישום:</strong>
+                            <ul class="plan-actions" style="margin-right:20px;">
+                                ${allEx.map(ex => `<li>${ex}</li>`).join('')}
+                            </ul>
+                        </div>
+                    </div>`;
+                });
+            }
+        });
+        
+        container.innerHTML = html;
+    }
+
+    // --- Glossary ---
+    function renderGlossary() {
+        const container = document.getElementById('glossaryContainer');
+        let html = '';
+        for (const [term, def] of Object.entries(glossaryTerms)) {
+            html += `
+            <div style="background:white; padding:25px; border-radius:12px; border:1px solid #ECEFF1; box-shadow:0 4px 10px rgba(0,0,0,0.02); transition:transform 0.2s;">
+                <strong style="color:var(--primary); font-size:1.15em; display:block; margin-bottom:8px;">${term}</strong>
+                <p style="line-height:1.5; color:#546E7A;">${def}</p>
+            </div>`;
+        }
+        container.innerHTML = html;
+    }
+
+    function switchTab(tabId) {
+        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+        document.querySelectorAll('.content').forEach(c => c.classList.remove('active'));
+        
+        const tabs = ['learning', 'practices', 'plan', 'glossary'];
+        const index = tabs.indexOf(tabId);
+        document.querySelectorAll('.tab')[index].classList.add('active');
+        document.getElementById(tabId).classList.add('active');
+        window.scrollTo(0,0);
+    }
+
+    // Init
+    init();
+
+</script>
+</body>
+</html>
