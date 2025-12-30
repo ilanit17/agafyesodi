@@ -7,23 +7,14 @@
     <style>
         :root {
             /* Watercolor & Refined Palette */
-            --primary: #5D8AA8; /* Air Force Blue - Soft but strong */
-            --secondary: #8FBC8F; /* Dark Sea Green - Natural */
-            --accent: #E6B89C; /* Soft Peach/Clay */
-            --bg-body: #F9FAFB; /* Very neutral off-white */
+            --primary: #5D8AA8; /* Air Force Blue */
+            --secondary: #8FBC8F; /* Dark Sea Green */
+            --accent: #E6B89C; /* Soft Peach */
+            --bg-body: #F9FAFB;
             --surface: #FFFFFF; 
-            --text-dark: #37474F; /* Blue Grey text instead of harsh black */
+            --text-dark: #37474F;
             --text-light: #78909C;
             --border-light: #ECEFF1;
-            
-            /* Specific Principle Colors (CSS Variables for general UI use) */
-            --color-care: #D48FA4;
-            --color-trust: #B39DDB;
-            --color-diversity: #9FA8DA;
-            --color-access: #90CAF9;
-            --color-trans: #81D4FA;
-            --color-qual: #80CBC4;
-            --color-flex: #A5D6A7;
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -43,7 +34,7 @@
             margin: 0 auto;
             background: var(--surface);
             border-radius: 16px;
-            box-shadow: 0 10px 40px rgba(93, 138, 168, 0.08); /* Soft colored shadow */
+            box-shadow: 0 10px 40px rgba(93, 138, 168, 0.08);
             overflow: hidden;
             display: flex;
             flex-direction: column;
@@ -216,7 +207,6 @@
         .practice-title { font-weight: 700; font-size: 1.15em; color: var(--text-dark); margin-bottom: 6px; }
         .practice-desc { color: #78909C; font-size: 0.95em; }
         
-        /* Explicit Visual Cue - Refined */
         .practice-expand-hint {
             display: inline-block;
             font-size: 0.75em;
@@ -299,15 +289,27 @@
         .plan-actions li { font-size: 1.05em; color: #546E7A; margin-top: 8px; position: relative; padding-right: 20px; }
         .plan-actions li::before { content: "•"; color: #B0BEC5; font-size: 1.2em; position: absolute; right: 0; top: -3px; }
 
-        .btn-print { 
-            background: var(--primary); color: white; border: none; 
-            padding: 16px 45px; font-size: 1.1em; border-radius: 50px; 
-            cursor: pointer; display: block; margin: 40px auto; 
+        .actions-row {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin: 40px auto;
+        }
+
+        .btn-action { 
+            color: white; border: none; 
+            padding: 16px 35px; font-size: 1.1em; border-radius: 50px; 
+            cursor: pointer; 
             box-shadow: 0 10px 20px rgba(93, 138, 168, 0.2);
             transition: transform 0.2s, box-shadow 0.2s;
             font-weight: 600;
+            display: flex; align-items: center; gap: 10px;
         }
-        .btn-print:hover { transform: translateY(-2px); box-shadow: 0 15px 30px rgba(93, 138, 168, 0.3); }
+        
+        .btn-print { background: var(--primary); }
+        .btn-word { background: #2B579A; } /* Word blue */
+
+        .btn-action:hover { transform: translateY(-2px); box-shadow: 0 15px 30px rgba(93, 138, 168, 0.3); }
 
         /* Glossary */
         .glossary-card {
@@ -319,7 +321,7 @@
         .glossary-card:hover { transform: translateY(-3px); }
 
         @media print {
-            .tabs, .btn-print, .add-box { display: none !important; }
+            .tabs, .btn-print, .add-box, .actions-row { display: none !important; }
             .container { box-shadow: none; max-width: 100%; border: none; border-radius: 0; }
             .content { display: none !important; padding: 0; }
             #plan { display: block !important; padding: 0; }
@@ -366,9 +368,9 @@
 
     <!-- 3. Plan Section -->
     <div id="plan" class="content">
-        <div class="plan-container">
+        <div class="plan-container" id="planExportArea">
             <div style="text-align: center; border-bottom: 2px solid #F5F5F5; padding-bottom: 30px; margin-bottom: 40px;">
-                <h2 style="color: var(--primary); margin-bottom: 10px;">תוכנית עבודה לקידום הוגנות</h2>
+                <h2 style="color: #5D8AA8; margin-bottom: 10px;">תוכנית עבודה לקידום הוגנות</h2>
                 <p style="color: #90A4AE; font-size: 1.1em;">הפרקטיקות ודרכי היישום שנבחרו על ידי הצוות</p>
                 <p id="currentDate" style="color: #B0BEC5; margin-top: 10px; font-size: 0.9em;"></p>
             </div>
@@ -376,7 +378,15 @@
                 <p style="text-align: center; color: #CFD8DC; font-size: 1.2em; font-weight:300;">עדיין לא נבחרו פרקטיקות. עברו ללשונית "בחירת פרקטיקות".</p>
             </div>
         </div>
-        <button class="btn-print" onclick="window.print()">🖨️ הדפס תוכנית</button>
+        
+        <div class="actions-row">
+            <button class="btn-action btn-print" onclick="window.print()">
+                <span>🖨️</span> הדפסה
+            </button>
+            <button class="btn-action btn-word" onclick="exportToWord()">
+                <span>📥</span> הורדה כקובץ Word
+            </button>
+        </div>
     </div>
 
     <!-- 4. Glossary -->
@@ -386,12 +396,12 @@
 </div>
 
 <script>
-    // --- FULL DATA (Watercolor Palette) ---
+    // --- FULL DATA (Complete Update from OCR) ---
     
     const fullData = {
         'אכפתיות': {
             color: '#D88398', icon: '💗', // Muted Rose (Watercolor)
-            def: 'יכולת להביע אמפתיה, להקשיב ולהכיל',
+            def: 'יכולת להביע אמפתיה, להקשיב ולהכיל. אכפתיות היא הבסיס ליצירת קשרים משמעותיים ותחושת שייכות.',
             arenas: {
                 'הוראה-למידה-הערכה': [
                     'נעשים חיבורים לעולם הרגשי של התלמידים והתלמידות באופן מתוכנן',
@@ -481,8 +491,8 @@
             ]
         },
         'אמון': {
-            color: '#958BB6', icon: '🤲', // Muted Violet/Lavender (Watercolor)
-            def: 'תחושה שניתן לסמוך על עצמי, על אחרים ועל הסביבה',
+            color: '#958BB6', icon: '🤲', // Muted Violet
+            def: 'תחושה שניתן לסמוך על עצמי, על אחרים ועל הסביבה. אמון הוא הבסיס להתנסות, ללמידה ולנטילת סיכונים.',
             arenas: {
                 'הוראה-למידה-הערכה': [
                     'מתקיים שיח משתף ומתייעץ שאינו שיפוטי כלפי טעויות',
@@ -569,8 +579,8 @@
             ]
         },
         'מגוון': {
-            color: '#7E97AD', icon: '🌈', // Greyish Blue (Watercolor)
-            def: 'הכרה והערכה לקול הייחודי, הכישרון והזהות של כל אחד',
+            color: '#7E97AD', icon: '🌈', // Greyish Blue
+            def: 'הכרה והערכה לקול הייחודי, הכישרון והזהות של כל אחד. מגוון הוא עוצמה ולא אתגר.',
             arenas: {
                 'הוראה-למידה-הערכה': [
                     'ניתן מקום למגוון העמדות ונקודות המבט בשיעורים',
@@ -656,8 +666,8 @@
             ]
         },
         'נגישות': {
-            color: '#7FB3D5', icon: '🚪', // Stonewash Blue (Watercolor)
-            def: 'יצירת אפשרות לכולם לממש את זכותם ללמידה איכותית',
+            color: '#7FB3D5', icon: '🚪', // Stonewash Blue
+            def: 'יצירת אפשרות לכולם לממש את זכותם ללמידה איכותית. הסרת חסמים מערכתיים וחברתיים.',
             arenas: {
                 'הוראה-למידה-הערכה': [
                     'נערך מיפוי שיטתי של חסמים המגבילים השתתפות של תלמידים',
@@ -744,8 +754,8 @@
             ]
         },
         'שקיפות': {
-            color: '#5DADE2', icon: '🔍', // Soft Blue (Watercolor)
-            def: 'ידע ונתונים רלוונטיים נמצאים בידי כל מי שצריך לקבל החלטות',
+            color: '#5DADE2', icon: '🔍', // Soft Blue
+            def: 'ידע ונתונים רלוונטיים נמצאים בידי כל מי שצריך לקבל החלטות. שיתוף מידע באופן פתוח וברור.',
             arenas: {
                 'הוראה-למידה-הערכה': [
                     'מטרות הפעילות וההיגיון שבהן מוצגים בצורה שקופה וברורה לתלמידים',
@@ -808,8 +818,8 @@
             ]
         },
         'איכות': {
-            color: '#73B0B6', icon: '⭐', // Tealish Grey (Watercolor)
-            def: 'עבודה מבוססת נתונים ומכוונת לתוצאות בעלות ערך',
+            color: '#73B0B6', icon: '⭐', // Tealish Grey
+            def: 'עבודה מבוססת נתונים ומכוונת לתוצאות בעלות ערך. שאיפה למצוינות ושיפור מתמיד.',
             arenas: {
                 'הוראה-למידה-הערכה': [
                     'הפעילות מבוססת על גישות חדשניות המציבות רף גבוה',
@@ -895,8 +905,8 @@
             ]
         },
         'גמישות': {
-            color: '#8FC1A9', icon: '🌱', // Sage (Watercolor)
-            def: 'מיצוי פוטנציאל והתאמה לצרכים משתנים',
+            color: '#8FC1A9', icon: '🌱', // Sage
+            def: 'מיצוי פוטנציאל והתאמה לצרכים משתנים. יכולת להגיב לשינויים ולהתאים את הפעולה.',
             arenas: {
                 'הוראה-למידה-הערכה': [
                     'ניתנת לתלמידים בחירה באופן ההשתתפות המתאים להם',
@@ -1225,6 +1235,54 @@
         });
         
         container.innerHTML = html;
+    }
+
+    // --- Word Export Function ---
+    function exportToWord() {
+        // 1. Get the HTML content of the plan
+        const planContent = document.getElementById('planExportArea').innerHTML;
+        
+        // 2. Wrap it in a complete HTML structure compatible with Word
+        const htmlBody = `
+            <html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'>
+            <head>
+                <meta charset='utf-8'>
+                <title>תוכנית עבודה - הוגנות בחינוך</title>
+                <style>
+                    body { font-family: 'Segoe UI', Arial, sans-serif; direction: rtl; text-align: right; }
+                    .plan-item { margin-bottom: 20px; border-bottom: 1px solid #ccc; padding-bottom: 20px; }
+                    h2 { color: #5D8AA8; }
+                    h3 { color: #555; }
+                    ul { list-style-type: disc; margin-right: 20px; }
+                    li { margin-bottom: 5px; }
+                </style>
+            </head>
+            <body>
+                ${planContent}
+            </body>
+            </html>
+        `;
+
+        // 3. Create a Blob with the content
+        const blob = new Blob(['\ufeff', htmlBody], {
+            type: 'application/msword'
+        });
+
+        // 4. Create a download link and trigger it
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        
+        // Filename with date
+        const dateStr = new Date().toLocaleDateString('he-IL').replace(/\./g, '-');
+        link.download = `תוכנית_עבודה_הוגנות_${dateStr}.doc`;
+        
+        document.body.appendChild(link);
+        link.click();
+        
+        // Cleanup
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
     }
 
     // --- Glossary ---
