@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>עגפא יסודי - משאבים חינוכיים</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Assistant:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --accent-gradient: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            --text-color: #333;
+            --bg-color: #f0f2f5;
+            --card-bg: rgba(255, 255, 255, 0.95);
+            --shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Assistant', 'Segoe UI', Arial, sans-serif;
+            background: var(--bg-color);
+            color: var(--text-color);
+            direction: rtl;
+            padding: 20px;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header {
+            background: var(--primary-gradient);
+            color: white;
+            text-align: center;
+            padding: 60px 30px;
+            border-radius: 20px;
+            margin-bottom: 40px;
+            box-shadow: var(--shadow);
+        }
+
+        .header h1 {
+            font-size: 3em;
+            font-weight: 700;
+            margin-bottom: 15px;
+        }
+
+        .header p {
+            font-size: 1.3em;
+            font-weight: 300;
+            opacity: 0.95;
+        }
+
+        .featured-section {
+            margin-bottom: 40px;
+        }
+
+        .section-title {
+            font-size: 2em;
+            font-weight: 600;
+            margin-bottom: 25px;
+            color: #667eea;
+        }
+
+        .featured-card {
+            background: var(--card-bg);
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: var(--shadow);
+            border: 2px solid #667eea;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .featured-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 40px rgba(102, 126, 234, 0.2);
+        }
+
+        .featured-card h2 {
+            font-size: 2em;
+            font-weight: 700;
+            margin-bottom: 15px;
+            background: var(--accent-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .featured-card p {
+            font-size: 1.2em;
+            line-height: 1.8;
+            margin-bottom: 25px;
+            color: #555;
+        }
+
+        .featured-card .features {
+            margin-bottom: 25px;
+        }
+
+        .featured-card .features li {
+            font-size: 1.1em;
+            margin-bottom: 12px;
+            padding-right: 20px;
+            line-height: 1.6;
+        }
+
+        .btn {
+            display: inline-block;
+            background: var(--accent-gradient);
+            color: white;
+            padding: 15px 40px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-size: 1.2em;
+            font-weight: 600;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            box-shadow: 0 4px 15px rgba(79, 172, 254, 0.3);
+        }
+
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(79, 172, 254, 0.4);
+        }
+
+        .resources-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 25px;
+            margin-bottom: 40px;
+        }
+
+        .resource-card {
+            background: var(--card-bg);
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .resource-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
+        }
+
+        .resource-card h3 {
+            font-size: 1.4em;
+            font-weight: 600;
+            margin-bottom: 12px;
+            color: #667eea;
+        }
+
+        .resource-card p {
+            font-size: 1em;
+            line-height: 1.6;
+            color: #666;
+            margin-bottom: 15px;
+        }
+
+        .resource-link {
+            color: #4facfe;
+            text-decoration: none;
+            font-weight: 600;
+            transition: color 0.3s ease;
+        }
+
+        .resource-link:hover {
+            color: #00f2fe;
+        }
+
+        .footer {
+            text-align: center;
+            padding: 30px;
+            color: #888;
+            font-size: 1em;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2em;
+            }
+
+            .header p {
+                font-size: 1.1em;
+            }
+
+            .featured-card h2 {
+                font-size: 1.6em;
+            }
+
+            .resources-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>עגפא יסודי</h1>
+            <p>משאבים חינוכיים למורים ולתלמידים</p>
+        </div>
+
+        <div class="featured-section">
+            <h2 class="section-title">⭐ כלי מומלץ</h2>
+            <div class="featured-card">
+                <h2>אפליקציה להדמיה מנטלית והבנת הנקרא</h2>
+                <p>
+                    כלי חדשני ומתקדם המיועד לשיפור הבנת הנקרא באמצעות טכניקות הדמיה מנטלית.
+                    האפליקציה משלבת בינה מלאכותית ליצירת תרגילים מותאמים אישית, דפי עבודה אינטראקטיביים,
+                    וכלים פדגוגיים מתקדמים למורים ולתלמידים.
+                </p>
+                <ul class="features">
+                    <li>✓ יצירת טקסטים מותאמים אישית באמצעות בינה מלאכותית</li>
+                    <li>✓ תרגילי הבנת הנקרא עם שאלות חשיבה מגוונות</li>
+                    <li>✓ זיהוי אווירה ורגשות בטקסט</li>
+                    <li>✓ איורים ונרציה קולית לתמיכה בלמידה רב-חושית</li>
+                    <li>✓ ייצוא לWord ו-HTML לשימוש נוח בכיתה</li>
+                </ul>
+                <a href="https://ilanit17.github.io/mental-imagery-app/" class="btn" target="_blank">
+                    כניסה לאפליקציה →
+                </a>
+            </div>
+        </div>
+
+        <div class="resources-section">
+            <h2 class="section-title">משאבים נוספים</h2>
+            <div class="resources-grid">
+                <div class="resource-card">
+                    <h3>אפליקציית הנדסת חוסן חינוכי</h3>
+                    <p>מודל מתודולוגי לניהול והנדסת חוסן במרחב החינוכי.</p>
+                    <a href="resilience_app.html" class="resource-link">למשאב →</a>
+                </div>
+
+                <div class="resource-card">
+                    <h3>מדריך תהליך אינטראקטיבי</h3>
+                    <p>מדריך למשתמש לתכנון תוכנית ליווי חינוכית.</p>
+                    <a href="interactive-process-guide.html" class="resource-link">למשאב →</a>
+                </div>
+
+                <div class="resource-card">
+                    <h3>גלוית מסלולים</h3>
+                    <p>כלי אינטראקטיבי למסלולי למידה והדרכה.</p>
+                    <a href="maslulim.html" class="resource-link">למשאב →</a>
+                </div>
+
+                <div class="resource-card">
+                    <h3>מטריצה חינוכית</h3>
+                    <p>כלי לניתוח ותכנון מבנה חינוכי.</p>
+                    <a href="matriza.html" class="resource-link">למשאב →</a>
+                </div>
+
+                <div class="resource-card">
+                    <h3>כיתה פעילה</h3>
+                    <p>משאב לעיצוב סביבת למידה פעילה.</p>
+                    <a href="כיתה פעלנית.html" class="resource-link">למשאב →</a>
+                </div>
+
+                <div class="resource-card">
+                    <h3>עקרונות ההוגנות במרחב הבית ספרי</h3>
+                    <p>מדריך מקיף לקידום הוגנות בבית הספר.</p>
+                    <a href="עקרונות ההוגנות במרחב הבית ספרי.html" class="resource-link">למשאב →</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p>© 2026 עגפא יסודי - כל הזכויות שמורות</p>
+        </div>
+    </div>
+</body>
+</html>
