@@ -130,6 +130,56 @@
             box-shadow: 0 6px 20px rgba(79, 172, 254, 0.4);
         }
 
+        .notice-box {
+            background: linear-gradient(135deg, #fff3cd 0%, #ffe9a6 100%);
+            border: 2px solid #ffc107;
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 25px;
+        }
+
+        .notice-box h3 {
+            font-size: 1.3em;
+            font-weight: 700;
+            margin-bottom: 15px;
+            color: #856404;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .notice-box p {
+            font-size: 1.05em;
+            line-height: 1.7;
+            color: #856404;
+            margin-bottom: 12px;
+        }
+
+        .notice-box ol {
+            margin-right: 20px;
+            color: #856404;
+        }
+
+        .notice-box li {
+            font-size: 1.05em;
+            margin-bottom: 10px;
+            line-height: 1.6;
+        }
+
+        .notice-box a {
+            color: #0066cc;
+            text-decoration: underline;
+            font-weight: 600;
+        }
+
+        .notice-box code {
+            background: rgba(0, 0, 0, 0.1);
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.95em;
+        }
+
         .resources-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
@@ -224,6 +274,20 @@
                     <li>✓ איורים ונרציה קולית לתמיכה בלמידה רב-חושית</li>
                     <li>✓ ייצוא לWord ו-HTML לשימוש נוח בכיתה</li>
                 </ul>
+                
+                <div class="notice-box">
+                    <h3>⚠️ הערה חשובה לפני השימוש</h3>
+                    <p><strong>האפליקציה דורשת מפתח API של Google Gemini לעבודה תקינה.</strong></p>
+                    <p>אם אתם מקבלים שגיאה שאין מפתח, עקבו אחר השלבים הבאים:</p>
+                    <ol>
+                        <li>קבלו מפתח API חינמי מ-<a href="https://aistudio.google.com/app/apikey" target="_blank">Google AI Studio</a></li>
+                        <li>הוסיפו את המפתח ב-<a href="https://github.com/ilanit17/mental-imagery-app/settings/secrets/actions" target="_blank">GitHub Secrets</a> (שם: <code>API_KEY</code>)</li>
+                        <li>הריצו מחדש את ה-<a href="https://github.com/ilanit17/mental-imagery-app/actions" target="_blank">GitHub Actions Workflow</a></li>
+                        <li>המתינו 2-3 דקות לסיום הבנייה</li>
+                    </ol>
+                    <p>להוראות מפורטות, ראו את הקובץ <a href="https://github.com/ilanit17/mental-imagery-app/blob/main/API_KEY_FIX.md" target="_blank">API_KEY_FIX.md</a> במאגר.</p>
+                </div>
+                
                 <a href="https://ilanit17.github.io/mental-imagery-app/" class="btn" target="_blank">
                     כניסה לאפליקציה →
                 </a>
