@@ -1,0 +1,11 @@
+flask
+flask-cors
+pandas
+numpy
+anthropic
+plotly
+openpyxl
+xlsxwriter
+scikit-learn
+seaborn
+python-dotenv
