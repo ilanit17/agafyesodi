@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>מדריך אינטראקטיבי - בונה הכלים החינוכי</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Assistant:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #3b82f6;
+            --primary-dark: #2563eb;
+            --secondary: #6366f1;
+            --accent: #8b5cf6;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --info: #06b6d4;
+            --bg: #f1f5f9;
+            --card-bg: #ffffff;
+            --text: #1e293b;
+            --text-light: #64748b;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Assistant', sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        .guide-container {
+            width: 95vw;
+            max-width: 1000px;
+            height: 92vh;
+            background: var(--card-bg);
+            border-radius: 2rem;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.15);
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+
+        /* סרגל לוגואים עליון */
+        .logos-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 2.5rem;
+            background: #fff;
+            border-radius: 2rem 2rem 0 0;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .logos-header img {
+            height: 60px;
+            width: auto;
+            object-fit: contain;
+        }
+
+        /* פס התקדמות */
+        .progress-container {
+            width: 100%;
+            height: 6px;
+            background: #f1f5f9;
+            overflow: hidden;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            width: 0%;
+            transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .content-area {
+            flex: 1;
+            padding: 2rem 2.5rem;
+            overflow-y: auto;
+            position: relative;
+        }
+
+        .slide {
+            display: none;
+            animation: fadeIn 0.5s ease-out forwards;
+        }
+
+        .slide.active { display: block; }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        h1 { font-size: 2.2rem; color: var(--primary-dark); margin-bottom: 1rem; font-weight: 800; }
+        h2 { font-size: 1.8rem; color: var(--secondary); margin-bottom: 1.2rem; display: flex; align-items: center; gap: 0.5rem; }
+        h3 { font-size: 1.4rem; color: var(--primary); margin: 1.5rem 0 1rem; }
+        h4 { font-size: 1.2rem; font-weight: 700; margin-top: 1rem; }
+        p { margin-bottom: 1rem; line-height: 1.7; font-size: 1.1rem; }
+
+        .info-box {
+            padding: 1.2rem;
+            border-radius: 1rem;
+            margin: 1rem 0;
+            border-right: 5px solid;
+        }
+        .info-box.success { background: #f0fdf4; border-color: var(--success); }
+        .info-box.warning { background: #fffbeb; border-color: var(--warning); }
+        .info-box.info { background: #f0f9ff; border-color: var(--info); }
+        .info-box.tip { background: #faf5ff; border-color: var(--accent); }
+
+        .step-item {
+            background: #f8fafc;
+            padding: 1.2rem;
+            border-radius: 1rem;
+            margin-bottom: 1rem;
+            border-right: 4px solid var(--primary);
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 1rem;
+        }
+        .feature-card { background: #f0f9ff; padding: 1rem; border-radius: 0.75rem; border: 1px solid #e2e8f0; }
+
+        .nav-controls {
+            padding: 1.2rem 2.5rem;
+            border-top: 1px solid #e2e8f0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #f8fafc;
+            border-radius: 0 0 2rem 2rem;
+        }
+
+        .btn {
+            padding: 0.7rem 1.5rem;
+            border-radius: 0.8rem;
+            border: none;
+            font-weight: 700;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.2s;
+            font-size: 1.1rem;
+        }
+
+        .btn-prev { background: #e2e8f0; color: var(--text); }
+        .btn-next { background: var(--primary); color: white; }
+        .btn:hover { transform: translateY(-2px); opacity: 0.9; }
+
+        .step-indicator { font-weight: 600; color: var(--text-light); }
+
+        .comparison-table {
+            width: 100%; border-collapse: collapse; margin-top: 1rem;
+        }
+        .comparison-table th, td { padding: 0.6rem; border: 1px solid #e2e8f0; text-align: right; font-size: 0.95rem; }
+        .comparison-table th { background: var(--primary); color: white; }
+
+        .highlight { background: #fef3c7; padding: 0 0.3rem; border-radius: 4px; font-weight: 600; }
+    </style>
+</head>
+<body>
+
+    <div class="guide-container">
+        <!-- סרגל לוגואים מעודכן עם שמות הקבצים מהתיקייה שלך -->
+        <div class="logos-header">
+            <img src="לוגו יסודי עכשווי.png" alt="לוגו יסודי עכשווי">
+            <img src="לוגו אגף בכיר חינוך יסודי.jpeg" alt="לוגו אגף בכיר חינוך יסודי">
+        </div>
+
+        <div class="progress-container">
+            <div id="progressBar" class="progress-bar"></div>
+        </div>
+
+        <div class="content-area">
+            <!-- Slide 1: Welcome -->
+            <div class="slide active">
+                <div style="text-align: center; padding-top: 1rem;">
+                    <h1>📚 ברוכים הבאים למדריך</h1>
+                    <p style="font-size: 1.4rem;">בונה הכלים החינוכי</p>
+                    <div style="background: linear-gradient(135deg, var(--primary), var(--secondary)); color: white; padding: 2rem; border-radius: 1.5rem; margin-top: 1.5rem;">
+                        <p style="font-size: 1.4rem; font-weight: 800;">תִּכְנוּת בְּקַלּוּת</p>
+                        <p>הפדגוגיה שלך + הבינה המלאכותית = כלי חינוכי מותאם אישית</p>
+                    </div>
+                    <p style="margin-top: 2rem; color: var(--text-light);">השתמשו בחיצים למטה כדי להתקדם במדריך</p>
+                </div>
+            </div>
+
+            <!-- Slide 2: What is the tool -->
+            <div class="slide">
+                <h2>🎯 מהו "בונה הכלים החינוכי"?</h2>
+                <p><strong>בונה הכלים החינוכי</strong> הוא כלי חדשני שמאפשר למורים ואנשי חינוך ליצור פרומפטים (הנחיות) מקצועיים ומותאמים אישית לבינה מלאכותית, <span class="highlight">ללא צורך בידע טכני</span>.</p>
+                <p>במקום לכתוב קוד או ללמוד תכנות, אתם פשוט עונים על שאלות פשוטות על הכלי החינוכי שאתם רוצים ליצור, והכלי יוצר עבורכם פרומפט מקצועי שאפשר להעביר ישירות לכל מערכת בינה מלאכותית.</p>
+                <div class="info-box success">
+                    <strong>✨ המטרה שלנו:</strong> להעצים אנשי חינוך ליצור כלים דיגיטליים בעצמם, תוך שמירה על המומחיות הפדגוגית שלהם במרכז.
+                </div>
+            </div>
+
+            <!-- Slide 3: Key Features -->
+            <div class="slide">
+                <h2>🌟 תכונות מרכזיות</h2>
+                <div class="features-grid" style="margin-top: 1rem;">
+                    <div class="feature-card"><strong>⚡ פשוט וקל:</strong> ממשק אינטואיטיבי ללא צורך בידע טכני.</div>
+                    <div class="feature-card"><strong>🎓 פדגוגיה במרכז:</strong> מתמקד בחזון החינוכי שלך.</div>
+                    <div class="feature-card"><strong>🚀 מהיר ויעיל:</strong> 10-30 דקות ליצירת כלי מלא.</div>
+                    <div class="feature-card"><strong>🔒 פרטיות מוגנת:</strong> תזכורות לשמירה על פרטיות תלמידים.</div>
+                    <div class="feature-card"><strong>🎨 התאמה אישית:</strong> כלים מותאמים לצרכים הספציפיים שלך.</div>
+                    <div class="feature-card"><strong>💡 שיפור מתמיד:</strong> אפשרות לשכלל את הכלי בשיחה עם AI.</div>
+                </div>
+            </div>
+
+            <!-- Slide 4: Steps - Stage A -->
+            <div class="slide">
+                <h2>📖 שלב א': בחירת מסלול</h2>
+                <div class="step-item">
+                    <h3 style="margin-top:0;">🚀 מסלול מהיר <span style="font-size: 0.9rem; background:#dbeafe; padding: 4px 10px; border-radius: 20px; color:#1e40af;">10-15 דקות</span></h3>
+                    <p><strong>למי מתאים:</strong> מורים שרוצים ליצור כלי בסיסי ועובד במהירות.</p>
+                    <p><strong>מה כולל:</strong> 5-7 שאלות, גרסה ראשונית, מתאים לתרגולים ומשחקים פשוטים.</p>
+                </div>
+                <div class="step-item" style="border-right-color: var(--warning);">
+                    <h3 style="margin-top:0;">🎯 מסלול מקצועי <span style="font-size: 0.9rem; background:#fef3c7; padding: 4px 10px; border-radius: 20px; color:#92400e;">20-30 דקות</span></h3>
+                    <p><strong>למי מתאים:</strong> מורים שרוצים כלי מעמיק ומבוסס מחקר.</p>
+                    <p><strong>מה כולל:</strong> 10-12 שאלות, ביסוס תיאורטי, מתאים למערכי שיעור מורכבים וכלי הערכה.</p>
+                </div>
+                <div class="info-box tip">
+                    <strong>💡 טיפ:</strong> לא בטוחים? התחילו במסלול המהיר! תמיד אפשר לשפר את הכלי בשיחה עם ה-AI אחר כך.
+                </div>
+            </div>
+
+            <!-- Slide 5: Stage B -->
+            <div class="slide">
+                <h2>📝 שלב ב': מילוי הפרטים</h2>
+                <p>עכשיו תענו על שאלות פשוטות על הכלי שאתם רוצים ליצור:</p>
+                <ul style="margin-right: 2rem; margin-bottom: 1rem;">
+                    <li><strong>סוג הכלי:</strong> מה אתם רוצים ליצור? (משחק, דף עבודה, תרגול...)</li>
+                    <li><strong>נושא התוכן:</strong> באיזה נושא מדובר? (מתמטיקה, עברית, היסטוריה...)</li>
+                    <li><strong>קהל היעד:</strong> לאיזה גיל/כיתה הכלי מיועד?</li>
+                    <li><strong>מטרות למידה:</strong> מה התלמידים ילמדו?</li>
+                    <li><strong>תכונות מיוחדות:</strong> אילו יכולות נוספות צריך הכלי?</li>
+                </ul>
+                <div class="info-box info">
+                    <strong>ℹ️ טיפ חשוב:</strong> ככל שתהיו יותר ספציפיים בתשובות, כך הכלי שייווצר יהיה יותר מדויק ומותאם לצרכים שלכם.
+                </div>
+            </div>
+
+            <!-- Slide 6: Professional Path Options -->
+            <div class="slide">
+                <h2>🎓 רקע תיאורטי (במסלול מקצועי)</h2>
+                <p>ביסוס תיאורטי מבטיח שהכלי שלכם יהיה מבוסס על עקרונות פדגוגיים מוכחים ולא רק על אינטואיציה.</p>
+                <div class="step-item">
+                    <strong>✅ אופציה 1: יש לי ממצאים עם רקע תיאורטי</strong>
+                    <p>כשיש לכם תיאוריה ספציפית (למשל: למידה בונה, עומס קוגניטיבי, למידה מבוססת משחק).</p>
+                </div>
+                <div class="step-item">
+                    <strong>🔍 אופציה 2: בקש מהבינה המלאכותית לחקור</strong>
+                    <p>ה-AI יחקור וימליץ על תיאוריות למידה ומחקרים רלוונטיים שמתאימים לכלי שלכם.</p>
+                </div>
+                <div class="step-item">
+                    <strong>⚡ אופציה 3: בנה ללא רקע תיאורטי מיוחד</strong>
+                    <p>הכלי ייבנה על בסיס עקרונות פדגוגיים כלליים.</p>
+                </div>
+            </div>
+
+            <!-- Slide 7: Stage C & D -->
+            <div class="slide">
+                <h2>🎉 שלב ג' ו-ד': קבלת הפרומפט והפעלתו</h2>
+                <div class="step-item">
+                    <strong>שלב ג': קבלת הפרומפט</strong>
+                    <p>לאחר מילוי השאלות, תקבלו הנחיה מקצועית הכוללת מטרות, התאמות לגיל, הנחיות דידקטיות ודרישות טכניות.</p>
+                </div>
+                <div class="step-item">
+                    <strong>שלב ד': יצירת הכלי ב-AI</strong>
+                    <ol style="margin-right: 1.5rem; margin-bottom: 0.5rem;">
+                        <li>העתיקו את הפרומפט שנוצר.</li>
+                        <li>פתחו <strong>Claude AI</strong> (מומלץ), ChatGPT או Gemini.</li>
+                        <li>הדביקו בשיחה חדשה ושלחו.</li>
+                    </ol>
+                </div>
+                <div class="info-box success">
+                    תוך דקות ספורות תקבלו כלי חינוכי מלא, מוכן לשימוש בכיתה!
+                </div>
+            </div>
+
+            <!-- Slide 8: Step E -->
+            <div class="slide">
+                <h2>💬 שלב ה': שיפור הכלי (החלק החשוב!)</h2>
+                <p>הכלי לא מושלם מהניסיון הראשון? <strong>אין בעיה!</strong> המשיכו את השיחה עם ה-AI ושפרו את הכלי:</p>
+                <div class="info-box tip">
+                    <ul style="margin-right: 1.5rem;">
+                        <li>"תוכל להוסיף עוד 5 שאלות?"</li>
+                        <li>"שנה את רמת הקושי למתקדמים"</li>
+                        <li>"הוסף הסברים מפורטים יותר"</li>
+                        <li>"תעשה את זה יותר אינטראקטיבי"</li>
+                    </ul>
+                </div>
+                <p><strong>קסם השיחה:</strong> שיחה פשוטה עם ה-AI יכולה להפוך כלי בסיסי לכלי מתקדם ומושלם בדקות!</p>
+            </div>
+
+            <!-- Slide 9: Privacy -->
+            <div class="slide">
+                <h2 style="color: var(--warning);">⚠️ חשוב מאוד - פרטיות!</h2>
+                <div class="info-box warning">
+                    <p><strong>🔒 שמירה על פרטיות התלמידים:</strong></p>
+                    <p>כשאתם משתמשים בכלי שנוצר או מדברים עם ה-AI:</p>
+                    <ul style="margin-right: 1.5rem; margin-bottom: 0.5rem;">
+                        <li><strong>אל תזינו שמות מלאים</strong> של תלמידים.</li>
+                        <li><strong>אל תזינו מספרי תעודת זהות.</strong></li>
+                        <li><strong>אל תזינו מידע מזהה אישי.</strong></li>
+                        <li><strong>השתמשו במזהים כלליים:</strong> "תלמיד א'", "קבוצה 1" וכו'.</li>
+                    </ul>
+                    <p>זכרו: מערכות בינה מלאכותית הן ציבוריות - כל מה שאתם מזינים עלול להישמר.</p>
+                </div>
+            </div>
+
+            <!-- Slide 10: Comparison -->
+            <div class="slide">
+                <h2>🆚 השוואה בין המסלולים</h2>
+                <table class="comparison-table">
+                    <tr>
+                        <th>תכונה</th>
+                        <th>מסלול מהיר</th>
+                        <th>מסלול מקצועי</th>
+                    </tr>
+                    <tr><td><strong>זמן</strong></td><td>10-15 דקות</td><td>20-30 דקות</td></tr>
+                    <tr><td><strong>שאלות</strong></td><td>5-7 שאלות</td><td>10-12 שאלות</td></tr>
+                    <tr><td><strong>רקע תיאורטי</strong></td><td>לא כלול</td><td>3 אפשרויות לבחירה</td></tr>
+                    <tr><td><strong>מתאים ל...</strong></td><td>כלים פשוטים</td><td>כלים מורכבים</td></tr>
+                    <tr><td><strong>דוגמאות</strong></td><td>תרגול, משחק</td><td>מערך שיעור, כלי הערכה</td></tr>
+                </table>
+            </div>
+
+            <!-- Slide 11: FAQ 1 -->
+            <div class="slide">
+                <h2>❓ שאלות נפוצות</h2>
+                <h3>האם צריך ידע טכני כדי להשתמש בכלי?</h3>
+                <p><strong>בכלל לא!</strong> הכלי מתוכנן במיוחד עבור מורים ואנשי חינוך ללא רקע טכני. כל מה שצריך זה לענות על שאלות פשוטות.</p>
+                <h3>כמה זמן לוקח ליצור כלי?</h3>
+                <p>תלוי במסלול שבחרתם: 10-15 דקות במסלול המהיר, 20-30 דקות במסלול המקצועי.</p>
+            </div>
+
+            <!-- Slide 12: FAQ 2 -->
+            <div class="slide">
+                <h2>❓ שאלות נפוצות (המשך)</h2>
+                <h3>מה אם הכלי לא מושלם בניסיון הראשון?</h3>
+                <p>זה בסדר גמור! פשוט המשיכו את השיחה עם ה-AI ובקשו שינויים. זה החלק החזק ביותר.</p>
+                <h3>האם יכול להיות שהכלי יזרוק טעויות?</h3>
+                <p>כן, זה אפשרי. בינה מלאכותית לא מושלמת. לכן חשוב <strong>לבדוק את התוכן</strong> לפני שימוש בכיתה.</p>
+                <h3>האם הפרומפט שנוצר שייך לי?</h3>
+                <p>כן! הפרומפט שלכם לגמרי. תוכלו לשמור אותו, לשנות אותו, ולהשתמש בו שוב ושוב.</p>
+            </div>
+
+            <!-- Slide 13: Examples -->
+            <div class="slide">
+                <h2>📝 דוגמאות לכלים שאפשר ליצור</h2>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                    <div class="feature-card">
+                        <h4 style="color: var(--primary);">כלים פשוטים:</h4>
+                        <ul style="margin-right: 1rem; font-size: 0.95rem;">
+                            <li>🎮 משחק טריוויה בהיסטוריה</li>
+                            <li>📝 דף תרגול בשברים</li>
+                            <li>🎯 משחק התאמה למילים באנגלית</li>
+                            <li>📖 תרגיל קריאה והבנה</li>
+                        </ul>
+                    </div>
+                    <div class="feature-card">
+                        <h4 style="color: var(--secondary);">כלים מתקדמים:</h4>
+                        <ul style="margin-right: 1rem; font-size: 0.95rem;">
+                            <li>📚 מערך שיעור מלא</li>
+                            <li>🎓 כלי הערכה פורמטיבית</li>
+                            <li>🔬 סימולציה אינטראקטיבית</li>
+                            <li>📖 יחידת לימוד שלמה</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Slide 14: 4 Essences -->
+            <div class="slide">
+                <h2>🧪 4 תמציות הבינה המלאכותית</h2>
+                <div class="features-grid">
+                    <div class="feature-card"><strong>✨ הפליאה:</strong> חוויות למידה מרתקות שמעוררות סקרנות.</div>
+                    <div class="feature-card"><strong>🎯 הדיוק:</strong> מעקב נתונים וניתוח מדויק של התקדמות.</div>
+                    <div class="feature-card"><strong>🌬️ הנשימה:</strong> חיסכון בזמן ושחרור מעומס בירוקרטי.</div>
+                    <div class="feature-card"><strong>🌐 הרלוונטיות:</strong> חיבור הלמידה לעולם הדיגיטלי של התלמיד.</div>
+                </div>
+            </div>
+
+            <!-- Slide 15: Conclusion -->
+            <div class="slide">
+                <div style="text-align: center; padding-top: 1rem;">
+                    <h1>זהו, אתם מוכנים! 🚀</h1>
+                    <div class="info-box success" style="display: inline-block; padding: 2rem; margin-top: 1rem;">
+                        <p style="font-size: 1.5rem;"><strong>זכרו תמיד:</strong></p>
+                        <p style="font-size: 1.25rem;">הפדגוגיה שלכם היא הבסיס,<br>הבינה המלאכותית היא התמצית.</p>
+                    </div>
+                    <p style="margin-top: 1.5rem;">אתם המומחים החינוכיים - ה-AI רק עוזר לכם להגשים את החזון שלכם!</p>
+                    <p style="color: var(--text-light); font-size: 0.9rem; margin-top: 2rem;">נוצר באהבה ❤️ על ידי צוות החדשנות של אגף בכיר חינוך יסודי</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- פקדים -->
+        <div class="nav-controls">
+            <button id="btnPrev" class="btn btn-prev" disabled>◀ הקודם</button>
+            <div id="stepIndicator" class="step-indicator">שקף 1 מתוך 15</div>
+            <button id="btnNext" class="btn btn-next">הבא ▶</button>
+        </div>
+    </div>
+
+    <script>
+        const slides = document.querySelectorAll('.slide');
+        const btnNext = document.getElementById('btnNext');
+        const btnPrev = document.getElementById('btnPrev');
+        const progressBar = document.getElementById('progressBar');
+        const stepIndicator = document.getElementById('stepIndicator');
+        let currentSlide = 0;
+
+        function updateSlide() {
+            slides.forEach((slide, index) => {
+                slide.classList.toggle('active', index === currentSlide);
+            });
+
+            btnPrev.disabled = currentSlide === 0;
+            if (currentSlide === slides.length - 1) {
+                btnNext.innerHTML = "התחל מחדש 🔄";
+            } else {
+                btnNext.innerHTML = "הבא ▶";
+            }
+
+            const progress = ((currentSlide + 1) / slides.length) * 100;
+            progressBar.style.width = `${progress}%`;
+            stepIndicator.textContent = `שקף ${currentSlide + 1} מתוך ${slides.length}`;
+            
+            document.querySelector('.content-area').scrollTop = 0;
+        }
+
+        btnNext.addEventListener('click', () => {
+            if (currentSlide < slides.length - 1) {
+                currentSlide++;
+            } else {
+                currentSlide = 0;
+            }
+            updateSlide();
+        });
+
+        btnPrev.addEventListener('click', () => {
+            if (currentSlide > 0) {
+                currentSlide--;
+                updateSlide();
+            }
+        });
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowLeft') btnNext.click();
+            if (e.key === 'ArrowRight') btnPrev.click();
+        });
+
+        updateSlide();
+    </script>
+</body>
+</html>
