@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Guide: Educational Tool Builder</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+        body { 
+            font-family: 'Inter', sans-serif; 
+            background: #f0f4f8; 
+            color: #1e293b; 
+            overflow: hidden; 
+            height: 100vh; 
+            margin: 0; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+        }
+        
+        .fade-in { animation: fadeIn 0.6s cubic-bezier(0.16, 1, 0.3, 1); }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        
+        .cursor { display: inline-block; width: 4px; height: 32px; background: #3b82f6; vertical-align: middle; margin-left: 8px; }
+        .cursor.blink { animation: blink 1s infinite; }
+        @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
+        
+        .main-card { background: #ffffff; border: 1px solid #e2e8f0; }
+        .narrative-box { background: #f8fafc; border-top: 3px solid #3b82f6; z-index: 10; }
+        
+        #main-title {
+            line-height: 1.2;
+            padding: 0.2em 0;
+        }
+        
+        #content-container {
+            padding-top: 20px;
+        }
+
+        #icon-box {
+            line-height: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+    </style>
+</head>
+<body class="p-4 md:p-8">
+    <div id="app" class="main-card w-full max-w-6xl h-[92vh] rounded-[48px] shadow-2xl flex flex-col relative overflow-hidden">
+        
+        <!-- Header -->
+        <div class="p-6 md:p-8 flex justify-between items-center border-b border-slate-100 shrink-0 bg-white z-20">
+            <div class="flex flex-col">
+                <h1 class="text-xs md:text-sm font-black text-blue-600 uppercase tracking-widest text-left">Tool Builder Guide: Pedagogy + AI</h1>
+                <p id="chapter-label" class="text-[9px] md:text-[10px] text-slate-400 font-bold uppercase mt-0.5 text-left"></p>
+            </div>
+            <div id="progress-dots" class="flex gap-1.5 md:gap-2"></div>
+        </div>
+
+        <!-- Stage Area (Center Content) -->
+        <div class="flex-1 flex flex-col items-center justify-center p-4 md:p-10 text-center relative overflow-hidden bg-white">
+            <div id="content-container" class="fade-in flex flex-col items-center w-full max-w-3xl">
+                <!-- Icon with safety margin -->
+                <div id="icon-box" class="text-[90px] md:text-[130px] mb-4 md:mb-6 transition-transform duration-700 hover:scale-105 drop-shadow-sm"></div>
+                
+                <!-- Main Title -->
+                <h2 id="main-title" class="text-4xl md:text-6xl font-black mb-2 md:mb-4 tracking-tight text-slate-800"></h2>
+                
+                <p id="sub-title" class="text-xl md:text-3xl font-bold text-blue-500/80"></p>
+            </div>
+
+            <!-- Navigation Buttons (Positioned for LTR) -->
+            <button id="prev-btn" class="absolute left-2 md:left-8 top-1/2 -translate-y-1/2 w-14 h-14 md:w-20 md:h-20 rounded-full border border-blue-100 bg-white shadow-lg flex items-center justify-center text-2xl md:text-3xl hover:bg-blue-50 text-blue-600 transition-all disabled:opacity-0 disabled:pointer-events-none z-30">←</button>
+            <button id="next-btn" class="absolute right-2 md:right-8 top-1/2 -translate-y-1/2 w-14 h-14 md:w-20 md:h-20 rounded-full border border-blue-100 bg-white shadow-lg flex items-center justify-center text-2xl md:text-3xl hover:bg-blue-50 text-blue-600 transition-all disabled:opacity-0 disabled:pointer-events-none z-30">→</button>
+        </div>
+
+        <!-- Narrative Box (Bottom Area) -->
+        <div class="narrative-box min-h-[180px] md:min-h-[240px] p-6 md:p-10 flex flex-col items-center justify-center relative shrink-0">
+            <p id="typed-output" class="text-xl md:text-3xl font-bold text-slate-700 text-center leading-relaxed max-w-4xl tracking-wide"></p>
+            <div id="final-action" class="mt-6 hidden">
+                <button onclick="window.close()" class="px-10 py-3 bg-blue-600 text-white rounded-2xl font-black text-xl hover:bg-blue-700 transition-all shadow-md">Let's Build!</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const stages = [
+            {
+                "icon": "🏗️",
+                "title": "Easy Building",
+                "subtitle": "From Pedagogical Idea to Digital Tool",
+                "narrative": "Welcome to the Educational Tool Builder. Here you can transform any educational or administrative need into a working digital tool using AI. You bring the pedagogy, and the AI brings the technical essence."
+            },
+            {
+                "icon": "🛤️",
+                "title": "Choose Your Path",
+                "subtitle": "Quick or Professional?",
+                "narrative": "Before we start, choose the right path for you: 'The Fast Track' for a preliminary result in minutes, or 'The Professional Track' for building an in-depth tool based on research, teaching goals, and success metrics."
+            },
+            {
+                "icon": "✨",
+                "title": "The Four Essences",
+                "subtitle": "What's the Heart of Your Tool?",
+                "narrative": "Are you looking to spark curiosity (Wonder), refine data (Precision), streamline processes (Breathing), or connect to students' language (Relevance)? Choosing an essence will guide the AI towards the right style for you."
+            },
+            {
+                "icon": "🎯",
+                "title": "Define the Need",
+                "subtitle": "Identifying the Challenge",
+                "narrative": "This is the most critical stage. Describe the problem you want to solve. The more you elaborate on your target audience and the data you'll input, the more accurate the tool will be. Remember: use general identifiers without specific student details."
+            },
+            {
+                "icon": "🎓",
+                "title": "Professional Layer",
+                "subtitle": "Research-Based Design",
+                "narrative": "In the Professional Track, we'll add theoretical background, define goals at the teacher level, and desired outcomes at the student level. This pedagogical planning transforms your app from a 'nice utility' into a meaningful tool."
+            },
+            {
+                "icon": "📄",
+                "title": "Generate the Prompt",
+                "subtitle": "Human Code for the Machine",
+                "narrative": "At the end of the process, the system will generate a professional 'Prompt' for you. Copy and paste it into Claude, ChatGPT, or any other AI model. The prompt contains your entire pedagogical vision in a language the machine understands."
+            },
+            {
+                "icon": "💬",
+                "title": "Magic of Conversation",
+                "subtitle": "Dialogue, Not Coding",
+                "narrative": "The prompt is just the beginning! Once pasted, the AI will propose a structure for the tool. Ask for improvements: 'Make the buttons larger', 'Add a graph', 'Change the color'. Don't stop until the tool looks exactly as you dreamed."
+            }
+        ];
+
+        let currentIdx = 0;
+        let typingInterval = null;
+
+        const iconBox = document.getElementById('icon-box');
+        const mainTitle = document.getElementById('main-title');
+        const subTitle = document.getElementById('sub-title');
+        const typedOutput = document.getElementById('typed-output');
+        const progressDots = document.getElementById('progress-dots');
+        const chapterLabel = document.getElementById('chapter-label');
+        const nextBtn = document.getElementById('next-btn');
+        const prevBtn = document.getElementById('prev-btn');
+        const finalAction = document.getElementById('final-action');
+
+        function render() {
+            const data = stages[currentIdx];
+            const container = document.getElementById('content-container');
+            container.classList.remove('fade-in');
+            void container.offsetWidth;
+            container.classList.add('fade-in');
+
+            iconBox.innerText = data.icon;
+            mainTitle.innerText = data.title;
+            subTitle.innerText = data.subtitle;
+            
+            if (currentIdx < 3) {
+                chapterLabel.innerText = 'Part I: Vision & Paths';
+            } else if (currentIdx < 5) {
+                chapterLabel.innerText = 'Part II: Defining the Need';
+            } else {
+                chapterLabel.innerText = 'Part III: Development & Implementation';
+            }
+            
+            prevBtn.disabled = currentIdx === 0;
+            nextBtn.disabled = currentIdx === stages.length - 1;
+            finalAction.classList.toggle('hidden', currentIdx !== stages.length - 1);
+
+            progressDots.innerHTML = '';
+            stages.forEach((_, i) => {
+                const dot = document.createElement('div');
+                dot.className = `h-1.5 md:h-2 rounded-full transition-all duration-700 ${i === currentIdx ? 'w-8 md:w-12 bg-blue-600' : i < currentIdx ? 'w-2 md:w-3 bg-blue-200' : 'w-2 md:w-3 bg-slate-100'}`;
+                progressDots.appendChild(dot);
+            });
+
+            if (typingInterval) clearInterval(typingInterval);
+            typedOutput.innerHTML = '';
+            let charIdx = 0;
+            const fullText = data.narrative;
+            const cursor = document.createElement('span');
+            cursor.className = 'cursor';
+            
+            typingInterval = setInterval(() => {
+                if (charIdx < fullText.length) {
+                    typedOutput.innerText = fullText.substring(0, charIdx + 1);
+                    typedOutput.appendChild(cursor);
+                    charIdx++;
+                } else {
+                    clearInterval(typingInterval);
+                    cursor.classList.add('blink');
+                }
+            }, 25);
+        }
+
+        nextBtn.onclick = () => { if (currentIdx < stages.length - 1) { currentIdx++; render(); } };
+        prevBtn.onclick = () => { if (currentIdx > 0) { currentIdx--; render(); } };
+        window.onkeydown = (e) => {
+            if (e.key === 'ArrowRight') nextBtn.onclick();
+            if (e.key === 'ArrowLeft') prevBtn.onclick();
+        };
+        render();
+    </script>
+</body>
+</html>
