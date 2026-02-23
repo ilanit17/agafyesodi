@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>אשף פורטרט מתמונה</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;direction:rtl;min-height:100vh;background:linear-gradient(135deg,#ffecd2 0%,#fcb69f 25%,#a8edea 75%,#fed6e3 100%);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px}
+button,input{font-family:inherit}
+.card{background:rgba(255,255,255,0.93);border-radius:24px;box-shadow:0 20px 60px rgba(0,0,0,0.15);width:100%;max-width:640px;overflow:hidden}
+.header{background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);padding:24px 32px 18px;color:white;text-align:center}
+.header h1{font-size:21px;font-weight:800;margin:0}
+.header p{margin:5px 0 0;opacity:.85;font-size:13px}
+.header .icon{font-size:32px;margin-bottom:6px}
+.progress-wrap{padding:16px 32px 0}
+.progress-top{display:flex;justify-content:space-between;margin-bottom:6px;font-size:12px;color:#888;font-weight:600}
+.progress-bar{height:5px;background:#e0e0e0;border-radius:99px;overflow:hidden}
+.progress-fill{height:100%;background:linear-gradient(90deg,#667eea,#764ba2);border-radius:99px;transition:width .4s ease}
+.content{padding:22px 32px}
+.content h2{font-size:19px;font-weight:700;color:#2d2d2d;margin-bottom:4px}
+.content p.sub{color:#666;font-size:14px;margin-bottom:16px}
+.nav{padding:0 32px 26px;display:flex;justify-content:space-between}
+.btn-back{padding:10px 20px;border:2px solid #e8e8e8;border-radius:12px;background:white;cursor:pointer;color:#555;font-size:14px;font-weight:600}
+.btn-back:disabled{color:#ccc;cursor:not-allowed}
+.btn-next{padding:12px 28px;border:none;border-radius:12px;background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);color:white;font-size:15px;font-weight:700;cursor:pointer;box-shadow:0 4px 15px rgba(102,126,234,.4)}
+.btn-next.disabled{background:#e0e0e0;color:#aaa;box-shadow:none;cursor:not-allowed}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.grid2s{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.opt-single{padding:14px 16px;border-radius:14px;cursor:pointer;text-align:right;border:2px solid #e8e8e8;background:white;transition:all .2s;width:100%}
+.opt-single .oe{font-size:22px;margin-bottom:4px}
+.opt-single .ol{font-weight:700;font-size:14px;color:#2d2d2d}
+.opt-single .od{font-size:12px;color:#888;margin-top:2px}
+.opt-single.sel{border-color:#667eea;background:linear-gradient(135deg,#f0f3ff,#e8edff);box-shadow:0 4px 12px rgba(102,126,234,.2);transform:scale(1.02)}
+.opt-multi{padding:10px 14px;border-radius:12px;cursor:pointer;text-align:right;display:flex;align-items:center;gap:8px;border:2px solid #e8e8e8;background:white;transition:all .15s;width:100%}
+.opt-multi.sel{border-color:#667eea;background:linear-gradient(135deg,#f0f3ff,#e8edff);transform:scale(1.02)}
+.opt-multi .oe{font-size:20px}
+.opt-multi .ol{font-size:13px;font-weight:500;color:#2d2d2d}
+.opt-multi.sel .ol{font-weight:700}
+.opt-multi .check{margin-right:auto;color:#667eea;font-size:16px}
+.inp{width:100%;padding:12px 16px;border:2px solid #e8e8e8;border-radius:12px;font-size:14px;outline:none;direction:rtl;transition:border .2s}
+.inp:focus{border-color:#667eea}
+.inp-lg{padding:14px 16px;font-size:15px}
+.inp-other{margin-top:10px;border-color:#667eea}
+.hint{font-size:12px;color:#aaa;margin-top:6px}
+.family-box{background:#fafafa;border:1px solid #e8e8e8;border-radius:14px;padding:14px 16px;margin-bottom:12px}
+.family-box .flabel{display:flex;align-items:center;gap:8px;margin-bottom:8px;font-weight:700;font-size:14px;color:#444}
+.role-label{display:block;font-weight:700;font-size:13px;color:#555;margin-bottom:6px}
+.result-section{padding:28px 32px 32px}
+.notice{display:inline-flex;align-items:center;gap:8px;background:#fff8e1;border:1px solid #ffe082;border-radius:10px;padding:8px 14px;font-size:13px;color:#7c4a00;margin-top:10px}
+.prompt-box{background:linear-gradient(135deg,#f8f9ff,#f0f3ff);border:2px solid #d4dcff;border-radius:16px;padding:18px;margin:16px 0}
+.prompt-box p{font-size:13px;line-height:1.9;color:#3d3d5c;font-family:monospace;direction:ltr;text-align:left;white-space:pre-wrap;word-break:break-word}
+.btn-copy{width:100%;padding:14px;border:none;border-radius:14px;background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);color:white;font-size:16px;font-weight:700;cursor:pointer;margin-bottom:20px;box-shadow:0 4px 15px rgba(102,126,234,.4);transition:background .3s}
+.btn-copy.ok{background:linear-gradient(135deg,#43e97b,#38f9d7)}
+.tabs{display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap}
+.tab-btn{padding:7px 12px;border:2px solid #e8e8e8;border-radius:10px;background:white;cursor:pointer;font-size:12px;font-weight:600;color:#777;transition:all .2s}
+.tool-steps{background:#f9f9f9;border:1px solid #e8e8e8;border-radius:12px;padding:14px;margin-bottom:16px}
+.tool-step{display:flex;gap:10px;align-items:flex-start;margin-bottom:8px}
+.tool-step:last-child{margin-bottom:0}
+.step-num{min-width:22px;height:22px;border-radius:50%;color:white;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center}
+.step-txt{font-size:13px;color:#555;line-height:1.5}
+.btn-reset{width:100%;padding:12px;border:2px solid #e8e8e8;border-radius:12px;background:white;font-size:14px;font-weight:600;color:#666;cursor:pointer}
+.foot{margin-top:14px;font-size:11px;color:rgba(0,0,0,.35);text-align:center}
+.label-row{display:block;font-size:13px;font-weight:700;color:#555;margin-bottom:6px;margin-top:12px}
+</style>
+</head>
+<body>
+
+<div class="card" id="app"></div>
+<p class="foot">פותח לפעילות גיבוש צוותית ✨</p>
+
+<script>
+const STEPS = [
+  {
+    id:"style", title:"סגנון הציור", emoji:"🎨",
+    question:"לאיזה סגנון להפוך את התמונה?", type:"single",
+    options:[
+      {value:"Pixar 3D animated character style", label:"פיקסאר", emoji:"🎬", desc:"תלת-ממד חמים ומעוגל"},
+      {value:"flat cartoon illustration style", label:"קריקטורה", emoji:"✏️", desc:"קווים נקיים וצבעוניים"},
+      {value:"watercolor childrens book illustration style", label:"ספר ילדים", emoji:"📖", desc:"עדין ואמנותי"},
+      {value:"anime illustration style", label:"אנימה", emoji:"⭐", desc:"עיניים גדולות ואנרגטי"},
+      {value:"bold sticker art style with thick outlines", label:"סטיקר", emoji:"🏷️", desc:"מודגש ומצויר"},
+    ]
+  },
+  {
+    id:"hobbies", title:"תחביבים", emoji:"🌟",
+    question:"מה היא אוהבת לעשות?", type:"multi",
+    options:[
+      {value:"reading books", label:"קריאה", emoji:"📚"},
+      {value:"cooking and baking", label:"בישול ואפייה", emoji:"🍳"},
+      {value:"hiking in nature", label:"טיולים בטבע", emoji:"🥾"},
+      {value:"yoga and meditation", label:"יוגה ומדיטציה", emoji:"🧘"},
+      {value:"music and singing", label:"מוסיקה ושירה", emoji:"🎵"},
+      {value:"gardening", label:"גינון", emoji:"🌱"},
+      {value:"painting and art", label:"ציור ואמנות", emoji:"🖌️"},
+      {value:"sports and fitness", label:"ספורט", emoji:"🏃"},
+      {value:"travel and adventures", label:"טיולים ותיירות", emoji:"✈️"},
+      {value:"photography", label:"צילום", emoji:"📷"},
+      {value:"__other__", label:"אחר...", emoji:"✏️"},
+    ]
+  },
+  {
+    id:"values", title:"ערכים ותכונות", emoji:"💎",
+    question:"מה מאפיין אותה?", type:"multi",
+    options:[
+      {value:"surrounded by glowing heart symbols representing empathy and warmth", label:"אמפתיה וחום", emoji:"❤️"},
+      {value:"with a glowing lighthouse beam representing guidance and leadership", label:"הנחיה ומנהיגות", emoji:"🔦"},
+      {value:"with visible tree roots representing stability and growth", label:"יציבות וצמיחה", emoji:"🌳"},
+      {value:"with open book and lightbulb representing wisdom and curiosity", label:"חכמה וסקרנות", emoji:"💡"},
+      {value:"with a bridge motif representing connection and collaboration", label:"חיבור ושיתוף פעולה", emoji:"🤝"},
+      {value:"with stars and compass representing vision and direction", label:"חזון וכיוון", emoji:"🧭"},
+      {value:"with shield and strong stance representing courage and resilience", label:"אומץ ועמידות", emoji:"🛡️"},
+      {value:"surrounded by confetti and joyful energy representing humor and joy", label:"שמחה והומור", emoji:"🎉"},
+      {value:"__other__", label:"אחר...", emoji:"✏️"},
+    ]
+  },
+  {
+    id:"metaphor", title:"דימוי ומטאפורה", emoji:"🦋",
+    question:"היא כמו... (בחרי או כתבי)", type:"metaphor",
+    placeholder:"למשל: גשר שמחבר בין אנשים, אור בחושך, עץ שורשי...",
+    presets:[
+      {value:"lighthouse guiding ships through fog", label:"מגדלור בערפל", emoji:"🔦"},
+      {value:"strong ancient tree with deep roots and wide branches", label:"עץ עתיק עם שורשים", emoji:"🌳"},
+      {value:"butterfly mid-transformation wings spreading wide", label:"פרפר שמשתנה וגדל", emoji:"🦋"},
+      {value:"bridge connecting two distant worlds", label:"גשר בין שני עולמות", emoji:"🌉"},
+      {value:"sun radiating warmth and light to everything around it", label:"שמש שמחממת הסביבה", emoji:"☀️"},
+      {value:"compass that always finds the right direction", label:"מצפן שמוצא את הדרך", emoji:"🧭"},
+    ]
+  },
+  {
+    id:"family", title:"בני משפחה", emoji:"👨‍👩‍👧‍👦",
+    question:"מה תרצי לשלב מהחיים המשפחתיים?", type:"family"
+  },
+  {
+    id:"role", title:"תפקיד ועיסוק", emoji:"💼",
+    question:"מה התפקיד והעיסוק שלה?", type:"role"
+  },
+  {
+    id:"object", title:"חפץ מיוחד", emoji:"🎁",
+    question:"חפץ אחד שמייצג אותה", type:"text",
+    placeholder:"למשל: כוס קפה, פנקס ועט, נעלי ריצה, גיטרה..."
+  },
+  {
+    id:"mood", title:"אווירה", emoji:"🌈",
+    question:"מה האווירה הכללית?", type:"single",
+    options:[
+      {value:"warm golden sunny atmosphere", label:"חמימה וזוהרת", emoji:"☀️"},
+      {value:"cool calm blue atmosphere", label:"רגועה ומרעננת", emoji:"💙"},
+      {value:"vibrant colorful energetic atmosphere", label:"צבעונית ואנרגטית", emoji:"🌈"},
+      {value:"soft pastel dreamy atmosphere", label:"עדינה וחלומית", emoji:"🌸"},
+    ]
+  },
+];
+
+const TOOLS = [
+  {name:"ChatGPT", emoji:"🤖", color:"#10a37f", steps:[
+    "פתחי שיחה חדשה ב-ChatGPT",
+    "לחצי על סמל הצרף קובץ והעלי את תמונת האדם",
+    "הדביקי את הפרומפט בשדה הטקסט",
+    "לחצי שלח – DALL-E יתרגם את הפנים לסגנון הנבחר",
+  ]},
+  {name:"נאנו ננה", emoji:"🍌", color:"#f59e0b", steps:[
+    "היכנסי לאתר נאנו ננה",
+    "בחרי מצב יצירת תמונה מתמונה",
+    "העלי את תמונת המקור",
+    "הדביקי את הפרומפט ולחצי צור",
+  ]},
+  {name:"Midjourney", emoji:"🎨", color:"#6366f1", steps:[
+    "העלי את התמונה ל-Discord וקבלי את ה-URL שלה",
+    "כתבי: /imagine [URL] ואחריו את הפרומפט",
+    "הוסיפי --iw 2 בסוף לשמירה חזקה על הפנים",
+    "לחצי Enter ליצירה",
+  ]},
+];
+
+// State
+const state = {
+  step: 0,
+  done: false,
+  tab: 0,
+  ans: {},
+};
+
+function buildPrompt(a) {
+  const style = a.style || "cartoon illustration style";
+  const parts = [];
+  parts.push("Transform this photo into a " + style);
+  parts.push("keep the persons facial features and likeness exactly");
+  const metaphor = a.metaphor_custom || a.metaphor;
+  if (metaphor) parts.push("the person remains fully themselves as a human being, but incorporate symbolic visual elements of " + metaphor + " into the background and surroundings without transforming the person into the metaphor");
+  const hobbies = (a.hobbies||[]).filter(v=>v!=="__other__");
+  if (a.hobbies_other) hobbies.push(a.hobbies_other);
+  if (hobbies.length) parts.push("with visual elements of " + hobbies.join(", ") + " around them");
+  const values = (a.values||[]).filter(v=>v!=="__other__");
+  if (a.values_other) values.push(a.values_other);
+  if (values.length) parts.push(values.join(", "));
+  if (a.role_title) parts.push("occupation: " + a.role_title + (a.role_details ? ", " + a.role_details : ""));
+  const fam = [];
+  if (a.family_partner) fam.push("partner: " + a.family_partner);
+  if (a.family_children) fam.push("children: " + a.family_children);
+  if (a.family_pets) fam.push("pets: " + a.family_pets);
+  if (fam.length) parts.push("incorporate as small symbolic vignettes in the background: " + fam.join(", "));
+  if (a.object) parts.push("holding or accompanied by " + a.object);
+  if (a.mood) parts.push(a.mood);
+  parts.push("white clean background, detailed professional illustration, character portrait, no text, no words, no letters, no labels, no captions anywhere in the image");
+  return parts.join(". ") + ".";
+}
+
+function canNext() {
+  const cur = STEPS[state.step];
+  if (["text","metaphor","family","role"].includes(cur.type)) return true;
+  if (cur.type === "single") return !!state.ans[cur.id];
+  if (cur.type === "multi") return (state.ans[cur.id]||[]).length > 0;
+  return true;
+}
+
+function render() {
+  const app = document.getElementById("app");
+  app.innerHTML = state.done ? renderResult() : renderStep();
+  attachEvents();
+}
+
+function renderHeader() {
+  return `
+    <div class="header">
+      <div class="icon">🖼️✨</div>
+      <h1>אשף פורטרט מתמונה</h1>
+      <p>בחרי סגנון וערכים → קבלי פרומפט מוכן להדבקה</p>
+    </div>`;
+}
+
+function renderStep() {
+  const cur = STEPS[state.step];
+  const pct = ((state.step+1)/STEPS.length*100).toFixed(1);
+  const emojis = STEPS.map((s,i)=>`<span style="opacity:${i<=state.step?1:0.3};margin-right:3px;font-size:14px">${s.emoji}</span>`).join("");
+
+  let body = "";
+  if (cur.type === "single") {
+    body = `<div class="grid2">${cur.options.map(opt=>{
+      const s = state.ans[cur.id]===opt.value;
+      return `<button class="opt-single${s?" sel":""}" data-type="single" data-id="${cur.id}" data-val="${opt.value}">
+        <div class="oe">${opt.emoji}</div>
+        <div class="ol">${opt.label}</div>
+        ${opt.desc?`<div class="od">${opt.desc}</div>`:""}
+      </button>`;
+    }).join("")}</div>`;
+  }
+
+  if (cur.type === "multi") {
+    const selected = state.ans[cur.id]||[];
+    const showOther = selected.includes("__other__");
+    body = `<div class="grid2s">${cur.options.map(opt=>{
+      const s = selected.includes(opt.value);
+      return `<button class="opt-multi${s?" sel":""}" data-type="multi" data-id="${cur.id}" data-val="${opt.value}">
+        <span class="oe">${opt.emoji}</span>
+        <span class="ol">${opt.label}</span>
+        ${s?`<span class="check">✓</span>`:""}
+      </button>`;
+    }).join("")}</div>
+    ${showOther?`<input class="inp inp-other" type="text" placeholder="פרטי כאן..." data-field="${cur.id}_other" value="${state.ans[cur.id+"_other"]||""}" />`:""}`;
+  }
+
+  if (cur.type === "metaphor") {
+    const selected = state.ans.metaphor;
+    const custom = state.ans.metaphor_custom||"";
+    body = `<div class="grid2s">${cur.presets.map(opt=>{
+      const s = selected===opt.value && !custom;
+      return `<button class="opt-multi${s?" sel":""}" data-type="metaphor-preset" data-val="${opt.value}">
+        <span class="oe">${opt.emoji}</span>
+        <span class="ol">${opt.label}</span>
+        ${s?`<span class="check">✓</span>`:""}
+      </button>`;
+    }).join("")}</div>
+    <p style="margin:14px 0 6px;font-size:13px;color:#777;font-weight:600">✍️ או כתבי משהו אחר:</p>
+    <input class="inp" type="text" placeholder="${cur.placeholder}" data-field="metaphor_custom" value="${custom}" />
+    <p class="hint">שדה אופציונלי</p>`;
+  }
+
+  if (cur.type === "family") {
+    body = `
+      <div class="family-box"><div class="flabel"><span>💑</span><span>בן/בת זוג</span></div>
+        <input class="inp" type="text" placeholder="שם בן/בת הזוג (אופציונלי)" data-field="family_partner" value="${state.ans.family_partner||""}" /></div>
+      <div class="family-box"><div class="flabel"><span>👧</span><span>ילדים</span></div>
+        <input class="inp" type="text" placeholder="גילאי / מספר ילדים (למשל: שלוש בנות, בן 8)" data-field="family_children" value="${state.ans.family_children||""}" /></div>
+      <div class="family-box"><div class="flabel"><span>🐾</span><span>חיות מחמד</span></div>
+        <input class="inp" type="text" placeholder="חיות מחמד (אופציונלי)" data-field="family_pets" value="${state.ans.family_pets||""}" /></div>
+      <p class="hint">כל השדות אופציונליים</p>`;
+  }
+
+  if (cur.type === "role") {
+    body = `
+      <label class="role-label">💼 תפקיד</label>
+      <input class="inp inp-lg" type="text" placeholder="תפקיד (למשל: מנהלת בית ספר, מורה לחינוך מיוחד)" data-field="role_title" value="${state.ans.role_title||""}" />
+      <label class="role-label" style="margin-top:12px">📝 פרטים נוספים</label>
+      <input class="inp" type="text" placeholder="פרטים נוספים (למשל: עובדת עם ילדים צעירים, מובילה צוות גדול)" data-field="role_details" value="${state.ans.role_details||""}" />
+      <p class="hint" style="margin-top:8px">שדות אופציונליים</p>`;
+  }
+
+  if (cur.type === "text") {
+    body = `
+      <input class="inp inp-lg" type="text" placeholder="${cur.placeholder}" data-field="${cur.id}" value="${state.ans[cur.id]||""}" />
+      <p class="hint">שדה אופציונלי</p>`;
+  }
+
+  const nextDisabled = !canNext();
+  return `
+    ${renderHeader()}
+    <div class="progress-wrap">
+      <div class="progress-top"><span>שלב ${state.step+1} מתוך ${STEPS.length}</span><span>${emojis}</span></div>
+      <div class="progress-bar"><div class="progress-fill" style="width:${pct}%"></div></div>
+    </div>
+    <div class="content">
+      <h2>${cur.emoji} ${cur.title}</h2>
+      <p class="sub">${cur.question}</p>
+      ${body}
+    </div>
+    <div class="nav">
+      <button class="btn-back" id="btnBack" ${state.step===0?"disabled":""}>← חזרה</button>
+      <button class="btn-next${nextDisabled?" disabled":""}" id="btnNext">${state.step===STEPS.length-1?"✨ צרי פרומפט!":"המשך →"}</button>
+    </div>`;
+}
+
+function renderResult() {
+  const prompt = buildPrompt(state.ans);
+  const toolTabs = TOOLS.map((t,i)=>`<button class="tab-btn" id="tab${i}" style="${state.tab===i?`border-color:${t.color};background:${t.color}18;color:${t.color}`:""}">${t.emoji} ${t.name}</button>`).join("");
+  const tool = TOOLS[state.tab];
+  const toolSteps = tool.steps.map((s,i)=>`
+    <div class="tool-step">
+      <div class="step-num" style="background:${tool.color}">${i+1}</div>
+      <span class="step-txt">${s}</span>
+    </div>`).join("");
+
+  return `
+    ${renderHeader()}
+    <div class="result-section">
+      <div style="text-align:center;margin-bottom:20px">
+        <div style="font-size:40px;margin-bottom:10px">✨</div>
+        <h2 style="font-size:21px;font-weight:800;color:#2d2d2d;margin-bottom:8px">הפרומפט מוכן!</h2>
+        <div class="notice">📸 <span><strong>חשוב:</strong> העלי את תמונת האדם ישירות לכלי יחד עם הפרומפט</span></div>
+      </div>
+      <div class="prompt-box"><p id="promptText">${prompt}</p></div>
+      <button class="btn-copy" id="btnCopy">📋 העתיקי את הפרומפט</button>
+      <p style="font-weight:700;font-size:14px;color:#444;margin-bottom:10px">📌 איך משתמשים בפרומפט?</p>
+      <div class="tabs">${toolTabs}</div>
+      <div class="tool-steps">${toolSteps}</div>
+      <button class="btn-reset" id="btnReset">🔄 פרומפט חדש</button>
+    </div>`;
+}
+
+function attachEvents() {
+  // Single select
+  document.querySelectorAll("[data-type='single']").forEach(btn=>{
+    btn.addEventListener("click",()=>{
+      state.ans[btn.dataset.id] = btn.dataset.val;
+      render();
+    });
+  });
+
+  // Multi select
+  document.querySelectorAll("[data-type='multi']").forEach(btn=>{
+    btn.addEventListener("click",()=>{
+      const id = btn.dataset.id;
+      const val = btn.dataset.val;
+      const arr = state.ans[id]||[];
+      state.ans[id] = arr.includes(val) ? arr.filter(x=>x!==val) : [...arr,val];
+      render();
+    });
+  });
+
+  // Metaphor presets
+  document.querySelectorAll("[data-type='metaphor-preset']").forEach(btn=>{
+    btn.addEventListener("click",()=>{
+      state.ans.metaphor = btn.dataset.val;
+      state.ans.metaphor_custom = "";
+      render();
+    });
+  });
+
+  // All text inputs
+  document.querySelectorAll("[data-field]").forEach(inp=>{
+    inp.addEventListener("input",()=>{
+      const key = inp.dataset.field;
+      state.ans[key] = inp.value;
+      if (key === "metaphor_custom" && inp.value) {
+        state.ans.metaphor = inp.value;
+      }
+    });
+  });
+
+  // Nav buttons
+  const btnBack = document.getElementById("btnBack");
+  const btnNext = document.getElementById("btnNext");
+  if (btnBack) btnBack.addEventListener("click",()=>{ if(state.step>0){state.step--;render();} });
+  if (btnNext) btnNext.addEventListener("click",()=>{
+    if (!canNext()) return;
+    if (state.step < STEPS.length-1) { state.step++; render(); }
+    else { state.done=true; render(); }
+  });
+
+  // Copy
+  const btnCopy = document.getElementById("btnCopy");
+  if (btnCopy) btnCopy.addEventListener("click",()=>{
+    const text = buildPrompt(state.ans);
+    const ta = document.createElement("textarea");
+    ta.value = text;
+    ta.style.cssText = "position:fixed;left:-9999px;top:-9999px;opacity:0";
+    document.body.appendChild(ta);
+    ta.focus(); ta.select();
+    try {
+      document.execCommand("copy");
+      btnCopy.textContent = "✅ הועתק!";
+      btnCopy.classList.add("ok");
+      setTimeout(()=>{ btnCopy.textContent="📋 העתיקי את הפרומפט"; btnCopy.classList.remove("ok"); },2500);
+    } catch(e) { alert("העתיקי ידנית:\n\n"+text); }
+    document.body.removeChild(ta);
+  });
+
+  // Tool tabs
+  TOOLS.forEach((_,i)=>{
+    const t = document.getElementById("tab"+i);
+    if (t) t.addEventListener("click",()=>{ state.tab=i; render(); });
+  });
+
+  // Reset
+  const btnReset = document.getElementById("btnReset");
+  if (btnReset) btnReset.addEventListener("click",()=>{ state.step=0; state.done=false; state.ans={}; state.tab=0; render(); });
+}
+
+render();
+</script>
+</body>
+</html>
