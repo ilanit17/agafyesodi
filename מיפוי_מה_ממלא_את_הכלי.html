@@ -1,0 +1,728 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>מה ממלא את הכלי שלכם? | כנס מנהלים 2026</title>
+<link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;700;900&family=Secular+One&display=swap" rel="stylesheet">
+<style>
+:root {
+  --warm-bg: #FDF6EE;
+  --deep-navy: #1B2A4A;
+  --gold-accent: #D4A853;
+  --soft-coral: #E8856C;
+  --ocean-blue: #3A7CA5;
+  --sage-green: #7BA38C;
+  --lavender: #8E7DBE;
+  --warm-rose: #C4727F;
+  --sand: #C9B99A;
+  --text-dark: #2C2C2C;
+  --text-light: #6B6B6B;
+  --card-bg: #FFFFFF;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: 'Heebo', sans-serif;
+  background: var(--warm-bg);
+  color: var(--text-dark);
+  overflow-x: hidden;
+  line-height: 1.7;
+}
+
+/* ===== HERO ===== */
+.hero {
+  position: relative;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 3rem 2rem;
+  background: linear-gradient(170deg, #1B2A4A 0%, #2E4A6E 40%, #3A7CA5 75%, #7BA38C 100%);
+  overflow: hidden;
+}
+
+.hero::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: 
+    radial-gradient(circle at 20% 30%, rgba(212,168,83,0.15) 0%, transparent 50%),
+    radial-gradient(circle at 80% 70%, rgba(232,133,108,0.1) 0%, transparent 50%);
+}
+
+.hero-particles {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+}
+
+.particle {
+  position: absolute;
+  width: 4px;
+  height: 4px;
+  background: rgba(255,255,255,0.3);
+  border-radius: 50%;
+  animation: float-up linear infinite;
+}
+
+@keyframes float-up {
+  0% { transform: translateY(100vh) scale(0); opacity: 0; }
+  10% { opacity: 1; }
+  90% { opacity: 1; }
+  100% { transform: translateY(-10vh) scale(1); opacity: 0; }
+}
+
+.hero-content {
+  position: relative;
+  z-index: 2;
+  max-width: 900px;
+}
+
+.hero-badge {
+  display: inline-block;
+  padding: 0.5rem 1.8rem;
+  border: 1px solid rgba(212,168,83,0.5);
+  border-radius: 50px;
+  color: var(--gold-accent);
+  font-size: 0.85rem;
+  font-weight: 500;
+  letter-spacing: 0.5px;
+  margin-bottom: 2rem;
+  animation: fadeIn 1s ease 0.3s both;
+}
+
+.hero h1 {
+  font-family: 'Secular One', sans-serif;
+  font-size: clamp(2.2rem, 6vw, 4.2rem);
+  color: #fff;
+  line-height: 1.3;
+  margin-bottom: 0.5rem;
+  animation: fadeIn 1s ease 0.5s both;
+}
+
+.hero h1 .highlight {
+  color: var(--gold-accent);
+  position: relative;
+}
+
+.hero-subtitle {
+  font-size: clamp(1rem, 2.5vw, 1.4rem);
+  color: rgba(255,255,255,0.7);
+  font-weight: 300;
+  margin-bottom: 3rem;
+  animation: fadeIn 1s ease 0.7s both;
+}
+
+.hero-stats {
+  display: flex;
+  gap: 3rem;
+  justify-content: center;
+  flex-wrap: wrap;
+  animation: fadeIn 1s ease 0.9s both;
+}
+
+.hero-stat {
+  text-align: center;
+}
+
+.hero-stat-num {
+  font-family: 'Secular One', sans-serif;
+  font-size: 3.5rem;
+  color: var(--gold-accent);
+  line-height: 1;
+}
+
+.hero-stat-label {
+  color: rgba(255,255,255,0.6);
+  font-size: 0.9rem;
+  margin-top: 0.3rem;
+}
+
+.scroll-hint {
+  position: absolute;
+  bottom: 2.5rem;
+  left: 50%;
+  transform: translateX(-50%);
+  color: rgba(255,255,255,0.4);
+  font-size: 0.8rem;
+  animation: bounce 2s ease infinite;
+  z-index: 2;
+}
+
+@keyframes bounce {
+  0%, 100% { transform: translateX(-50%) translateY(0); }
+  50% { transform: translateX(-50%) translateY(8px); }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ===== MAIN CHART SECTION ===== */
+.section {
+  padding: 5rem 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.section-title {
+  font-family: 'Secular One', sans-serif;
+  font-size: 2rem;
+  color: var(--deep-navy);
+  margin-bottom: 0.5rem;
+  position: relative;
+  display: inline-block;
+}
+
+.section-title::after {
+  content: '';
+  position: absolute;
+  bottom: -6px;
+  right: 0;
+  width: 60px;
+  height: 3px;
+  background: var(--gold-accent);
+  border-radius: 2px;
+}
+
+.section-desc {
+  color: var(--text-light);
+  margin-bottom: 3rem;
+  font-size: 1.05rem;
+}
+
+/* ===== BAR CHART ===== */
+.chart-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-bottom: 4rem;
+}
+
+.chart-row {
+  display: grid;
+  grid-template-columns: 150px 1fr 50px;
+  align-items: center;
+  gap: 1rem;
+  opacity: 0;
+  animation: slideIn 0.6s ease forwards;
+}
+
+.chart-row:nth-child(1) { animation-delay: 0.1s; }
+.chart-row:nth-child(2) { animation-delay: 0.15s; }
+.chart-row:nth-child(3) { animation-delay: 0.2s; }
+.chart-row:nth-child(4) { animation-delay: 0.25s; }
+.chart-row:nth-child(5) { animation-delay: 0.3s; }
+.chart-row:nth-child(6) { animation-delay: 0.35s; }
+.chart-row:nth-child(7) { animation-delay: 0.4s; }
+.chart-row:nth-child(8) { animation-delay: 0.45s; }
+.chart-row:nth-child(9) { animation-delay: 0.5s; }
+.chart-row:nth-child(10) { animation-delay: 0.55s; }
+.chart-row:nth-child(11) { animation-delay: 0.6s; }
+.chart-row:nth-child(12) { animation-delay: 0.65s; }
+.chart-row:nth-child(13) { animation-delay: 0.7s; }
+.chart-row:nth-child(14) { animation-delay: 0.75s; }
+.chart-row:nth-child(15) { animation-delay: 0.8s; }
+.chart-row:nth-child(16) { animation-delay: 0.85s; }
+
+@keyframes slideIn {
+  from { opacity: 0; transform: translateX(30px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+.chart-label {
+  font-weight: 700;
+  font-size: 0.9rem;
+  text-align: left;
+  color: var(--deep-navy);
+}
+
+.chart-bar-wrap {
+  background: rgba(27,42,74,0.06);
+  border-radius: 8px;
+  height: 38px;
+  position: relative;
+  overflow: hidden;
+}
+
+.chart-bar {
+  height: 100%;
+  border-radius: 8px;
+  transition: width 1.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  width: 0;
+  position: relative;
+}
+
+.chart-bar.animated { /* width set by JS */ }
+
+.chart-count {
+  font-family: 'Secular One', sans-serif;
+  font-size: 1.1rem;
+  color: var(--deep-navy);
+  text-align: center;
+}
+
+/* ===== QUOTE CARDS ===== */
+.quotes-section {
+  padding: 5rem 2rem;
+  background: linear-gradient(180deg, var(--warm-bg) 0%, #F0E8DA 100%);
+}
+
+.quotes-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.quotes-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 1.5rem;
+  margin-top: 3rem;
+}
+
+.quote-card {
+  background: var(--card-bg);
+  border-radius: 16px;
+  padding: 2rem;
+  position: relative;
+  box-shadow: 0 2px 20px rgba(0,0,0,0.04);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  overflow: hidden;
+  opacity: 0;
+  animation: cardIn 0.5s ease forwards;
+}
+
+.quote-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 30px rgba(0,0,0,0.08);
+}
+
+@keyframes cardIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.quote-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 4px;
+  height: 100%;
+}
+
+.quote-card .quote-icon {
+  font-size: 3rem;
+  line-height: 1;
+  opacity: 0.15;
+  position: absolute;
+  top: 0.8rem;
+  left: 1rem;
+  font-family: Georgia, serif;
+}
+
+.quote-text {
+  font-size: 1.1rem;
+  line-height: 1.8;
+  color: var(--text-dark);
+  margin-bottom: 1rem;
+  font-weight: 500;
+}
+
+.quote-author {
+  font-size: 0.85rem;
+  color: var(--text-light);
+}
+
+.quote-tag {
+  display: inline-block;
+  padding: 0.25rem 0.8rem;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  margin-top: 0.8rem;
+}
+
+/* ===== WORD CLOUD ===== */
+.cloud-section {
+  padding: 5rem 2rem;
+  text-align: center;
+}
+
+.cloud-inner {
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+.word-cloud {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: 0.8rem;
+  padding: 3rem 1rem;
+}
+
+.cloud-word {
+  display: inline-block;
+  padding: 0.4rem 1.2rem;
+  border-radius: 30px;
+  font-weight: 700;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  cursor: default;
+  white-space: nowrap;
+}
+
+.cloud-word:hover {
+  transform: scale(1.1);
+  box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+}
+
+/* ===== INSIGHTS ===== */
+.insights-section {
+  padding: 5rem 2rem;
+  background: var(--deep-navy);
+  color: #fff;
+}
+
+.insights-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.insights-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 2rem;
+  margin-top: 3rem;
+}
+
+.insight-card {
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 16px;
+  padding: 2rem;
+  backdrop-filter: blur(10px);
+  transition: background 0.3s ease;
+}
+
+.insight-card:hover {
+  background: rgba(255,255,255,0.1);
+}
+
+.insight-emoji {
+  font-size: 2.5rem;
+  margin-bottom: 1rem;
+}
+
+.insight-title {
+  font-family: 'Secular One', sans-serif;
+  font-size: 1.2rem;
+  margin-bottom: 0.8rem;
+  color: var(--gold-accent);
+}
+
+.insight-text {
+  font-size: 0.95rem;
+  color: rgba(255,255,255,0.7);
+  line-height: 1.7;
+}
+
+/* ===== FOOTER ===== */
+.footer {
+  text-align: center;
+  padding: 3rem 2rem;
+  color: var(--text-light);
+  font-size: 0.85rem;
+  border-top: 1px solid rgba(0,0,0,0.06);
+}
+
+.footer strong {
+  color: var(--deep-navy);
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 768px) {
+  .hero-stats { gap: 1.5rem; }
+  .hero-stat-num { font-size: 2.5rem; }
+  .chart-row { grid-template-columns: 100px 1fr 40px; }
+  .chart-label { font-size: 0.8rem; }
+  .quotes-grid { grid-template-columns: 1fr; }
+  .insights-grid { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+
+<!-- ===== HERO ===== -->
+<section class="hero">
+  <div class="hero-particles" id="particles"></div>
+  <div class="hero-content">
+    <div class="hero-badge">כנס יסודי עכשווי: מנווטים קדימה &nbsp;|&nbsp; 17 במרץ 2026</div>
+    <h1>מה <span class="highlight">ממלא את הכלי</span> שלכם<br>בזמן הזה?</h1>
+    <p class="hero-subtitle">מיפוי תשובות מנהלי בתי ספר יסודיים מכל רחבי הארץ</p>
+    <div class="hero-stats">
+      <div class="hero-stat">
+        <div class="hero-stat-num">~250</div>
+        <div class="hero-stat-label">מנהלים השיבו</div>
+      </div>
+      <div class="hero-stat">
+        <div class="hero-stat-num">16</div>
+        <div class="hero-stat-label">נושאים מרכזיים</div>
+      </div>
+      <div class="hero-stat">
+        <div class="hero-stat-num">1</div>
+        <div class="hero-stat-label">קול אנושי משותף</div>
+      </div>
+    </div>
+  </div>
+  <div class="scroll-hint">▼ גללו למטה</div>
+</section>
+
+<!-- ===== BAR CHART ===== -->
+<div class="section" id="chart-section">
+  <div class="section-title">התפלגות הנושאים</div>
+  <p class="section-desc">כל מנהל/ת ענה במילים שלו — הנתונים מייצגים את מספר האזכורים בכל נושא</p>
+  
+  <div class="chart-container" id="chart"></div>
+</div>
+
+<!-- ===== QUOTES ===== -->
+<section class="quotes-section">
+  <div class="quotes-inner">
+    <div class="section-title" style="color:var(--deep-navy);">בקולם של המנהלים</div>
+    <p class="section-desc">ציטוטים מייצגים שנבחרו מתוך התשובות</p>
+    <div class="quotes-grid" id="quotes"></div>
+  </div>
+</section>
+
+<!-- ===== WORD CLOUD ===== -->
+<section class="cloud-section">
+  <div class="cloud-inner">
+    <div class="section-title">ענן מילים</div>
+    <p class="section-desc">המילים שחוזרות שוב ושוב — גודל המילה משקף את תדירותה</p>
+    <div class="word-cloud" id="wordcloud"></div>
+  </div>
+</section>
+
+<!-- ===== INSIGHTS ===== -->
+<section class="insights-section">
+  <div class="insights-inner">
+    <div class="section-title" style="color:#fff;">תובנות מרכזיות</div>
+    <div class="insights-grid" id="insights"></div>
+  </div>
+</section>
+
+<!-- ===== FOOTER ===== -->
+<footer class="footer">
+  <strong>האגף לחינוך יסודי | משרד החינוך</strong><br>
+  כנס "יסודי עכשווי: מנווטים קדימה" | 17 במרץ 2026<br>
+  ניתוח נתונים מתוך צ'אט הכנס
+</footer>
+
+<script>
+// ===== DATA =====
+const chartData = [
+  { label: "משפחה", count: 95, color: "#E8856C" },
+  { label: "צוות חינוכי", count: 42, color: "#3A7CA5" },
+  { label: "אמונה ותפילה", count: 38, color: "#8E7DBE" },
+  { label: "עשייה חינוכית", count: 30, color: "#D4A853" },
+  { label: "תלמידים וילדים", count: 25, color: "#7BA38C" },
+  { label: "תקווה ואופטימיות", count: 22, color: "#C9B99A" },
+  { label: "קהילה", count: 18, color: "#5B9BD5" },
+  { label: "שליחות ומשמעות", count: 15, color: "#C4727F" },
+  { label: "מחויבות ואחריות", count: 12, color: "#6B8E6B" },
+  { label: "חוסן ושגרה", count: 12, color: "#B07D56" },
+  { label: "תחושה היסטורית", count: 8, color: "#4A6FA5" },
+  { label: "חברים וקשרים", count: 8, color: "#9B8EC0" },
+  { label: "טבע וספורט ותחביבים", count: 8, color: "#6AAB8E" },
+  { label: "פיקוח ורשות", count: 7, color: "#D49A6A" },
+  { label: "מילים טובות והוקרה", count: 6, color: "#D4729B" },
+  { label: "נתינה והתנדבות", count: 5, color: "#7CAFC4" },
+];
+
+const maxCount = chartData[0].count;
+
+// ===== BUILD CHART =====
+const chartEl = document.getElementById("chart");
+chartData.forEach((d, i) => {
+  const row = document.createElement("div");
+  row.className = "chart-row";
+  row.style.animationDelay = `${0.1 + i * 0.05}s`;
+  row.innerHTML = `
+    <div class="chart-label">${d.label}</div>
+    <div class="chart-bar-wrap">
+      <div class="chart-bar" style="background: linear-gradient(to left, ${d.color}, ${d.color}CC); width: 0%;" data-width="${(d.count / maxCount * 100)}"></div>
+    </div>
+    <div class="chart-count">${d.count}</div>
+  `;
+  chartEl.appendChild(row);
+});
+
+// Animate bars on scroll
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      document.querySelectorAll('.chart-bar').forEach((bar, i) => {
+        setTimeout(() => {
+          bar.style.width = bar.dataset.width + '%';
+        }, i * 80);
+      });
+      observer.unobserve(e.target);
+    }
+  });
+}, { threshold: 0.2 });
+observer.observe(chartEl);
+
+// ===== QUOTES =====
+const quotes = [
+  { text: "יצירת איים של שגרות בתוך אוקינוס חירום", author: "עינבל בן עטר", tag: "חוסן ושגרה", color: "#B07D56" },
+  { text: "המשפחה האישית — עוגן בתוך כל הסערה. צוות בית הספר שמייצר שגרה לכל כך הרבה תלמידים ומשפחות. שומרים על קשר עם תלמידים — מחמם את הלב!", author: "לירון בן-חמו", tag: "משפחה + צוות", color: "#E8856C" },
+  { text: "אלו ימים גדולים וממלאים ואנחנו חלק מההיסטוריה של הניסים האלו", author: "אבי שוחטמן", tag: "תחושה היסטורית", color: "#4A6FA5" },
+  { text: "הידיעה שאנחנו כצוות מהווים עבור התלמידים והמשפחות עוגן של יציבות, סדר וביטחון. דווקא בתקופות של אי-ודאות, יש לנו הזדמנות אמיתית להשפיע", author: "סמדר זנטי", tag: "שליחות", color: "#C4727F" },
+  { text: "שוקולד. המון שוקולד", author: "יורם בר קובץ", tag: "☺", color: "#D4A853" },
+  { text: "המפגש עם הילדים אפילו שזה מקוון, לשמוע אותם בשיעורים, הודעות של הורים ותלמידים שמודים", author: "פאתנה בשארה", tag: "תלמידים", color: "#7BA38C" },
+  { text: "משפחה, כלבים, פחמימות, עשייה", author: "מתן שחר", tag: "☺ אותנטיות", color: "#D4A853" },
+  { text: "ההבנה שיש לי את היכולת להשפיע ולייצר חוסן לצוות שלי שיכול לייצר חוסן לתלמידי וקהילת ביה\"ס", author: "מינה אשטמקר", tag: "שליחות + חוסן", color: "#C4727F" },
+  { text: "השגרה שנשארה. כל מה שעדיין עושים לפי שגרה. התפילות ברמדאן. הסעודה המשפחתית המשותפת", author: "סכינה עתאמנה", tag: "שגרה + אמונה", color: "#8E7DBE" },
+  { text: "מילה טובה של הורים, המשפחה היקרה שלנו, והמורות שפונות אלי ורואות בי כתובת עבורם", author: "זאב (בית החינוך)", tag: "מילים טובות", color: "#D4729B" },
+  { text: "האפשרות לרוקן את הכלי ולהתמלא מחדש", author: "אורית לנדאו", tag: "נתינה", color: "#7CAFC4" },
+  { text: "חיבוק מהקהילה ונתינה לקהילה", author: "ליטל גרבץ צבי", tag: "קהילה", color: "#5B9BD5" },
+  { text: "נולדה לי נכדה לפני שבועיים! זה הכי הרבה אוויר שאפשר", author: "מנהל/ת", tag: "משפחה ☺", color: "#E8856C" },
+  { text: "המחשבה שאנו אחראים על מאות תלמידים ואנחנו חייבים להיות חזקים למענם", author: "Dr. Zaher Abd Alqader", tag: "מחויבות", color: "#6B8E6B" },
+  { text: "הצוות שלי, היכולות המתגלות שלו, הרצון הטוב לעשייה גם כאשר התנאים לא פשוטים", author: "ביה\"ס אורנה פורת", tag: "צוות חינוכי", color: "#3A7CA5" },
+];
+
+const quotesEl = document.getElementById("quotes");
+quotes.forEach((q, i) => {
+  const card = document.createElement("div");
+  card.className = "quote-card";
+  card.style.animationDelay = `${i * 0.08}s`;
+  card.innerHTML = `
+    <div style="position:absolute;top:0;right:0;width:4px;height:100%;background:${q.color};border-radius:0 8px 8px 0;"></div>
+    <span class="quote-icon">"</span>
+    <div class="quote-text">${q.text}</div>
+    <div class="quote-author">— ${q.author}</div>
+    <span class="quote-tag" style="background:${q.color}18;color:${q.color};">${q.tag}</span>
+  `;
+  quotesEl.appendChild(card);
+});
+
+// ===== WORD CLOUD =====
+const words = [
+  { word: "משפחה", size: 3, color: "#E8856C" },
+  { word: "צוות", size: 2.3, color: "#3A7CA5" },
+  { word: "אמונה", size: 2.1, color: "#8E7DBE" },
+  { word: "עשייה", size: 1.9, color: "#D4A853" },
+  { word: "ילדים", size: 1.7, color: "#7BA38C" },
+  { word: "תקווה", size: 1.6, color: "#C9B99A" },
+  { word: "קהילה", size: 1.5, color: "#5B9BD5" },
+  { word: "שליחות", size: 1.3, color: "#C4727F" },
+  { word: "חוסן", size: 1.2, color: "#B07D56" },
+  { word: "שגרה", size: 1.2, color: "#B07D56" },
+  { word: "תפילה", size: 1.3, color: "#8E7DBE" },
+  { word: "תלמידים", size: 1.5, color: "#7BA38C" },
+  { word: "אחריות", size: 1.1, color: "#6B8E6B" },
+  { word: "חברים", size: 1.1, color: "#9B8EC0" },
+  { word: "אופטימיות", size: 1.2, color: "#C9B99A" },
+  { word: "מחויבות", size: 1.1, color: "#6B8E6B" },
+  { word: "הורים", size: 1.2, color: "#D4729B" },
+  { word: "הוקרה", size: 1.0, color: "#D4729B" },
+  { word: "נתינה", size: 1.0, color: "#7CAFC4" },
+  { word: "משמעות", size: 1.2, color: "#C4727F" },
+  { word: "ציונות", size: 1.0, color: "#4A6FA5" },
+  { word: "היסטוריה", size: 1.0, color: "#4A6FA5" },
+  { word: "אהבה", size: 1.3, color: "#E8856C" },
+  { word: "ספורט", size: 0.95, color: "#6AAB8E" },
+  { word: "טבע", size: 0.95, color: "#6AAB8E" },
+  { word: "בית", size: 1.3, color: "#E8856C" },
+  { word: "שוקולד", size: 0.95, color: "#D4A853" },
+  { word: "אומנות", size: 0.9, color: "#9B8EC0" },
+  { word: "הומור", size: 0.9, color: "#D4A853" },
+  { word: "התנדבות", size: 0.95, color: "#7CAFC4" },
+  { word: "מפקחת", size: 1.0, color: "#D49A6A" },
+  { word: "פורים", size: 0.9, color: "#D4A853" },
+  { word: "זום", size: 1.0, color: "#3A7CA5" },
+  { word: "גמישות", size: 0.95, color: "#B07D56" },
+];
+
+// Shuffle
+words.sort(() => Math.random() - 0.5);
+
+const cloudEl = document.getElementById("wordcloud");
+words.forEach(w => {
+  const span = document.createElement("span");
+  span.className = "cloud-word";
+  span.textContent = w.word;
+  span.style.fontSize = `${w.size}rem`;
+  span.style.color = w.color;
+  span.style.background = w.color + "12";
+  span.style.border = `1px solid ${w.color}30`;
+  cloudEl.appendChild(span);
+});
+
+// ===== INSIGHTS =====
+const insights = [
+  {
+    emoji: "🏠",
+    title: "המשפחה — העוגן המוחלט",
+    text: "כ-95 מנהלים ציינו את המשפחה כגורם המרכזי שממלא את הכלי — המשפחה הגרעינית, נכדים, בן/בת זוג, ואפילו חיות מחמד. המשפחה היא העוגן הקבוע בתוך הסערה."
+  },
+  {
+    emoji: "🤝",
+    title: "הצוות — שותפות בשליחות",
+    text: "42 אזכורים לצוות החינוכי. מנהלים מתארים צוותים מגוייסים, מסורים ורותמים, שמייצרים שגרה לילדים גם בתנאים קשים. הצוות הוא מקור כוח מרכזי."
+  },
+  {
+    emoji: "🕊️",
+    title: "אמונה — מעגל משותף",
+    text: "38 אזכורים — יהודים וערבים כאחד מציינים אמונה כמקור כוח. מ\"אמונה בבורא עולם\" דרך \"התפילות ברמדאן\" ועד \"אמונה בצדקת הדרך\". מעגל אנושי משותף."
+  },
+  {
+    emoji: "🏝️",
+    title: "\"איים של שגרה באוקינוס חירום\"",
+    text: "הביטוי של עינבל בן עטר מסכם תפיסה שחוזרת: המנהלים רואים ביצירת שגרה — גם מרחוק — פעולה של חוסן. חגיגת פורים, שיעור בזום, ארוחה משפחתית — כולם \"איים\"."
+  },
+  {
+    emoji: "🌊",
+    title: "רגע היסטורי",
+    text: "מנהלים רבים מתארים תחושת שייכות לרגע היסטורי גדול. \"שזכינו לחיות בתקופה גדולה ומיוחדת\" — תחושה שנותנת משמעות גם לקושי."
+  },
+  {
+    emoji: "💛",
+    title: "מילים טובות = דלק",
+    text: "הוקרה מהורים, תלמידים וצוות חוזרת כגורם מחזק. \"חיוך של תלמיד\", \"הודעות חיזוק מחממות לב\" — המילים הקטנות הן הדלק הגדול."
+  },
+];
+
+const insightsEl = document.getElementById("insights");
+insights.forEach(ins => {
+  const card = document.createElement("div");
+  card.className = "insight-card";
+  card.innerHTML = `
+    <div class="insight-emoji">${ins.emoji}</div>
+    <div class="insight-title">${ins.title}</div>
+    <div class="insight-text">${ins.text}</div>
+  `;
+  insightsEl.appendChild(card);
+});
+
+// ===== PARTICLES =====
+const particlesEl = document.getElementById("particles");
+for (let i = 0; i < 30; i++) {
+  const p = document.createElement("div");
+  p.className = "particle";
+  p.style.left = Math.random() * 100 + "%";
+  p.style.animationDuration = (6 + Math.random() * 10) + "s";
+  p.style.animationDelay = Math.random() * 8 + "s";
+  p.style.width = p.style.height = (2 + Math.random() * 4) + "px";
+  particlesEl.appendChild(p);
+}
+</script>
+</body>
+</html>
