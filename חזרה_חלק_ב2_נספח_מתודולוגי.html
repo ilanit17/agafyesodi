@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="he"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>חזרה מדורגת ללמידה לאחר תקופת חירום — חלק ב2: נספח מתודולוגי</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Assistant:wght@300;400;600;700&amp;family=Heebo:wght@400;600;700;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet"/>
+<style>
+        :root {
+            --navy: #1a2744; --navy-light: #2a3f6a;
+            --teal: #0d8a7e; --teal-light: #11b3a4; --teal-pale: #e6f7f5;
+            --warm: #f5f0e8; --warm-dark: #e8dfd2;
+            --coral: #e07a5f; --gold: #d4a94c;
+            --purple: #7c3aed; --green: #2d7d46; --blue: #2563a8;
+        }
+        
+        * { box-sizing: border-box; margin:0; padding:0; }
+        body {
+            background: #f0f2f5; font-family: 'Assistant', sans-serif;
+            direction: rtl; text-align: right; padding: 20px 0;
+            display: flex; flex-direction: column; align-items: center;
+        }
+        .slide-container {
+            width: 794px; min-height: 1123px; background: white;
+            margin-bottom: 40px; box-shadow: 0 8px 25px rgba(0,0,0,0.08);
+            position: relative; padding: 44px 48px 34px 48px;
+            page-break-after: always; page-break-inside: avoid;
+            break-inside: avoid-page;
+            display: flex; flex-direction: column;
+        }
+        .slide-container::before {
+            content: ""; position: absolute; top: 0; right: 0;
+            width: 100%; height: 10px;
+            background: linear-gradient(90deg, var(--navy), var(--teal), var(--coral));
+        }
+
+        /* Layout Utilities */
+        .content-grow { flex-grow: 1; display: flex; flex-direction: column; padding: 10px 0; }
+        .v-between { justify-content: space-between; }
+        .v-evenly { justify-content: space-evenly; }
+        
+        /* Typography */
+        h1 { font-family: 'Heebo'; font-size: 34px; font-weight: 900; color: var(--navy); text-align: center; line-height: 1.2; margin: 0 0 10px; }
+        .branding { font-size: 16px; font-weight: 700; color: var(--navy); text-align: center; margin-bottom: 14px; }
+        .hero-badge {
+            display: inline-block; background: var(--teal-pale); color: var(--teal); border: 1px solid var(--teal-light);
+            border-radius: 100px; padding: 5px 18px; font-size: 15px; font-weight: 700; margin-bottom: 10px; align-self: center;
+        }
+        .hero-subtitle { font-size: 20px; font-weight: 600; color: #475569; text-align: center; margin-bottom: 18px; line-height: 1.5; max-width: 92%; align-self: center;}
+        
+        .sec-title { font-family: 'Heebo'; font-size: 26px; font-weight: 900; color: var(--navy); margin: 0 0 14px; border-bottom: 2px solid var(--teal-pale); padding-bottom: 7px; display: inline-block;}
+        h3 { font-family: 'Heebo'; font-size: 21px; font-weight: 700; color: var(--navy); margin: 0 0 8px; }
+        h4 { font-family: 'Heebo'; font-size: 18px; font-weight: 700; color: var(--navy); margin: 0 0 8px; }
+        p, li { font-size: 17px; line-height: 1.65; margin: 0 0 10px; color: #334155; }
+        ul { padding-right: 22px; margin: 6px 0 10px; }
+        li { margin-bottom: 6px; }
+        a { color: var(--teal); text-decoration: none; font-weight: 600; }
+        a:hover { text-decoration: underline; }
+
+        /* Scenarios Bar */
+        .scenarios-bar { display: grid; grid-template-columns: repeat(3,1fr); gap: 12px; margin-bottom: 15px; }
+        .scenario-card { background: white; border-radius: 8px; padding: 18px 16px; box-shadow: 0 2px 10px rgba(0,0,0,0.04); text-align: center; border-top: 4px solid #e2e8f0; }
+        .scenario-card.physical { border-top-color: var(--green); }
+        .scenario-card.remote { border-top-color: var(--blue); }
+        .scenario-card.hybrid { border-top-color: var(--purple); }
+        .scenario-num { display: inline-flex; align-items: center; justify-content: center; width: 32px; height: 32px; border-radius: 50%; font-weight: 700; font-size: 16px; margin-bottom: 6px; }
+        .scenario-card.physical .scenario-num { background: #e8f5ef; color: var(--green); }
+        .scenario-card.remote .scenario-num { background: #e8f0fb; color: var(--blue); }
+        .scenario-card.hybrid .scenario-num { background: #f0e8fb; color: var(--purple); }
+
+        /* Notes & Highlights */
+        .structure-note { background: var(--navy); color: white; border-radius: 8px; padding: 14px 20px; margin-bottom: 15px; font-size: 14px; line-height: 1.6; }
+        .structure-note p { color: white; margin:0; }
+        .structure-note strong { color: var(--teal-light); }
+        .structure-note a { color: var(--teal-light); text-decoration: underline; }
+
+        /* 5 Moves Overview */
+        .move-strip { display: flex; align-items: stretch; background: white; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.05); margin-bottom: 10px; border: 1px solid #f1f5f9; }
+        .move-num-bar { width: 44px; display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 18px; color: white; flex-shrink: 0; font-family: 'Heebo'; }
+        .m1 .move-num-bar { background: var(--teal); } .m2 .move-num-bar { background: #2196a8; }
+        .m3 .move-num-bar { background: var(--navy-light); } .m4 .move-num-bar { background: var(--coral); }
+        .m5 .move-num-bar { background: var(--gold); }
+        .move-content { padding: 10px 16px; flex: 1; }
+        .move-content h3 { font-size: 15px; margin-bottom: 2px; }
+        .move-tags { font-size: 13px; color: #64748b; font-weight: 600; }
+
+        /* Matrices (Detailed Moves) */
+        .scenario-matrix { background: white; border-radius: 10px; box-shadow: 0 2px 12px rgba(0,0,0,0.06); margin-bottom: 25px; overflow: visible; border: 1px solid #e2e8f0; page-break-inside: avoid; break-inside: avoid-page; }
+        .matrix-header { padding: 16px 24px 12px; display: flex; align-items: flex-start; gap: 12px; border-bottom: 1px solid #f1f5f9; }
+        .matrix-icon { width: 38px; height: 38px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0; }
+        .matrix-header h2 { font-family: 'Heebo'; font-size: 21px; font-weight: 700; color: var(--navy); margin: 0 0 4px; }
+        .matrix-header .why { font-size: 16px; color: #64748b; margin: 0; line-height: 1.5; }
+        .why-box { background: #f8fafc; border-right: 4px solid #cbd5e1; padding: 12px 18px; margin: 14px 24px; border-radius: 0 6px 6px 0; font-size: 16px; line-height: 1.7; color: #334155; }
+        .general-recs { padding: 0 24px 8px; }
+        .general-recs h4 { font-size: 14px; margin-bottom: 6px; color: var(--navy); }
+        .scenario-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0; margin: 0 24px 20px; border-radius: 8px; overflow: hidden; border: 1px solid #e2e8f0; }
+        .sg-col { padding: 14px; }
+        .sg-col:not(:last-child) { border-left: 1px solid #e2e8f0; }
+        .sg-col.physical { background: #f0fdf4; } .sg-col.remote { background: #eff6ff; } .sg-col.hybrid { background: #faf5ff; }
+        .sg-label { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; padding-bottom: 6px; border-bottom: 2px solid transparent; }
+        .sg-col.physical .sg-label { border-bottom-color: var(--green); } .sg-col.remote .sg-label { border-bottom-color: var(--blue); } .sg-col.hybrid .sg-label { border-bottom-color: var(--purple); }
+        .sg-label-icon { width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; color: white; flex-shrink: 0; }
+        .sg-col.physical .sg-label-icon { background: var(--green); } .sg-col.remote .sg-label-icon { background: var(--blue); } .sg-col.hybrid .sg-label-icon { background: var(--purple); }
+        .sg-label span { font-size: 15px; font-weight: 700; color: var(--navy); }
+        .sg-col ul li { font-size: 15px; line-height: 1.65; margin-bottom: 8px; padding-right: 14px; position: relative; }
+        .sg-col ul li::before { content: '–'; position: absolute; right: 0; color: #94a3b8; font-weight: bold; }
+        
+        /* Matrix specific coloring */
+        .mat-1 .matrix-icon { background: var(--teal-pale); color: var(--teal); } .mat-1 .why-box { border-right-color: var(--teal); }
+        .mat-2 .matrix-icon { background: #e0f3f7; color: #2196a8; } .mat-2 .why-box { border-right-color: #2196a8; }
+        .mat-3 .matrix-icon { background: #e8ecf4; color: var(--navy-light); } .mat-3 .why-box { border-right-color: var(--navy-light); }
+        .mat-4 .matrix-icon { background: #fde8e0; color: var(--coral); } .mat-4 .why-box { border-right-color: var(--coral); }
+        .mat-5 .matrix-icon { background: #fef3c7; color: #b45309; } .mat-5 .why-box { border-right-color: var(--gold); }
+
+        /* Age Focus */
+        .age-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 12px; margin: 10px 0; }
+        .age-card { background: #f8fafc; border-radius: 6px; padding: 14px; border-top: 3px solid var(--teal); }
+        .age-card.mid { border-top-color: var(--blue); } .age-card.senior { border-top-color: var(--purple); }
+        .age-card h4 { font-size: 14px; margin-bottom: 6px; }
+        .age-card ul li { font-size: 15px; padding-right: 12px; margin-bottom: 6px; position: relative; }
+        .age-card ul li::before { content: '–'; position: absolute; right: 0; color: #94a3b8; }
+
+        /* Priority Focus Boxes */
+        .focus-duo { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 25px; page-break-inside: avoid;}
+        .focus-box { border-radius: 8px; padding: 20px 24px; position: relative; overflow: hidden; }
+        .focus-box::before { content: ''; position: absolute; top: 0; right: 0; width: 6px; height: 100%; }
+        .focus-box.young { background: linear-gradient(135deg, #f0fdf4, #dcfce7); border: 1px solid #86efac; }
+        .focus-box.young::before { background: var(--green); }
+        .focus-box.senior { background: linear-gradient(135deg, #faf5ff, #f3e8ff); border: 1px solid #d8b4fe; }
+        .focus-box.senior::before { background: var(--purple); }
+        .focus-box .focus-badge { display: inline-block; padding: 2px 10px; border-radius: 100px; font-size: 12px; font-weight: 700; margin-bottom: 10px; }
+        .focus-box.young .focus-badge { background: #166534; color: white; }
+        .focus-box.senior .focus-badge { background: #6b21a8; color: white; }
+        .focus-box h3 { font-size: 16px; font-weight: 900; margin-bottom: 8px; }
+        .focus-box.young h3 { color: #166534; } .focus-box.senior h3 { color: #6b21a8; }
+        .focus-box p { font-size: 16px; color: #334155; line-height: 1.7; margin-bottom: 12px; }
+        .focus-box ul { list-style: none; padding: 0; }
+        .focus-box ul li { font-size: 15px; color: #1e293b; padding: 4px 0; padding-right: 15px; position: relative; line-height: 1.6; }
+        .focus-box ul li::before { content: '◆'; position: absolute; right: 0; font-size: 8px; top: 7px; }
+        .focus-box.young ul li::before { color: var(--green); } .focus-box.senior ul li::before { color: var(--purple); }
+
+        /* Timeline */
+        .tl-week { margin-bottom: 16px; border: 1px solid #e2e8f0; border-radius: 8px; overflow: hidden; page-break-inside: avoid; }
+        .tl-header { background: #f1f5f9; padding: 8px 16px; font-weight: 700; color: var(--navy); font-size: 14px; border-bottom: 1px solid #e2e8f0; display: inline-block; width: 100%;}
+        .tl-grid { display: grid; grid-template-columns: repeat(2,1fr); gap: 1px; background: #e2e8f0; }
+        .tl-item { background: white; padding: 12px 16px; }
+        .tl-item-tag { font-size: 11px; font-weight: 700; text-transform: uppercase; margin-bottom: 4px; }
+        .tl-item-tag.emotional { color: var(--teal); } .tl-item-tag.social { color: #2196a8; }
+        .tl-item-tag.pedagogical { color: var(--navy-light); } .tl-item-tag.organizational { color: var(--gold); }
+        .tl-item p { font-size: 15px; line-height: 1.6; margin: 0; }
+
+        /* Parents */
+        .parents-grid { display: grid; grid-template-columns: repeat(2,1fr); gap: 12px; margin-top: 10px; }
+        .parent-item { background: #f8fafc; border-radius: 6px; padding: 14px; border: 1px solid #e2e8f0; }
+        .parent-item h4 { font-size: 14.5px; margin-bottom: 4px; }
+        .parent-item p { font-size: 16px; line-height: 1.6; margin: 0; }
+
+        /* Checklist */
+        .check-group { margin-bottom: 14px; page-break-inside: avoid; }
+        .check-group h4 { font-size: 14.5px; margin-bottom: 6px; padding-bottom: 4px; border-bottom: 1px solid #e2e8f0; }
+        .check-item { display: flex; align-items: flex-start; gap: 8px; margin-bottom: 6px; font-size: 16px; line-height: 1.6; color: #1e293b; }
+        .check-box { width: 15px; height: 15px; border: 2px solid #94a3b8; border-radius: 3px; flex-shrink: 0; margin-top: 3px; }
+
+        /* Memorial */
+        .memorial-section { background: white; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.06); border: 1px solid #e2e8f0; margin-bottom: 25px; overflow: hidden; page-break-inside: avoid; }
+        
+        /* Age Characteristics Section */
+        .age-char-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 16px; margin: 16px 0; }
+        .age-char-card { border-radius: 8px; padding: 20px; border-top: 4px solid var(--teal); page-break-inside: avoid; }
+        .age-char-card.young { background: #f0fdf4; border-top-color: #4ade80; }
+        .age-char-card.middle { background: #eff6ff; border-top-color: #60a5fa; }
+        .age-char-card.older { background: #faf5ff; border-top-color: #c084fc; }
+        .age-char-card h4 { font-size: 16px; font-weight: 900; margin-bottom: 12px; }
+        .age-char-card.young h4 { color: #166534; } .age-char-card.middle h4 { color: #1e40af; } .age-char-card.older h4 { color: #6b21a8; }
+        .age-char-card h5 { font-size: 13px; font-weight: 700; text-transform: uppercase; margin: 14px 0 6px; padding-top: 10px; border-top: 1px solid rgba(0,0,0,0.08); }
+        .age-char-card.young h5 { color: #166534; } .age-char-card.middle h5 { color: #1e40af; } .age-char-card.older h5 { color: #6b21a8; }
+        .age-char-card ul { list-style: none; padding: 0; }
+        .age-char-card ul li { font-size: 15px; color: #334155; padding: 4px 0; padding-right: 14px; position: relative; line-height: 1.65; }
+        .age-char-card ul li::before { content: '–'; position: absolute; right: 0; color: var(--gray-400); }
+        
+        .iron-rules { background: #fef3cd; border: 1px solid #fcd34d; border-radius: 8px; padding: 18px 22px; margin-top: 18px; page-break-inside: avoid;}
+        .iron-rules h4 { font-size: 15px; font-weight: 700; color: #92400e; margin-bottom: 10px; }
+        .iron-rules .rule-item { display: flex; gap: 10px; padding: 6px 0; font-size: 16px; color: #78350f; line-height: 1.7; }
+        
+        /* Hybrid Learning Appendix */
+        .blended-section { background: white; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.06); overflow: hidden; margin-bottom: 25px; border-top: 4px solid var(--purple); }
+        .blended-header { background: linear-gradient(135deg, #7c3aed, #a78bfa); color: white; padding: 18px 24px; }
+        .blended-header h2 { font-size: 18px; font-weight: 700; margin-bottom: 3px; }
+        .blended-header p { font-size: 13px; opacity: 0.9; margin:0;}
+        .blended-body { padding: 20px 24px; }
+        .alt-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 14px; margin: 16px 0; page-break-inside: avoid;}
+        .alt-card { background: #f8fafc; border-radius: 8px; padding: 18px; border-top: 3px solid var(--purple-light); }
+        .alt-card h4 { font-size: 14.5px; font-weight: 700; color: var(--navy); margin-bottom: 8px; }
+        .alt-card p { font-size: 15px; line-height: 1.6; margin-bottom: 8px; }
+        .alt-card .alt-detail { font-size: 15px; color: #64748b; line-height: 1.6; border-top: 1px solid #e2e8f0; padding-top: 8px; margin-top: 8px;}
+        .priority-box { background: #fef3cd; border: 1px solid #fcd34d; border-radius: 8px; padding: 16px 20px; margin-top: 16px; page-break-inside: avoid; }
+        .priority-box h4 { font-size: 14.5px; font-weight: 700; color: #92400e; margin-bottom: 6px; }
+        .priority-box ul { list-style: none; padding: 0; }
+        .priority-box ul li { font-size: 16px; color: #78350f; padding: 4px 0; padding-right: 18px; position: relative; line-height: 1.6; }
+        .priority-box ul li::before { content: '⚠'; position: absolute; right: 0; font-size: 10px; top: 4px; }
+        .appendix-ref { background: #f8fafc; border: 1.5px dashed #cbd5e1; border-radius: 8px; padding: 16px 22px; margin-top: 16px; font-size: 16px; line-height: 1.7; }
+        
+        /* Tables Appendix */
+        .app-table-wrap { overflow-x: auto; border: 1px solid #e2e8f0; border-radius: 8px; margin: 16px 0; page-break-inside: auto; }
+        .app-table { width: 100%; border-collapse: collapse; font-size: 15px; }
+        .app-table th { padding: 13px 15px; text-align: right; font-weight: 700; font-size: 14.5px; line-height: 1.5; vertical-align: top; border-bottom: 2px solid #cbd5e1; }
+        .app-table th.col-dim { background: #f1f5f9; color: var(--navy); width: 15%; }
+        .app-table th.col-young { background: #f0fdf4; color: #166534; width: 28%;}
+        .app-table th.col-mid { background: #eff6ff; color: #1e40af; width: 28%;}
+        .app-table th.col-old { background: #faf5ff; color: #6b21a8; width: 29%;}
+        .app-table td { padding: 13px 15px; vertical-align: top; border-bottom: 1px solid #e2e8f0; line-height: 1.65; color: #334155; }
+        .app-table tr { page-break-inside: avoid; }
+        .app-table td:first-child { font-weight: 700; color: var(--navy); background: #f8fafc; }
+        .app-table tr:last-child td { border-bottom: none; }
+
+        /* Logos & Footer */
+        .logos-header { display: flex; justify-content: space-between; align-items: flex-start; width: 100%; margin-bottom: 10px; }
+        .logo-img { height: 65px; object-fit: contain; }
+        .footer {
+            margin-top: auto; padding-top: 8px; border-top: 1px solid #e2e8f0;
+            font-size: 13px; color: #94a3b8; display: flex; justify-content: space-between; height: 25px;
+        }
+
+        @media print {
+            @page { size: A4 portrait; margin: 14mm 12mm; }
+            html, body { width: 100%; }
+            body { background: none !important; padding: 0 !important; margin: 0 !important; zoom: 1; font-size: 112%; }
+            .slide-container { 
+                width: 100% !important; 
+                height: auto !important; 
+                min-height: auto !important; 
+                margin: 0 0 8mm 0 !important; 
+                box-shadow: none !important; 
+                padding: 0 !important; 
+                page-break-after: always;
+                page-break-inside: auto !important;
+                break-inside: auto !important;
+                display: block !important;
+                overflow: visible !important;
+            }
+            .content-grow { display: block !important; }
+
+            h1, h2, h3, h4, h5, h6, .sec-title, .tl-header, .tl-week-label, .matrix-header, .sg-label, .focus-badge {
+                break-after: avoid-page;
+                page-break-after: avoid !important;
+            }
+            p, ul, ol, li, .why-box, .structure-note, .parent-item, .check-item, .appendix-ref {
+                orphans: 3;
+                widows: 3;
+            }
+
+            .scenario-matrix, .memorial-section, .checklist-section, .age-chars-section,
+            .blended-section, .focus-duo, .focus-box, .tl-week, .age-char-card,
+            .app-table-wrap, .check-group, .parent-item, .move-strip, .why-box,
+            .general-recs, .scenario-card, .iron-rules, .priority-box {
+                overflow: visible !important;
+                page-break-inside: avoid !important;
+                break-inside: avoid-page !important;
+            }
+
+            .scenario-grid, .age-grid, .age-char-grid, .parents-grid, .alt-grid, .focus-duo, .tl-grid {
+                page-break-inside: avoid !important;
+                break-inside: avoid-page !important;
+            }
+
+            .matrix-header, .sg-col, .age-char-card, .alt-card, .tl-item, .parent-item, .check-group, tr, td, th, li {
+                page-break-inside: avoid !important;
+                break-inside: avoid-page !important;
+            }
+
+            .scenario-matrix, .memorial-section, .blended-section, .focus-box, .age-char-card, .parent-item, .check-group, .app-table-wrap {
+                border-radius: 0 !important;
+            }
+
+            * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+        }
+    </style>
+</head><body><div class="slide-container">
+<div class="content-grow">
+<!-- השלמת הנספח ההיברידי -->
+<div class="blended-section" style="border-top:none; border-top-left-radius:0; border-top-right-radius:0; margin-top:-25px; box-shadow:none; border-bottom: 2px dashed #cbd5e1; margin-bottom: 25px;">
+<div class="blended-body" style="padding-top:10px;">
+<h4 style="font-size:15px; font-weight:700; color:var(--navy); margin:0 0 10px;">עוגנים פדגוגיים להובלת סביבת למידה משולבת</h4>
+<ul class="rec-list">
+<li><strong>עיגון חוסן רגשי והקפדה על שלומות הצוות:</strong> כל יום לימודים, תהא תצורתו אשר תהא, ייפתח באופן מובנה מבוסס חוויה והפגה, תוך הקצאת מרחב לשיח תומך המבסס תחושת מסוגלות ותקווה. המנהיגות הפדגוגית והרגישות אשר קברניטי בית הספר מגלים בתקופה זו היא המסד שעליו ניצב הקהל כולו.</li>
+<li><strong>שימור הנוכחות הדיגיטלית וניטור רציפות הקשר:</strong> תלמידים החווים עכבות בחזרתם למסגרת עקב חרדות מוצדקות או התמודדויות משפחתיות, דורשים ליווי פרטני והתערבות המבוססת על יחסי גומלין מקיפים עד לרגע בו יבשילו לשוב באורח מלא.</li>
+<li><strong>תכנון פדגוגי מערכתי והוליסטי:</strong> הפעלת שיקול דעת פדגוגי הנשען על חתך גילאים מדויק, תצורת ההוראה הנבחרת ואופי ציבור הלומדים. יש לגבש תוכנית שבועית בהירה המקיפה משאבי דיגיטל וטקסטואלים, מטלות למידה מוכוונות ותיווך תומך לעידוד אוטונומיה בלמידה.</li>
+<li><strong>עידוד הקהילה המקצועית-לומדת (קפ"ל):</strong> יצירת זירת היוועצות פעילה לחלוקת עומסים ותכנון מיטבי של לוחות הזמנים המורכבים והחומרים הפדגוגיים הנדרשים כעת.</li>
+<li><strong>איזון והלימה בין שמירה על שגרה לבין אירועי החירום:</strong> חשיבות עליונה להנכחת העוגנים הבית-ספריים (טקסים, ציוני דרך), על מנת להשרות יציבות, אך תוך קשב עדין להגבלות האבטחה ומצב החוסן הלאומי.</li>
+<li><strong>העמקת השותפות ויצירת סינרגיה מול ההורים והקהילה הרחבה:</strong> עיבוי ערוצי השקיפות למען הבטחת גיבויו המלא של העורף הקהילתי.</li>
+</ul>
+<div class="appendix-ref" style="margin-top:10px;">
+                    📎 <strong>לעזרתכם, מסמך המקור המלא:</strong> "ניהול למידה היברידית בשגרת חירום מתמשך — בית הספר היסודי" (אגף בכיר חינוך יסודי). מפרט סדרי יום מוצעים והנחיות למידה פרטניות להתאמה במערכי הלמידה ההיברידית.
+                </div>
+</div>
+</div>
+<!-- APPENDIX 2 — AGE-APPROPRIATE RESPONSES (Intro & Table 1) -->
+<div class="age-chars-section" id="age-appendix" style="margin-bottom: 0;">
+<div class="age-chars-header">
+<h2>👶🧒🧑 נספח מתודולוגי: מארג המענים הדיפרנציאליים מותאמי-ההתפתחות</h2>
+<p>נספח זה מאגד אינטגרציה של מודלים עולמיים מובילים לתמיכה חינוכית בתקופות משבר (NCTSN, NAEYC, CASEL, UNICEF) עם הפרקטיקות המוכחות של השדה החינוכי הישראלי.</p>
+</div>
+<div class="age-chars-body">
+<p>חשוב לזכור כי שובם של התלמידים למסגרת לאחר תקופת חירום אינו מסמן חזרה לנקודת ההתחלה. כל תלמיד נושא עמו מטען של תגובות ודפוסים שגובשו בימי המשבר, ואלו מושפעים באופן מכריע מבשלותו הרגשית והקוגניטיבית. הטבלאות המובאות להלן נועדו להעניק לאיש החינוך כלי אבחוני ותפעולי: זיהוי ביטויי דחק, הגדרת אסטרטגיות תמיכה ושילובן ביומיום הפדגוגי.</p>
+<!-- TABLE 1: Reactions -->
+<h4 style="font-size:16px; font-weight:900; color:var(--navy); margin:20px 0 8px;">טבלה מס' 1: אפיון ביטויי דחק בקרב תלמידים בחלוקה גילאית</h4>
+<div class="app-table-wrap" style="margin-top: 0;">
+<table class="app-table">
+<thead>
+<tr>
+<th class="col-dim">מוקד הפגיעה</th>
+<th class="col-young">יסודי צעיר (חט"צ עד כיתה ב׳)</th>
+<th class="col-mid">יסודי ביניים (כיתות ג׳–ד׳)</th>
+<th class="col-old">יסודי בוגר (כיתות ה׳–ו׳)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>המרחב הרגשי</td>
+<td>קושי באפיון ובמלל התחושות (אלקסיטימיה). חוויה של היעדר אונים ומצוקת פרידה מואצת מדמויות מיטיבות. הפגנת תופעות של חזרה לאחור (רגרסיה התפתחותית מוקדמת, דוגמת איבוד הרגלי ניקיון ושפה ילדותית). השתקפות המצוקה במרחב ה"משחק הטרגי" בעל אופי חזרתי וללא ממד הדמיון. עליה בתדירות הפחד מסיוטי לילה.</td>
+<td>התפתחות דאגה אובססיבית לביטחון ולקרובים. הופעת תחושות קשות של אי-מסוגלות, אשמה מתמשכת המלווה בביקורת עצמית פולשנית על היעדר יכולת שליטה בנסיבות האסון או מניעתו. תלונות חוזרות ונשנות הנוגעות למצוקה סומטית (תופעות דחק המקבלות ביטוי פסיכו-גופני בגוף, ללא ממצא פתולוגי). התנהגות בלתי סדירה, אימפולסיבית, או התקפים חריגים של תוקפנות.</td>
+<td>התעוררות מודעות פנימית חדה וביקורתית מול החולשות ורגישות היתר. בחירה בבידוד חברתי וריחוק אינטלקטואלי ורגשי למען הגנה מחדירה למרחב. הופעת תסמינים המאפיינים פלשבקים ותופעות של מחשבה חוזרת מעוררת מצוקה. התפכחות אלימה מתמונת עולם תמימה ומעבר להתנהגויות בוחנות גבול.</td>
+</tr>
+<tr>
+<td>ההיבט האקדמי והקוגניטיבי</td>
+<td>נסיגה ביכולות הפענוח והאוריינות המוקדמת. תנודתיות גבוהה ביכולת הקשב והריכוז אשר מוגבלת מטבעה. קשיי שקט ותזזיתיות יתר. צורך בהיצמדות חזקה למורה כמקור לתיווך ולהחזקה פסיכולוגית (Holding). סרבנות למשימות בעלות אופי בלתי מוכר או הדורשות התנסות חדשה.</td>
+<td>פגיעה משמעותית בתפקודי הלמידה וברציפות הקשב. ירידה דרסטית ביכולות הבנת הנקרא ופענוח בעיות. הקצאת משאבים נפשיים לחשיבה חודרנית ועיסוק בחלומות בהקיץ על חשבון למידה. העדפה להימנעות והופעת אפאתיות וחוסר מוטיבציה מתגבר. צניחה ברורה ברמת הגימור של התוצרים ויכולות ההבעה.</td>
+<td>פגיעה דרסטית וניכרת לעין בביצועים הפורמליים של התלמיד. קושי גובר בתהליכי התפקודים הניהוליים, בפרט בתכנון ובסדרי ארגון. נטישת ההתמודדות בחשיבה מעמיקה ומופשטת או צורות פתרון הדורשות מטא-קוגניציה. "מיקוד סלקטיבי" — מעורבות והשתתפות אקטיבית בנושאי טראומה ואקטואליה אל מול ריחוק מוחלט מדיסציפלינות ההוראה השגרתיות.</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+</div>
+<div class="footer"><span>עמוד 9</span><span>אגף בכיר חינוך יסודי</span></div>
+</div><div class="slide-container">
+<div class="content-grow">
+<!-- סיום טבלה 1 -->
+<div class="age-chars-section" style="border-top:none; border-top-left-radius:0; border-top-right-radius:0; margin-top:-25px; box-shadow:none; margin-bottom: 25px;">
+<div class="age-chars-body" style="padding-top: 0;">
+<div class="app-table-wrap" style="margin-top: 0;">
+<table class="app-table">
+<colgroup><col style="width: 15%;"/><col style="width: 28%;"/><col style="width: 28%;"/><col style="width: 29%;"/></colgroup>
+<tbody>
+<tr>
+<td>המעטפת החברתית הבין-אישית</td>
+<td>תלות מוגברת בנוכחותו של ההורה המלווה או המורה המנחה וסירוב מוחלט לתהליכי פרידה רגילים. נהייה אחר פטרונות של מבוגר מגן במקום יצירת אינטראקציות חברתיות רגילות. חזרה לעולם הפעוטות וחוסר גמישות לשיתוף מרחב למידה ומיומנויות חברתיות בסיסיות (כמו לקיחת תור). נטייה הולכת וגוברת למריבות.</td>
+<td>התרבות סכסוכים חברתיים שוליים ומקוטעים. ביטויים של פגיעות עמוקה אל מול כל תחושת הדרה ודחייה חברתית. היעדרות בולטת של יסודות אמפתיה כלפי הזולת. הופעת התנהגות שבטית (יצירת קליקות נוקשות המנציחות את הקבוצה ומגנות עליה מפני זרים). ניסיונות להשגת תחושת שליטה גם במחיר מאבקים מול קבוצת השווים או היעדר אמון מול פרצופים חדשים.</td>
+<td>מנגנון הגנה של התבודדות חברתית וריחוק פיזי מקבוצת השווים. החזקת תפיסה אבסולוטית בטענה של "איש אינו מבין את עומק כאבי". עיסוק מתיש בהשוואה חברתית ותחושת עוול על עוצמת ההתמודדות האישית. גילויי המרדה כנגד סמכות המסגרת מתוך משבר עמוק באמון כלפי עולם המבוגרים שאינו מיטיב עוד. לחלופין, גיוס קיצוני להצלה ותחושת חובה לעמוד בחזית יוזמת עזרה חברתית ופעילות גיוס למאמצי החירום.</td>
+</tr>
+</tbody>
+</table>
+</div>
+<!-- TABLE 2: Strategies -->
+<h4 style="font-size:16px; font-weight:900; color:var(--navy); margin:28px 0 8px;">טבלה מס' 2: אסטרטגיות התערבות ומענה פדגוגי מותאם</h4>
+<div class="app-table-wrap" style="margin-top: 0;">
+<table class="app-table">
+<thead>
+<tr>
+<th class="col-dim">מוקד המענה</th>
+<th class="col-young">יסודי צעיר (חט"צ עד כיתה ב׳)</th>
+<th class="col-mid">יסודי ביניים (כיתות ג׳–ד׳)</th>
+<th class="col-old">יסודי בוגר (כיתות ה׳–ו׳)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>תמיכה פסיכו-חברתית</td>
+<td>ביצוע מעגלי פתיחה להבעה רגשית אמצעית (10-15 דק') הנעזרים בהמחשות פיזיות ובובות עזר להשמת התחושות במילים, תוך ביסוס המחנכת כמרחב מכיל ומכונן תחושת אבטחה קיומית. העברה של עקרונות הריפוי וההתגברות במרחבים המשלבים הבעה ביבליותרפית ולא בדרכי עיבוד כפוי וישיר של חוויות החירום עצמן. הבניית פינות הפוגה מווסתות ברמה התחושתית (חול עדין, תאורה רכה). כינון תשתית ארגונית שקופה ומובהקת באמצעות לוחות זמנים חזותיים ויצירת סובלנות ואורך רוח בקרב הסגל כלפי תופעות נסיגה בתהליך ההתבגרות של הפעוט.</td>
+<td>בניית מד הרגשה יומי ברמה האישית במטרה למשש דופק ולגלות אמפתיה (לדוגמה: "אני מבינה שתחושות הדאגה תופסות מקום כעת, והדבר מהווה תגובה נורמלית בהחלט"). אספקת כלי תקשורת בלתי מאיימים בדמות תיבת דואר מקומית ("תיבת הלב"). הובלת משחקי אמון הדדי בין חברי השכבה (לדוגמה: משימות למידה משותפות התלויות בעבודת צוות הרמונית). מיפוי חיובי של רשימת כישורים תחת פרויקט "עץ החוזקות הכיתתי", והבניה מחדש של הגבולות המוסכמים המיושמת במשותף עם חברי הכיתה להשגת לגיטימיות ולכידות מחודשת.</td>
+<td>מתן מרחב מכבד, בלתי מחייב, המספק הזדמנות לשיתוף אך גם את הזכות המלאה והמגובה להימנע ולשמור על שתיקה רועמת. הקצאת זמנים ומחברות המיועדות לכתיבה יוצרת ככלי רפלקטיבי שאיננו עובר הערכה, לשם ניקוי משקעים והבניה נרטיבית מסדרת במוח ("מגירה ריקה"). הפעלת תלמידים כגורמים תורמים בסביבתם למטרות פיתוח חוסן אישי (נתינה בונה), דוגמת מינוים למדריכים לילדי הכיתות הנמוכות וכן שיתוף בסוגיות דילמטיות מהמרחב הציבורי שנוגעות לרוח ההתנדבות ולהנהגה ערכית המונחית ומונהגת על ידי הנוער בכיתה. יחס מחנך מיוחד ואכפתי אף כלפי תלמיד מסוגר, שמירת העין הבוחנת והזהירה כלפי האדישות המסוכנת שבקצוות.</td>
+</tr>
+<tr>
+<td>אסטרטגיה פדגוגית</td>
+<td>שינון ספירלי של חומר נלמד המהווה קרקע בטוחה המבטיחה בניית הישגיות וחזרה מהירה לחוויית מסוגלות אישית. משכי למידה קצרים הנקטעים לטובת התרעננויות והזרמת דם ממוקדת. פדגוגיה מוטת גוף (למידה באמצעות מעשה פיזי, מחול, פסיכומטריקה ומשחקים), מניעת השהייה במנח ישיבה נוקשה למשך שיעור רציף. הנגשת ההתקדמות לתלמיד דרך רצף מטלות בעלות אופי מתגמל מהיר ורצוף. שימוש מובהק בכלי "הערכה מקדמת" והשהיית כלי בחינה ביצועיים מובהקים. מיקוד מאמץ פדגוגי בתחום כישורי שפה כתובה ראשונית ומניית מושגי יסוד.</td>
+<td>שימוש בהערכת חסר סמויה לשם הבנת הסטטוס הפערים המילוליים והאריתמטיים מבלי לייצר אימת ביצוע או השלכות של "ציוני שלילי". מסגרות זמן פרקטיות למקצועות ליבה בטווח 25 דקות תוך שינוי האמצעי לאורך ציר הלמידה. שבירת חזית הלימוד באמצעות פדגוגיית קבוצות יעד (Groups). חידוד השיח על תהליכי הלמידה באמצעות משוב תהליכי והתייחסות למאמץ המושקע ולאיכות הניתוח המחשבתי על פני ה"נכון/לא-נכון" החד-ממדי. אגירת נתונים לצרכי הכוונת למידה (הערכה מעצבת), מיקוד במקצועות העוגן: שטף והבנת הנקרא, תפקודי כתיבה תקנית וכישורים אורייניים מתמטיים.</td>
+<td>הטמעת דרכי הוראה עתירות מעורבות סקרנית באמצעות פתרון בעיות ופרויקטים (PBL). העמקת מיומנויות של צריכת ידע דיגיטלי נבונה, טיפוח חוש ביקורתיות והערכת אמינות מקורות כנגזרת להתמודדות בסביבת עתירת דיסאינפורמציה (פייק ניוז שרווח בזמני חירום). הגדלת גבולות האוטונומיה המוקנית לתלמיד ביכולת לעצב את הפרויקט, משלב החקר, דרך התכנים הרצויים לו ועד להחלטה על אופן הגשתו של המוצר המוגמר. בניית מסורות משוב המנוהלות על ידי קבוצת העמיתים תחת הנחיית המחנך (Peer feedback), ובניית מאמץ משותף על יכולות הבעה לוגית מבוססת הנחות וטיעונים בתהליכי כתיבה מסועפים.</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+</div>
+<div class="footer"><span>עמוד 10</span><span>אגף בכיר חינוך יסודי</span></div>
+</div><div class="slide-container">
+<div class="content-grow">
+<div class="age-chars-section" style="border-top:none; border-top-left-radius:0; border-top-right-radius:0; margin-top:-25px; box-shadow:none; margin-bottom: 25px;">
+<div class="age-chars-body" style="padding-top: 0;">
+<div class="app-table-wrap" style="margin-top: 0;">
+<table class="app-table">
+<colgroup><col style="width: 15%;"/><col style="width: 28%;"/><col style="width: 28%;"/><col style="width: 29%;"/></colgroup>
+<tbody>
+<tr>
+<td>תקשורת הורים בונת אמון</td>
+<td>חידוד התובנה ההורית כי הופעת נסיגה התנהגותית בגילאים אלו (רגרסיה) משקפת דפוס בריא של הסתגלות פסיכולוגית — ואיננה מעידה על פגם חינוכי. הצעת כלים אופרטיביים להבניית הבית (חשיבותה של רוטינת הירדמות, צמצום חשיפת מידע, זמן מסך). התרעה מקדימה והטרמה לקראת אירועים קרובים העשויים לעורר טריגר. מיסוד ערוץ קשר טלפוני בלתי פורמלי עם הורי תלמידים החווים עכבות בחזרתם — ביוזמת המחנך ומבלי להתנות את הקשר בכינוס חלון הזדמנויות בית-ספרי רשמי.</td>
+<td>יידוע פרואקטיבי של הקהילה אודות תוכנית בית הספר בנוגע ל"נחיתה הרכה" בימים הקרובים ולתקופת המעבר. תחינה אל ציבור ההורים לגלות רגישות יוצאת דופן לשינויים זעירים במצבי הצבירה ההתנהגותיים של ילדם — בין אם בדפוסי הזנת מזון, איכות השינה, ומצבי הרוח החברתיים. עידוד וחיזוק פתיחות ערוץ תקשורת משפחתי לטובת עדכונים בסוגיות ושינויי סטאטוס בסביבה הפנים-ביתית. כנס ציבורי תמציתי וממקד של המחנך בסיסמת "עינינו פקוחות במשותף: אנו מכילים ומחזיקים את הילדים בבטחה ברגעי הבלבול, יחד אתכם".</td>
+<td>הנחייה לקיום דיאלוג מתקדם מול מתבגר — הבנת הדיסוננס בין מופע החיצוני ה"תקין" או השתקני, אל מול סופות הנפש והסערות הסמויות והמורכבות המתרחשות מתחת לפני השטח. חידוד כלי האיתור אצל ההורים (זיהוי תסמינים לדיכאון נסתר, בידוד מתמשך בחדר, תנודתיות מהירה באורח פתאומי). המסר לביצוע (To Do): להעניק למתבגר פרטיות, אוויר וספייס מחד גיסא, אך להבהיר לו שוב ושוב מאידך גיסא כי הם לעולם אינם משוחררים מאהבה, אחריות וגב, במיוחד בימי עצב ותסכול ציבורי ולאומי כגון חודש התקומה.</td>
+</tr>
+</tbody>
+</table>
+</div>
+<!-- TABLE 3: Activities -->
+<h4 style="font-size:16px; font-weight:900; color:var(--navy); margin:28px 0 8px;">טבלה מס' 3: יישום הלכה למעשה במרחב החינוכי — פעילויות מעשיות
+<div class="app-table-wrap" style="margin-top: 0;">
+<table class="app-table">
+<thead>
+<tr>
+<th class="col-dim">סוג הפעילות</th>
+<th class="col-young">יסודי צעיר (חט"צ עד כיתה ב׳)</th>
+<th class="col-mid">יסודי ביניים (כיתות ג׳–ד׳)</th>
+<th class="col-old">יסודי בוגר (כיתות ה׳–ו׳)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>פתיחת יום (10–15 דק׳)</td>
+<td>טקס קבוע ושיח שטיח. מתן רשות דיבור דרך עצם מתווך (לדוגמה, "בובת הדיבור"). פעילות מנייה יומית במטרה להנכיח כל תלמיד ולחזק את חוויית הנוכחות המלאה של הקבוצה ("כולנו יחד, במרחב המוגן והבטוח שלנו").</td>
+<td>ביצוע "מדידת שלומות" יומית (Check-in) — כל תלמיד מתאר תחושתו בעזרת צבע/כרטיס. אישוש ותיקוף מצד המחנכת לפסיפס הרגשות ("לגיטימי להרגיש דאגה במקביל לשמחת המפגש"). שיקוף סדר יום נהיר וצפוי.</td>
+<td>"חדשות מבוקרות": העלאת סוגיה אזרחית אחת או ידיעה חיובית ממהלך השבוע בהובלת תלמידים מתנדבים. לחלופין — הפעלת לוח קיר אנונימי לשיתוף: "מקור הכוח שלי השבוע", להגברת השראה ונטיעת משמעות משותפת.</td>
+</tr>
+<tr>
+<td>בניית אקלים (15–20 דק׳)</td>
+<td>הפעלת תורנויות כיתה המשדרות חשיבות ורלוונטיות כלפי כלל התלמידים בהרכב מתחלף יומית. השקת פעילות "פסיפס האני" שבו כל פעוט תולה את דיוקנו להצהרת קיומה המאוחד של השכבה כקהילה קטנה אך קיימת ומתגבשת בשעת הקושי.</td>
+<td>מתן משימות בעלות קו-סיום קצר מועד בהרכבים אקראיים (שלישיות) דוגמת הבניית מגדל איתן או פתרון בעיית היגיון (סודוקו/תשבץ קצר). בניית כרטיסיות "נבחרת" — כל תלמיד מכריז על מיומנויות וחוזקות אופי אישיות אותם הוא מביא אל השולחן הכיתתי המשותף ככוח חברתי.</td>
+<td>רקימת מערכת פרויקטים להעצמת ערכים והשפעה חברתית (Impact): ניסוח הוקרה לכוחות הביטחון / פעילי ציבור או הנהגת זמני ליווי וחונכות פעילה בחצר עבור תלמידי השכבות הרכות במטרה לשמש להם מודל לבוגר מגן והשראתי ולגלות גדלות מנהיגות שבונה גאווה מקומית ואישית אצל המתבגרים עצמם.</td>
+</tr>
+<tr>
+<td>פעולות ויסות והפוגה</td>
+<td>שילוב דמיון מודרך אלמנטרי לנשימה (כגון טכניקת מודעות נשימה - "ניפוח בלון"). שימוש בסביבת הירגעות פיזית בעלת תכונות חושיות (חול קינטי, פלסטלינה). פירוק אנרגיה וקפיצות במקום דרך משחקי תנועה המשחררים עודפי אדרנלין.</td>
+<td>ביסוס עיגון פיזי דרך טכניקת נשימות במודל "לנשום-לעצור-לנשוף" בעת מעברי שיעור. הקדשת "זמני הרפיה קוגניטיבית" קצובים לחשיפה מוזיקלית מפיגת לחצים, או ציור הבעה אינטואיטיבי המלווה במתיחות והפעלות קואורדינציה יומיומיות לא מכבידות לשיפור הקשב וטעינת הריכוז בכיתה בטרם הפעלת למידה.</td>
+<td>תרגול הקשבה חושית הממוקדת במרחב החיצוני והפנימי (Mindfulness), במשכי זמן הולמים להתבגרות (כ-5 דקות). קיום זמן קבוע לכתיבה יומנאית ללא תבניות וחוקים (כתיבת רצף תודעה) — טכניקה המשחררת חסמים. הקניית האוטונומיה ללומד בבחירת אסטרטגיית הויסות האפקטיבית והמועדפת עליו ביותר מתוך אוגדן שיטות אפשרי והנגשת מגוון אלטרנטיבות לגיטימיות בסביבת המסגרת החינוכית להרגעתו.</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="appendix-ref" style="margin-top:20px; text-align: right; direction: ltr;">
+<div style="direction: rtl;">
+                    📚 <strong>מקורות בינלאומיים לתכנון פדגוגי בשעת חירום:</strong><br/>
+                    • The National Child Traumatic Stress Network (NCTSN) - Age-Related Reactions to a Traumatic Event.<br/>
+                    • National Association for the Education of Young Children (NAEYC) - Supporting Young Children After Crisis.<br/>
+                    • Inter-agency Network for Education in Emergencies (INEE) - Minimum Standards 2024.<br/>
+                    • Center on PBIS - Supporting Schools During and After Crisis.<br/>
+                    • Collaborative for Academic, Social, and Emotional Learning (CASEL) &amp; SEE Learning.<br/>
+                    • UNICEF, UNESCO &amp; World Bank - Framework for Reopening Schools.
+                    </div>
+</div>
+</h4></div>
+</div>
+</div>
+<div class="footer"><span>עמוד 11</span><span>משרד החינוך — המינהל הפדגוגי | האגף לחינוך יסודי</span></div>
+</div></body></html>
