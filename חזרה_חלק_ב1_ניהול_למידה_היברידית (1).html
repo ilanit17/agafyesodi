@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="he"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>חזרה מדורגת ללמידה לאחר תקופת חירום — חלק ב1: ניהול למידה היברידית</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Assistant:wght@300;400;600;700&amp;family=Heebo:wght@400;600;700;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet"/>
+<style>
+        :root {
+            --navy: #1a2744; --navy-light: #2a3f6a;
+            --teal: #0d8a7e; --teal-light: #11b3a4; --teal-pale: #e6f7f5;
+            --warm: #f5f0e8; --warm-dark: #e8dfd2;
+            --coral: #e07a5f; --gold: #d4a94c;
+            --purple: #7c3aed; --green: #2d7d46; --blue: #2563a8;
+        }
+        
+        * { box-sizing: border-box; margin:0; padding:0; }
+        body {
+            background: #f0f2f5; font-family: 'Assistant', sans-serif;
+            direction: rtl; text-align: right; padding: 20px 0;
+            display: flex; flex-direction: column; align-items: center;
+        }
+        .slide-container {
+            width: 794px; min-height: 1123px; background: white;
+            margin-bottom: 40px; box-shadow: 0 8px 25px rgba(0,0,0,0.08);
+            position: relative; padding: 44px 48px 34px 48px;
+            page-break-after: always; page-break-inside: avoid;
+            break-inside: avoid-page;
+            display: flex; flex-direction: column;
+        }
+        .slide-container::before {
+            content: ""; position: absolute; top: 0; right: 0;
+            width: 100%; height: 10px;
+            background: linear-gradient(90deg, var(--navy), var(--teal), var(--coral));
+        }
+
+        /* Layout Utilities */
+        .content-grow { flex-grow: 1; display: flex; flex-direction: column; padding: 10px 0; }
+        .v-between { justify-content: space-between; }
+        .v-evenly { justify-content: space-evenly; }
+        
+        /* Typography */
+        h1 { font-family: 'Heebo'; font-size: 34px; font-weight: 900; color: var(--navy); text-align: center; line-height: 1.2; margin: 0 0 10px; }
+        .branding { font-size: 16px; font-weight: 700; color: var(--navy); text-align: center; margin-bottom: 14px; }
+        .hero-badge {
+            display: inline-block; background: var(--teal-pale); color: var(--teal); border: 1px solid var(--teal-light);
+            border-radius: 100px; padding: 5px 18px; font-size: 15px; font-weight: 700; margin-bottom: 10px; align-self: center;
+        }
+        .hero-subtitle { font-size: 20px; font-weight: 600; color: #475569; text-align: center; margin-bottom: 18px; line-height: 1.5; max-width: 92%; align-self: center;}
+        
+        .sec-title { font-family: 'Heebo'; font-size: 26px; font-weight: 900; color: var(--navy); margin: 0 0 14px; border-bottom: 2px solid var(--teal-pale); padding-bottom: 7px; display: inline-block;}
+        h3 { font-family: 'Heebo'; font-size: 21px; font-weight: 700; color: var(--navy); margin: 0 0 8px; }
+        h4 { font-family: 'Heebo'; font-size: 18px; font-weight: 700; color: var(--navy); margin: 0 0 8px; }
+        p, li { font-size: 17px; line-height: 1.65; margin: 0 0 10px; color: #334155; }
+        ul { padding-right: 22px; margin: 6px 0 10px; }
+        li { margin-bottom: 6px; }
+        a { color: var(--teal); text-decoration: none; font-weight: 600; }
+        a:hover { text-decoration: underline; }
+
+        /* Scenarios Bar */
+        .scenarios-bar { display: grid; grid-template-columns: repeat(3,1fr); gap: 12px; margin-bottom: 15px; }
+        .scenario-card { background: white; border-radius: 8px; padding: 18px 16px; box-shadow: 0 2px 10px rgba(0,0,0,0.04); text-align: center; border-top: 4px solid #e2e8f0; }
+        .scenario-card.physical { border-top-color: var(--green); }
+        .scenario-card.remote { border-top-color: var(--blue); }
+        .scenario-card.hybrid { border-top-color: var(--purple); }
+        .scenario-num { display: inline-flex; align-items: center; justify-content: center; width: 32px; height: 32px; border-radius: 50%; font-weight: 700; font-size: 16px; margin-bottom: 6px; }
+        .scenario-card.physical .scenario-num { background: #e8f5ef; color: var(--green); }
+        .scenario-card.remote .scenario-num { background: #e8f0fb; color: var(--blue); }
+        .scenario-card.hybrid .scenario-num { background: #f0e8fb; color: var(--purple); }
+
+        /* Notes & Highlights */
+        .structure-note { background: var(--navy); color: white; border-radius: 8px; padding: 14px 20px; margin-bottom: 15px; font-size: 14px; line-height: 1.6; }
+        .structure-note p { color: white; margin:0; }
+        .structure-note strong { color: var(--teal-light); }
+        .structure-note a { color: var(--teal-light); text-decoration: underline; }
+
+        /* 5 Moves Overview */
+        .move-strip { display: flex; align-items: stretch; background: white; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.05); margin-bottom: 10px; border: 1px solid #f1f5f9; }
+        .move-num-bar { width: 44px; display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 18px; color: white; flex-shrink: 0; font-family: 'Heebo'; }
+        .m1 .move-num-bar { background: var(--teal); } .m2 .move-num-bar { background: #2196a8; }
+        .m3 .move-num-bar { background: var(--navy-light); } .m4 .move-num-bar { background: var(--coral); }
+        .m5 .move-num-bar { background: var(--gold); }
+        .move-content { padding: 10px 16px; flex: 1; }
+        .move-content h3 { font-size: 15px; margin-bottom: 2px; }
+        .move-tags { font-size: 13px; color: #64748b; font-weight: 600; }
+
+        /* Matrices (Detailed Moves) */
+        .scenario-matrix { background: white; border-radius: 10px; box-shadow: 0 2px 12px rgba(0,0,0,0.06); margin-bottom: 25px; overflow: visible; border: 1px solid #e2e8f0; page-break-inside: avoid; break-inside: avoid-page; }
+        .matrix-header { padding: 16px 24px 12px; display: flex; align-items: flex-start; gap: 12px; border-bottom: 1px solid #f1f5f9; }
+        .matrix-icon { width: 38px; height: 38px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0; }
+        .matrix-header h2 { font-family: 'Heebo'; font-size: 21px; font-weight: 700; color: var(--navy); margin: 0 0 4px; }
+        .matrix-header .why { font-size: 16px; color: #64748b; margin: 0; line-height: 1.5; }
+        .why-box { background: #f8fafc; border-right: 4px solid #cbd5e1; padding: 12px 18px; margin: 14px 24px; border-radius: 0 6px 6px 0; font-size: 16px; line-height: 1.7; color: #334155; }
+        .general-recs { padding: 0 24px 8px; }
+        .general-recs h4 { font-size: 14px; margin-bottom: 6px; color: var(--navy); }
+        .scenario-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0; margin: 0 24px 20px; border-radius: 8px; overflow: hidden; border: 1px solid #e2e8f0; }
+        .sg-col { padding: 14px; }
+        .sg-col:not(:last-child) { border-left: 1px solid #e2e8f0; }
+        .sg-col.physical { background: #f0fdf4; } .sg-col.remote { background: #eff6ff; } .sg-col.hybrid { background: #faf5ff; }
+        .sg-label { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; padding-bottom: 6px; border-bottom: 2px solid transparent; }
+        .sg-col.physical .sg-label { border-bottom-color: var(--green); } .sg-col.remote .sg-label { border-bottom-color: var(--blue); } .sg-col.hybrid .sg-label { border-bottom-color: var(--purple); }
+        .sg-label-icon { width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; color: white; flex-shrink: 0; }
+        .sg-col.physical .sg-label-icon { background: var(--green); } .sg-col.remote .sg-label-icon { background: var(--blue); } .sg-col.hybrid .sg-label-icon { background: var(--purple); }
+        .sg-label span { font-size: 15px; font-weight: 700; color: var(--navy); }
+        .sg-col ul li { font-size: 15px; line-height: 1.65; margin-bottom: 8px; padding-right: 14px; position: relative; }
+        .sg-col ul li::before { content: '–'; position: absolute; right: 0; color: #94a3b8; font-weight: bold; }
+        
+        /* Matrix specific coloring */
+        .mat-1 .matrix-icon { background: var(--teal-pale); color: var(--teal); } .mat-1 .why-box { border-right-color: var(--teal); }
+        .mat-2 .matrix-icon { background: #e0f3f7; color: #2196a8; } .mat-2 .why-box { border-right-color: #2196a8; }
+        .mat-3 .matrix-icon { background: #e8ecf4; color: var(--navy-light); } .mat-3 .why-box { border-right-color: var(--navy-light); }
+        .mat-4 .matrix-icon { background: #fde8e0; color: var(--coral); } .mat-4 .why-box { border-right-color: var(--coral); }
+        .mat-5 .matrix-icon { background: #fef3c7; color: #b45309; } .mat-5 .why-box { border-right-color: var(--gold); }
+
+        /* Age Focus */
+        .age-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 12px; margin: 10px 0; }
+        .age-card { background: #f8fafc; border-radius: 6px; padding: 14px; border-top: 3px solid var(--teal); }
+        .age-card.mid { border-top-color: var(--blue); } .age-card.senior { border-top-color: var(--purple); }
+        .age-card h4 { font-size: 14px; margin-bottom: 6px; }
+        .age-card ul li { font-size: 15px; padding-right: 12px; margin-bottom: 6px; position: relative; }
+        .age-card ul li::before { content: '–'; position: absolute; right: 0; color: #94a3b8; }
+
+        /* Priority Focus Boxes */
+        .focus-duo { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 25px; page-break-inside: avoid;}
+        .focus-box { border-radius: 8px; padding: 20px 24px; position: relative; overflow: hidden; }
+        .focus-box::before { content: ''; position: absolute; top: 0; right: 0; width: 6px; height: 100%; }
+        .focus-box.young { background: linear-gradient(135deg, #f0fdf4, #dcfce7); border: 1px solid #86efac; }
+        .focus-box.young::before { background: var(--green); }
+        .focus-box.senior { background: linear-gradient(135deg, #faf5ff, #f3e8ff); border: 1px solid #d8b4fe; }
+        .focus-box.senior::before { background: var(--purple); }
+        .focus-box .focus-badge { display: inline-block; padding: 2px 10px; border-radius: 100px; font-size: 12px; font-weight: 700; margin-bottom: 10px; }
+        .focus-box.young .focus-badge { background: #166534; color: white; }
+        .focus-box.senior .focus-badge { background: #6b21a8; color: white; }
+        .focus-box h3 { font-size: 16px; font-weight: 900; margin-bottom: 8px; }
+        .focus-box.young h3 { color: #166534; } .focus-box.senior h3 { color: #6b21a8; }
+        .focus-box p { font-size: 16px; color: #334155; line-height: 1.7; margin-bottom: 12px; }
+        .focus-box ul { list-style: none; padding: 0; }
+        .focus-box ul li { font-size: 15px; color: #1e293b; padding: 4px 0; padding-right: 15px; position: relative; line-height: 1.6; }
+        .focus-box ul li::before { content: '◆'; position: absolute; right: 0; font-size: 8px; top: 7px; }
+        .focus-box.young ul li::before { color: var(--green); } .focus-box.senior ul li::before { color: var(--purple); }
+
+        /* Timeline */
+        .tl-week { margin-bottom: 16px; border: 1px solid #e2e8f0; border-radius: 8px; overflow: hidden; page-break-inside: avoid; }
+        .tl-header { background: #f1f5f9; padding: 8px 16px; font-weight: 700; color: var(--navy); font-size: 14px; border-bottom: 1px solid #e2e8f0; display: inline-block; width: 100%;}
+        .tl-grid { display: grid; grid-template-columns: repeat(2,1fr); gap: 1px; background: #e2e8f0; }
+        .tl-item { background: white; padding: 12px 16px; }
+        .tl-item-tag { font-size: 11px; font-weight: 700; text-transform: uppercase; margin-bottom: 4px; }
+        .tl-item-tag.emotional { color: var(--teal); } .tl-item-tag.social { color: #2196a8; }
+        .tl-item-tag.pedagogical { color: var(--navy-light); } .tl-item-tag.organizational { color: var(--gold); }
+        .tl-item p { font-size: 15px; line-height: 1.6; margin: 0; }
+
+        /* Parents */
+        .parents-grid { display: grid; grid-template-columns: repeat(2,1fr); gap: 12px; margin-top: 10px; }
+        .parent-item { background: #f8fafc; border-radius: 6px; padding: 14px; border: 1px solid #e2e8f0; }
+        .parent-item h4 { font-size: 14.5px; margin-bottom: 4px; }
+        .parent-item p { font-size: 16px; line-height: 1.6; margin: 0; }
+
+        /* Checklist */
+        .check-group { margin-bottom: 14px; page-break-inside: avoid; }
+        .check-group h4 { font-size: 14.5px; margin-bottom: 6px; padding-bottom: 4px; border-bottom: 1px solid #e2e8f0; }
+        .check-item { display: flex; align-items: flex-start; gap: 8px; margin-bottom: 6px; font-size: 16px; line-height: 1.6; color: #1e293b; }
+        .check-box { width: 15px; height: 15px; border: 2px solid #94a3b8; border-radius: 3px; flex-shrink: 0; margin-top: 3px; }
+
+        /* Memorial */
+        .memorial-section { background: white; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.06); border: 1px solid #e2e8f0; margin-bottom: 25px; overflow: hidden; page-break-inside: avoid; }
+        
+        /* Age Characteristics Section */
+        .age-char-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 16px; margin: 16px 0; }
+        .age-char-card { border-radius: 8px; padding: 20px; border-top: 4px solid var(--teal); page-break-inside: avoid; }
+        .age-char-card.young { background: #f0fdf4; border-top-color: #4ade80; }
+        .age-char-card.middle { background: #eff6ff; border-top-color: #60a5fa; }
+        .age-char-card.older { background: #faf5ff; border-top-color: #c084fc; }
+        .age-char-card h4 { font-size: 16px; font-weight: 900; margin-bottom: 12px; }
+        .age-char-card.young h4 { color: #166534; } .age-char-card.middle h4 { color: #1e40af; } .age-char-card.older h4 { color: #6b21a8; }
+        .age-char-card h5 { font-size: 13px; font-weight: 700; text-transform: uppercase; margin: 14px 0 6px; padding-top: 10px; border-top: 1px solid rgba(0,0,0,0.08); }
+        .age-char-card.young h5 { color: #166534; } .age-char-card.middle h5 { color: #1e40af; } .age-char-card.older h5 { color: #6b21a8; }
+        .age-char-card ul { list-style: none; padding: 0; }
+        .age-char-card ul li { font-size: 15px; color: #334155; padding: 4px 0; padding-right: 14px; position: relative; line-height: 1.65; }
+        .age-char-card ul li::before { content: '–'; position: absolute; right: 0; color: var(--gray-400); }
+        
+        .iron-rules { background: #fef3cd; border: 1px solid #fcd34d; border-radius: 8px; padding: 18px 22px; margin-top: 18px; page-break-inside: avoid;}
+        .iron-rules h4 { font-size: 15px; font-weight: 700; color: #92400e; margin-bottom: 10px; }
+        .iron-rules .rule-item { display: flex; gap: 10px; padding: 6px 0; font-size: 16px; color: #78350f; line-height: 1.7; }
+        
+        /* Hybrid Learning Appendix */
+        .blended-section { background: white; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.06); overflow: hidden; margin-bottom: 25px; border-top: 4px solid var(--purple); }
+        .blended-header { background: linear-gradient(135deg, #7c3aed, #a78bfa); color: white; padding: 18px 24px; }
+        .blended-header h2 { font-size: 18px; font-weight: 700; margin-bottom: 3px; }
+        .blended-header p { font-size: 13px; opacity: 0.9; margin:0;}
+        .blended-body { padding: 20px 24px; }
+        .alt-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 14px; margin: 16px 0; page-break-inside: avoid;}
+        .alt-card { background: #f8fafc; border-radius: 8px; padding: 18px; border-top: 3px solid var(--purple-light); }
+        .alt-card h4 { font-size: 14.5px; font-weight: 700; color: var(--navy); margin-bottom: 8px; }
+        .alt-card p { font-size: 15px; line-height: 1.6; margin-bottom: 8px; }
+        .alt-card .alt-detail { font-size: 15px; color: #64748b; line-height: 1.6; border-top: 1px solid #e2e8f0; padding-top: 8px; margin-top: 8px;}
+        .priority-box { background: #fef3cd; border: 1px solid #fcd34d; border-radius: 8px; padding: 16px 20px; margin-top: 16px; page-break-inside: avoid; }
+        .priority-box h4 { font-size: 14.5px; font-weight: 700; color: #92400e; margin-bottom: 6px; }
+        .priority-box ul { list-style: none; padding: 0; }
+        .priority-box ul li { font-size: 16px; color: #78350f; padding: 4px 0; padding-right: 18px; position: relative; line-height: 1.6; }
+        .priority-box ul li::before { content: '⚠'; position: absolute; right: 0; font-size: 10px; top: 4px; }
+        .appendix-ref { background: #f8fafc; border: 1.5px dashed #cbd5e1; border-radius: 8px; padding: 16px 22px; margin-top: 16px; font-size: 16px; line-height: 1.7; }
+        
+        /* Tables Appendix */
+        .app-table-wrap { overflow-x: auto; border: 1px solid #e2e8f0; border-radius: 8px; margin: 16px 0; page-break-inside: auto; }
+        .app-table { width: 100%; border-collapse: collapse; font-size: 15px; }
+        .app-table th { padding: 13px 15px; text-align: right; font-weight: 700; font-size: 14.5px; line-height: 1.5; vertical-align: top; border-bottom: 2px solid #cbd5e1; }
+        .app-table th.col-dim { background: #f1f5f9; color: var(--navy); width: 15%; }
+        .app-table th.col-young { background: #f0fdf4; color: #166534; width: 28%;}
+        .app-table th.col-mid { background: #eff6ff; color: #1e40af; width: 28%;}
+        .app-table th.col-old { background: #faf5ff; color: #6b21a8; width: 29%;}
+        .app-table td { padding: 13px 15px; vertical-align: top; border-bottom: 1px solid #e2e8f0; line-height: 1.65; color: #334155; }
+        .app-table tr { page-break-inside: avoid; }
+        .app-table td:first-child { font-weight: 700; color: var(--navy); background: #f8fafc; }
+        .app-table tr:last-child td { border-bottom: none; }
+
+        /* Logos & Footer */
+        .logos-header { display: flex; justify-content: space-between; align-items: flex-start; width: 100%; margin-bottom: 10px; }
+        .logo-img { height: 65px; object-fit: contain; }
+        .footer {
+            margin-top: auto; padding-top: 8px; border-top: 1px solid #e2e8f0;
+            font-size: 13px; color: #94a3b8; display: flex; justify-content: space-between; height: 25px;
+        }
+
+        @media print {
+            @page { size: A4 portrait; margin: 14mm 12mm; }
+            html, body { width: 100%; }
+            body { background: none !important; padding: 0 !important; margin: 0 !important; zoom: 1; font-size: 112%; }
+            .slide-container { 
+                width: 100% !important; 
+                height: auto !important; 
+                min-height: auto !important; 
+                margin: 0 0 8mm 0 !important; 
+                box-shadow: none !important; 
+                padding: 0 !important; 
+                page-break-after: always;
+                page-break-inside: auto !important;
+                break-inside: auto !important;
+                display: block !important;
+                overflow: visible !important;
+            }
+            .content-grow { display: block !important; }
+
+            h1, h2, h3, h4, h5, h6, .sec-title, .tl-header, .tl-week-label, .matrix-header, .sg-label, .focus-badge {
+                break-after: avoid-page;
+                page-break-after: avoid !important;
+            }
+            p, ul, ol, li, .why-box, .structure-note, .parent-item, .check-item, .appendix-ref {
+                orphans: 3;
+                widows: 3;
+            }
+
+            .scenario-matrix, .memorial-section, .checklist-section, .age-chars-section,
+            .blended-section, .focus-duo, .focus-box, .tl-week, .age-char-card,
+            .app-table-wrap, .check-group, .parent-item, .move-strip, .why-box,
+            .general-recs, .scenario-card, .iron-rules, .priority-box {
+                overflow: visible !important;
+                page-break-inside: avoid !important;
+                break-inside: avoid-page !important;
+            }
+
+            .scenario-grid, .age-grid, .age-char-grid, .parents-grid, .alt-grid, .focus-duo, .tl-grid {
+                page-break-inside: avoid !important;
+                break-inside: avoid-page !important;
+            }
+
+            .matrix-header, .sg-col, .age-char-card, .alt-card, .tl-item, .parent-item, .check-group, tr, td, th, li {
+                page-break-inside: avoid !important;
+                break-inside: avoid-page !important;
+            }
+
+            .scenario-matrix, .memorial-section, .blended-section, .focus-box, .age-char-card, .parent-item, .check-group, .app-table-wrap {
+                border-radius: 0 !important;
+            }
+
+            * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+        }
+    </style>
+</head><body><div class="slide-container">
+<div class="content-grow">
+<!-- CHECKLIST -->
+<div class="checklist-section" style="margin-bottom: 25px;">
+<div class="checklist-header" style="padding: 18px 24px;">
+<h2 style="font-size:18px;">✅ מחוון ניהולי (Checklist) להובלת תהליך החזרה</h2>
+<p style="margin:0;">כלי בקרה יישומי למנהל/ת המוסד החינוכי, המותאם לרצף זמני החזרה ולכלל תרחישי ההפעלה.</p>
+</div>
+<div class="checklist-body" style="padding: 16px 24px; display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+<div>
+<div class="check-group">
+<h4 style="color: var(--navy); border-bottom: 2px solid var(--navy); padding-bottom: 4px;">🔵 שלב ההיערכות וההטרמה</h4>
+<div class="check-item"><div class="check-box"></div><span>קיום ישיבת מליאה של הצוות: יישור קו, חלוקת גזרות ותיאום מסרים מוסדיים.</span></div>
+<div class="check-item"><div class="check-box"></div><span>איתור "מבוגרי עוגן" ייעודיים לתלמידים מאוכלוסיות היעד (תלמידים בסיכון).</span></div>
+<div class="check-item"><div class="check-box"></div><span>אישור סופי של תוכנית מתווה "הנחיתה הרכה" לשבועיים הראשונים להפעלה.</span></div>
+<div class="check-item"><div class="check-box"></div><span>שיגור איגרת מידע שקופה ומרגיעה לקהילת ההורים.</span></div>
+<div class="check-item"><div class="check-box"></div><span>הצטיידות ופיתוח מארזי תוכן לשגרת הבוקר וריענון נהלי הפניה לטיפול מקצועי.</span></div>
+<div class="check-item"><div class="check-box"></div><span>אישור תקינות כוללת של המוכנות הפיזית (היבטי מיגון) והדיגיטלית (פלטפורמות עבודה).</span></div>
+</div>
+<div class="check-group" style="margin-bottom: 0;">
+<h4 style="color: var(--green); border-bottom: 2px solid var(--green); padding-bottom: 4px;">🟢 שבוע ההפעלה הראשון</h4>
+<div class="check-item"><div class="check-box"></div><span>וידוא יישום יומיומי של שגרות הפתיחה בכלל המרחבים החינוכיים.</span></div>
+<div class="check-item"><div class="check-box"></div><span>בקרת נוכחות אקטיבית והפעלת מנגנוני קשר עם משפחות הנעדרים מן המוסד.</span></div>
+<div class="check-item"><div class="check-box"></div><span>השלמה ועדכון כלי מיפוי "עוגן" המוסדי ליצירת תמונת מצב מלאה.</span></div>
+<div class="check-item"><div class="check-box"></div><span>שמירה על סדר יום נטול פעולות הערכה (מבחנים) או משימות למידה חריגות בעומסן.</span></div>
+<div class="check-item"><div class="check-box"></div><span>אכיפת קיומן של ישיבות סיכום יום קצרות לשם בקרת אירועים שוטפת.</span></div>
+</div>
+</div>
+<div>
+<div class="check-group">
+<h4 style="color: #d97706; border-bottom: 2px solid #d97706; padding-bottom: 4px;">🟡 השבוע השני לחזרה</h4>
+<div class="check-item"><div class="check-box"></div><span>הכנסה מדורגת ומבוקרת של חומרי הוראה ותכני הקניה חדשים לסביבות הלמידה.</span></div>
+<div class="check-item"><div class="check-box"></div><span>הנעת תהליכי הערכה מעצבת, המושתתים על צפייה ודיאלוג שוטף (הימנעות מתרבות מבחנים).</span></div>
+<div class="check-item"><div class="check-box"></div><span>גיבוש והצגת תמונת המצב הכיתתית של צוות ההוראה אל מול צוות הניהול הבכיר.</span></div>
+<div class="check-item"><div class="check-box"></div><span>עיבוי הקשר היזום עם משפחות במקרי הצורך, לצורך תמיכה, הכוונה וליווי מקצועי.</span></div>
+</div>
+<div class="check-group" style="margin-bottom: 0;">
+<h4 style="color: var(--coral); border-bottom: 2px solid var(--coral); padding-bottom: 4px;">🔴 סיום חודש ההפעלה הראשון</h4>
+<div class="check-item"><div class="check-box"></div><span>הערכת מצב רב-ממדית מסכמת (מדדים רגשיים, אקלימיים ולימודיים).</span></div>
+<div class="check-item"><div class="check-box"></div><span>קבלת החלטות הנוגעות להפניית תלמידים להליכי סיוע קבוצתיים או להליכי סיוע פרטניים-מותאמים.</span></div>
+<div class="check-item"><div class="check-box"></div><span>קיום תהליך להפקת לקחים: איתור חולשות ועוצמות ובדיקת הנחיצות למעבר לתרחיש הפעלה שונה.</span></div>
+</div>
+</div>
+</div>
+</div>
+<div class="structure-note" style="background: var(--navy-light); margin-bottom: 25px;">
+<p><strong>הבהרה מרכזית:</strong> מסמך זה נועד לשמש פלטפורמה איתנה לעיבוד, התאמה והטמעת תהליכים בבתי הספר היסודיים, מתוך הבנה מעמיקה של מאפייני הקהילה ולשם גיבוי לשיקול הדעת המקצועי המקומי. על מנהלות ומנהלי בתי הספר להכין ולשמר נוהל הפעלה מוכן ליישום לכל אחד מן התרחישים, ולהיערך למעבר מהיר ויעיל ביניהם במידת הצורך. המסמך מהווה מסגרת מנחה והתווית-דרך ("מצפן") ולא מרשם טכני נוקשה.</p>
+</div>
+<!-- APPENDIX — HYBRID LEARNING -->
+<div class="blended-section" id="hybrid-appendix" style="margin-bottom: 0;">
+<div class="blended-header">
+<h2>🔀 נספח מנהלי: ניהול למידה היברידית — תרחישי הפעלה וחלופות מערכתיות</h2>
+<p>המסמך נגזר מהוראות "ניהול למידה היברידית בשגרת חירום מתמשך — בית הספר היסודי", אגף בכיר חינוך יסודי (אדר תשפ"ו).</p>
+</div>
+<div class="blended-body">
+<p>התפיסה ההיברידית מציעה פתרון מערכתי אדפטיבי, המגשר בין הלמידה בסביבה הפיזית ללמידה במרחב המקוון. היא מאפשרת למוסד החינוכי להמשיך את פעולתו בתנאי עמימות קיצוניים, תוך ציות להנחיות הביטחוניות, למצבת ההון האנושי ולזמינות המרחבים המוגנים. הפעלת מודל היברידי תבוסס על ערכים של שוויון בנגישות ללמידה, שמירת רציפות חינוכית ועידוד אוטונומיה בתהליך הלמידה.</p>
+<p>מתווה ההפעלה ייקבע על ידי צוות הניהול הבית-ספרי, תוך שיח משותף עם הפיקוח והרשות המקומית, ובהלימה בלתי מתפשרת להנחיות ההתגוננות האזרחית (פיקוד העורף).</p>
+<div class="priority-box">
+<h4>מדרג התעדוף לקליטה פיזית (במצבי קיבולת מוגבלת של מרחבי מיגון):</h4>
+<p style="font-size:13.5px; color:#78350f; margin-bottom:8px;">בהיעדר יכולת פיזית לקלוט את אוכלוסיית בית הספר במלואה, יוצב סדר הקדימויות הבא לנוכחות במרחב המוסדי:</p>
+<ul>
+<li>אוכלוסיית הגיל הרך ושכבות א׳–ג׳.</li>
+<li>תלמידי מסגרות החינוך המיוחד המשתלבים ולומדים בכיתות ייעודיות.</li>
+<li>תלמידים בסיכון המצויים במעקב גורמי מקצוע.</li>
+<li>אוכלוסיית התלמידים העולים החדשים הזקוקים למעטפת אינטנסיבית של קליטה והוראת השפה.</li>
+</ul>
+</div>
+<h4 style="font-size:15px; font-weight:700; color:var(--navy); margin:18px 0 10px;">מודלים ארגוניים לניהול הלמידה המשולבת (לבחינת המוסד):</h4>
+<div class="alt-grid" style="margin-bottom: 0;">
+<div class="alt-card">
+<h4>חלופה א׳ — פיצול על בסיס שכבתי</h4>
+<p>חט"צ ושכבות א׳–ג׳: <strong>למידה פרונטלית מלאה במרחב המוסדי.</strong></p>
+<p>שכבות ד׳–ו׳: <strong>למידה במרחב המקוון</strong> (אינטגרציה של אמצעים סינכרוניים וא-סינכרוניים).</p>
+<p class="alt-detail">חלופה זו מותאמת למוסדות בהם כושר הקיבולת של פתרונות המיגון מצומצם למחצית מתפוסת התלמידים, כאשר ניתנת עדיפות התפתחותית מוחלטת לחינוך לגיל הרך וליסודי הצעיר.</p>
+</div>
+<div class="alt-card">
+<h4>חלופה ב׳ — מודל הפיצול היומי (משמרות)</h4>
+<p>חט"צ ו א׳–ג׳: <strong>הוראה פיזית בשעות הבוקר</strong> (עד השעה 12:00).</p>
+<p>שכבות ד׳–ו׳: <strong>למידה מקוונת בבוקר והוראה פיזית בצוהריים</strong> (12:00–14:30).</p>
+<p class="alt-detail">יתרונה המובהק של חלופה זו טמון במתן אפשרות לכל תלמיד לפקוד את בית הספר מדי יום ביומו. עם זאת, היא מציבה אתגרים לוגיסטיים ואופרטיביים מורכבים במיוחד (שינוע, ניקיון ותיאום הוראה).</p>
+</div>
+<div class="alt-card">
+<h4>חלופה ג׳ — מודל הרוטציה השבועית</h4>
+<p>שכבות א׳–ד׳: <strong>4 ימי למידה פיזית</strong> מול 2 ימי למידה מקוונת.</p>
+<p>שכבות ה׳–ו׳: <strong>2 ימי למידה פיזית</strong> מול 4 ימי למידה מקוונת.</p>
+<p class="alt-detail">מודל המבוסס על פריסת הנוכחות לאורך השבוע המאפשר ניהול מחזורי של משאבי מיגון, הפחתת העומס היומי ומקסום השימוש בתשתיות הלמידה העומדות לרשות המוסד.</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="footer"><span>עמוד 8</span><span>אגף בכיר חינוך יסודי</span></div>
+</div></body></html>
